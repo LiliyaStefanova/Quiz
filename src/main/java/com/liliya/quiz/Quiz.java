@@ -1,5 +1,9 @@
 package com.liliya.quiz;
 
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+
 /**
  * A class used to create new quiz objects
  * The objects will contain the list of questions for each quiz game set up on the server
@@ -29,4 +33,16 @@ public interface Quiz {
      * Not creating a set quiz id yet as this will be generated automatically by the server
      * when new quiz is created
      */
+
+    /**
+     * Gets the quiz questions
+     * @return map of questions with id
+     */
+    public Set<Question> getQuizQuestions();
+
+   /* *//**
+     * Sets the questions for a quiz
+     * @param searchString
+     *//*
+    public void changeQuizQuestions(String searchString);*/
 }
