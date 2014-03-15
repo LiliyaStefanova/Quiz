@@ -11,6 +11,7 @@ public class QuizImpl implements Quiz {
     public QuizImpl(String name, Question [] questions){
         this.quizName=name;
         this.quizQuestions=convertQuestionToSet(questions);
+        this.quizId=QuizIDGenerator.getNewID();
     }
 
     @Override
@@ -25,7 +26,7 @@ public class QuizImpl implements Quiz {
 
     @Override
     public int getQuizId() {
-        return 0;  //To change body of implemented methods use File | Settings | File Templates.
+        return this.quizId;
     }
 
     @Override
