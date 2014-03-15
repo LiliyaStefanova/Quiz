@@ -39,6 +39,12 @@ public interface Question {
     public String getCorrectAnswer();
 
     /**
+     * Sets the correct answer to a question
+     * @param answer
+     */
+    public void setCorrectAnswer(String answer);
+
+    /**
      * Sets the number of points to be rewarded for a correct answer when setting up a quiz
      * @param points
      */

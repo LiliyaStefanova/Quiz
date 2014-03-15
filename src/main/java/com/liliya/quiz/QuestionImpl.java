@@ -48,17 +48,25 @@ public class QuestionImpl implements Question {
 
     @Override
     public String getCorrectAnswer() {
-        return null;  //To change body of implemented methods use File | Settings | File Templates.
+        return this.correctAnswer;
+    }
+
+    @Override
+    public void setCorrectAnswer(String answer) {
+
+        this.correctAnswer=answer;
+
     }
 
     @Override
     public void setCorrectAnswerPoints(int points) {
-        //To change body of implemented methods use File | Settings | File Templates.
+
+        this.correctAnswerPoints=points;
     }
 
     @Override
     public int getCorrectAnswerPoints() {
-        return 0;  //To change body of implemented methods use File | Settings | File Templates.
+        return correctAnswerPoints;
     }
 
     private Map<String, String> convertAnswersListToQuizFormat(String [] answers){

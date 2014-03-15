@@ -51,5 +51,43 @@ public class QuestionTest {
         assertEquals(possibleAnswersExpected, newQuestion.getPossibleAnswers());
     }
 
+    @Test
+    public void getCorrectAnswer(){
+
+        assertEquals("Canberra", newQuestion.getCorrectAnswer());
+    }
+
+    @Test
+    public void setCorrectAnswer(){
+        String question="What is the capital of Australia?";
+        String [] possibleAnswers={"Canberra", "Melbourne", "Darwin", "Singapore" };
+        String correctAnswer="Canberra";
+        int pointsAwarded=5;
+        Question newQuestion=new QuestionImpl(question, possibleAnswers, correctAnswer, pointsAwarded);
+        newQuestion.setCorrectAnswer("Melbourne");
+
+        assertEquals("Melbourne", newQuestion.getCorrectAnswer());
+    }
+
+
+    @Test
+    public void getCorrectAnswerPoint(){
+
+        assertEquals(5, newQuestion.getCorrectAnswerPoints());
+    }
+
+    @Test
+    public void setCorrectAnswerPoints(){
+        String question="What is the capital of Australia?";
+        String [] possibleAnswers={"Canberra", "Melbourne", "Darwin", "Singapore" };
+        String correctAnswer="Canberra";
+        int pointsAwarded=5;
+        Question newQuestion=new QuestionImpl(question, possibleAnswers, correctAnswer, pointsAwarded);
+        newQuestion.setCorrectAnswerPoints(10);
+
+        assertEquals(10, newQuestion.getCorrectAnswerPoints());
+    }
+
+
 
 }
