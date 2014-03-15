@@ -1,6 +1,7 @@
 package com.liliya.quiz;
 
 import java.util.List;
+import java.util.Map;
 
 /**
  * Question as part of hte questions in a quiz
@@ -23,13 +24,13 @@ public interface Question {
      * returns the list of possible answers for this question(multiple choice)
      * @return list of string answers
      */
-    public List<String> getPossibleAnswers();
+    public Map<String, String> getPossibleAnswers();
 
     /**
      * Sets the list of possible answers to a question when the question is created
      * @param possibleAnswers
      */
-    public void setPossibleAnswers(List<String> possibleAnswers);
+    public void setPossibleAnswers(String [] possibleAnswers);
 
     /**
      * Returns the correct answer for a question
