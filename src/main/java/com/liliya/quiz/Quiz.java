@@ -40,9 +40,10 @@ public interface Quiz {
      */
     public Set<Question> getQuizQuestions();
 
-   /* *//**
-     * Sets the questions for a quiz
-     * @param searchString
-     *//*
-    public void changeQuizQuestions(String searchString);*/
+    /**
+     * Returns true is the quiz is active and false if closed
+     * Used to determine if quiz is available for users to play
+     * @return
+     */
+    public boolean getQuizState();
 }
