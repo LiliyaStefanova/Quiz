@@ -4,6 +4,8 @@ import org.junit.*;
 
 import java.rmi.Remote;
 import java.rmi.RemoteException;
+import java.util.ArrayList;
+import java.util.List;
 
 import static org.junit.Assert.*;
 
@@ -58,6 +60,21 @@ public class QuizServerTestNonRMI {
 
     @Test
     public void getListCurrentQuizzes(){
+
+        String quizName1="General knowledge";
+        String quizName2="Gepgraphy";
+        try{
+            List<Quiz> expectedQuizList=new ArrayList<Quiz>();
+            Quiz quiz1=new QuizImpl(quizName1, questions);
+            expectedQuizList.add(quiz1);
+            //assertNotNull(quizServer.generateQuiz(quizName, questions));
+           quizServer.generateQuiz(quizName1, questions);
+
+            assertEquals(expectedQuizList.get(0).getQuizName(), quizServer.getListCurrentQuizzes().get(0).getQuizName());
+        }
+        catch(RemoteException ex){
+            ex.printStackTrace();
+        }
 
     }
 
