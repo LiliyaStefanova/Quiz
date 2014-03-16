@@ -7,11 +7,14 @@ public class QuizImpl implements Quiz {
     private String quizName;
     private int quizId;
     private Set<Question> quizQuestions;
+    //set to false once quiz is closed by user
+    private boolean quizActive;
 
     public QuizImpl(String name, Question [] questions){
         this.quizName=name;
         this.quizQuestions=convertQuestionToSet(questions);
         this.quizId=QuizIDGenerator.getNewID();
+        quizActive=true;
     }
 
     @Override
@@ -33,6 +36,11 @@ public class QuizImpl implements Quiz {
     public Set<Question> getQuizQuestions() {
 
         return quizQuestions;
+    }
+
+    @Override
+    public boolean getQuizState() {
+        return this.quizActive;
     }
 
   /*  @Override
