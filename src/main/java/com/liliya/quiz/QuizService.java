@@ -16,7 +16,7 @@ public interface QuizService extends Remote {
      * @param questions of the quiz specified by the set up client
      * @return id of the quiz
      */
-    public int generateQuiz(Question [] questions) throws RemoteException;
+    public int generateQuiz(String name, Question [] questions) throws RemoteException;
 
     /**
      * Stops the quiz instance upon request by set up client
@@ -35,7 +35,7 @@ public interface QuizService extends Remote {
      * Returns a list of current quizzes for the user to choose from
      * @return list of current quizzes
      */
-    public List<Quiz> getListCurrentQuizzes();
+    public List<Quiz> getListCurrentQuizzes() throws RemoteException;
 
     /**
      * Returns the list of players who have played a quiz

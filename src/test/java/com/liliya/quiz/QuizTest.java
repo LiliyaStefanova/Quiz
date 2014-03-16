@@ -54,10 +54,25 @@ public class QuizTest {
     }
 
     @Test
+    public void getQuizIdTest(){
+        Question [] questions={questionCapital, questionRiver};
+        Quiz quiz1=new QuizImpl("Capitals", questions);
+        Quiz quiz2=new QuizImpl("Capitals", questions);
+
+        assertEquals(2, quiz1.getQuizId());
+
+        assertEquals(3, quiz2.getQuizId());
+    }
+
+    @Test
     public void getQuizQuestionsTest(){
 
          //more extensive testing required to ensure correct entries
         assertTrue(newQuiz.getQuizQuestions().size()==2);
+    }
+
+    private void whatIsIDGeneratorNow(){
+        System.out.print("ID generator is at:"+QuizIDGenerator.checkCurrentId());
     }
 
 }
