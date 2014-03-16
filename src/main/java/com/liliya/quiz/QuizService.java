@@ -29,7 +29,7 @@ public interface QuizService extends Remote {
      * Uses id retrieved following the user choice from a list of quizzes
      * @return the score of the user at the end of the quiz
      */
-    public int playQuiz(int id) throws RemoteException;
+    public int playQuiz(int id, String name) throws RemoteException;
 
     /**
      * Returns a list of current quizzes for the user to choose from
