@@ -1,5 +1,6 @@
 package com.liliya.quiz;
 
+import java.io.Serializable;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -11,7 +12,7 @@ import java.util.Map;
  * Time: 12:56
  * To change this template use File | Settings | File Templates.
  */
-public class QuestionImpl implements Question {
+public class QuestionImpl implements Question, Serializable {
 
     private String question;
     //key will be a, b,c, d etc
@@ -79,5 +80,29 @@ public class QuestionImpl implements Question {
         possibleAnswers.put(questionIdentifiers[3],answers[3]);
     //will use fixed number of possible answers to begin with
         return possibleAnswers;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        QuestionImpl question1 = (QuestionImpl) o;
+
+        if (correctAnswer != null ? !correctAnswer.equals(question1.correctAnswer) : question1.correctAnswer != null)
+            return false;
+        if (possibleAnswers != null ? !possibleAnswers.equals(question1.possibleAnswers) : question1.possibleAnswers != null)
+            return false;
+        if (question != null ? !question.equals(question1.question) : question1.question != null) return false;
+
+        return true;
+    }
+
+    @Override
+    public int hashCode() {
+        int result = question != null ? question.hashCode() : 0;
+        result = 31 * result + (possibleAnswers != null ? possibleAnswers.hashCode() : 0);
+        result = 31 * result + (correctAnswer != null ? correctAnswer.hashCode() : 0);
+        return result;
     }
 }

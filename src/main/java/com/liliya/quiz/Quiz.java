@@ -46,4 +46,10 @@ public interface Quiz {
      * @return
      */
     public boolean getQuizState();
+
+    /**
+     * sets the state of the quiz to active or inactive
+     * @param state
+     */
+    public void setQuizState(boolean state);
 }

@@ -22,20 +22,26 @@ public interface QuizService extends Remote {
      * Stops the quiz instance upon request by set up client
      * @return list of all players for this quiz instance
      */
-    public Map<Quiz, List<Player>> closeQuiz() throws RemoteException;
+    public PlayerQuizInstance closeQuiz(int id) throws RemoteException;
 
     /**
      * Plays the quiz chosen by the player by displaying questions and accepting answers
      * Uses id retrieved following the user choice from a list of quizzes
      * @return the score of the user at the end of the quiz
      */
-    public int playQuiz(int id, String name) throws RemoteException;
+    public Quiz loadQuiz(int id, String name) throws RemoteException;
 
     /**
      * Returns a list of current quizzes for the user to choose from
      * @return list of current quizzes
      */
-    public List<Quiz> getListCurrentQuizzes() throws RemoteException;
+    public List<Quiz> getListActiveQuizzes() throws RemoteException;
+
+    /**
+     * Adds new player to the existing list
+     * @param name of the player
+     */
+    public Player addNewPlayer(String name) throws RemoteException;
 
     /**
      * Returns the list of players who have played a quiz

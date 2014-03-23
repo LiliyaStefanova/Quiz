@@ -1,8 +1,9 @@
 package com.liliya.quiz;
 
+import java.io.Serializable;
 import java.util.*;
 
-public class QuizImpl implements Quiz {
+public class QuizImpl implements Quiz, Serializable {
 
     private String quizName;
     private int quizId;
@@ -43,6 +44,11 @@ public class QuizImpl implements Quiz {
         return this.quizActive;
     }
 
+    @Override
+    public void setQuizState(boolean state) {
+        this.quizActive=state;
+    }
+
   /*  @Override
     public void changeQuizQuestions(String searchString) {
         //To change body of implemented methods use File | Settings | File Templates.
@@ -55,5 +61,28 @@ public class QuizImpl implements Quiz {
             quizQuestions.add(curr);
         }
         return quizQuestions;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        QuizImpl quiz = (QuizImpl) o;
+
+        if (quizId != quiz.quizId) return false;
+        if (quizName != null ? !quizName.equals(quiz.quizName) : quiz.quizName != null) return false;
+        if (quizQuestions != null ? !quizQuestions.equals(quiz.quizQuestions) : quiz.quizQuestions != null)
+            return false;
+
+        return true;
+    }
+
+    @Override
+    public int hashCode() {
+        int result = quizName != null ? quizName.hashCode() : 0;
+        result = 31 * result + quizId;
+        result = 31 * result + (quizQuestions != null ? quizQuestions.hashCode() : 0);
+        return result;
     }
 }
