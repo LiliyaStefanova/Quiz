@@ -1,17 +1,11 @@
 package com.liliya.quiz;
 
+import java.io.Serializable;
 import java.rmi.RemoteException;
 import java.rmi.server.UnicastRemoteObject;
 import java.util.*;
 
-/**
- * Created with IntelliJ IDEA.
- * User: liliya
- * Date: 15/03/14
- * Time: 09:58
- * To change this template use File | Settings | File Templates.
- */
-public class QuizServer extends UnicastRemoteObject implements QuizService {
+public class QuizServer extends UnicastRemoteObject implements QuizService, Serializable {
 
     //list of all players with all quizzes they have taken(including multiple attempts at same one
     //stores quiz id and score
@@ -42,6 +36,8 @@ public class QuizServer extends UnicastRemoteObject implements QuizService {
 
     @Override
     public int playQuiz(int id, String name) {
+
+        PlayerQuizInstance newInstance=new PlayerQuizInstance(playerExists(name), quizExists(id));
         return 0;  //To change body of implemented methods use File | Settings | File Templates.
     }
 
@@ -58,5 +54,27 @@ public class QuizServer extends UnicastRemoteObject implements QuizService {
     @Override
     public Map<Player, List<Quiz>> getQuizzesPerPlayer() {
         return null;  //To change body of implemented methods use File | Settings | File Templates.
+    }
+
+    private Quiz quizExists(int id){
+        Quiz existingQuiz=null;
+        for(Quiz curr: allActiveQuizzes){
+            if(curr.getQuizId()==id){
+               existingQuiz=curr;
+                return  existingQuiz;
+            }
+        }
+        return existingQuiz;
+    }
+
+    private Player playerExists(String name){
+        Player existingPlayer=null;
+        for(Player curr: allPlayers){
+            if(curr.getName().equals(name)){
+                existingPlayer=curr;
+                return curr;
+            }
+        }
+         return existingPlayer;
     }
 }
