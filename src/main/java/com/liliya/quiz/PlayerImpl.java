@@ -1,5 +1,7 @@
 package com.liliya.quiz;
 
+import java.io.Serializable;
+
 /**
  * Created with IntelliJ IDEA.
  * User: liliya
@@ -7,7 +9,7 @@ package com.liliya.quiz;
  * Time: 12:51
  * To change this template use File | Settings | File Templates.
  */
-public class PlayerImpl implements Player {
+public class PlayerImpl implements Player, Serializable {
 
     private String name;
 
@@ -21,4 +23,20 @@ public class PlayerImpl implements Player {
         return this.name;
     }
 
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        PlayerImpl player = (PlayerImpl) o;
+
+        if (name != null ? !name.equals(player.name) : player.name != null) return false;
+
+        return true;
+    }
+
+    @Override
+    public int hashCode() {
+        return name != null ? name.hashCode() : 0;
+    }
 }

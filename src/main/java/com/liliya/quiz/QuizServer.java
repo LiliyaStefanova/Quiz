@@ -16,9 +16,11 @@ public class QuizServer extends UnicastRemoteObject implements QuizService, Seri
     public QuizServer() throws RemoteException{
 
         allQuizzes=new ArrayList<Quiz>();
+        allPlayers=new HashSet<Player>();
+        playerQuizInstances=new ArrayList<PlayerQuizInstance>();
     }
     @Override
-    public int generateQuiz(String name, Question[] questions) throws RemoteException{
+    public int generateQuiz(String name, Map<Integer, Question> questions) throws RemoteException{
 
         Quiz newQuiz=new QuizImpl(name, questions);
         //need to make a check for duplicate quizzes here
@@ -57,16 +59,32 @@ public class QuizServer extends UnicastRemoteObject implements QuizService, Seri
     }
 
     @Override
-    public Quiz loadQuiz(int id, String name) {
+    public PlayerQuizInstance loadQuiz(int id, String name) {
+        /*Player instancePlayer=null;
+        if(playerExists(name)==null){
+            instancePlayer=addNewPlayer(name);
+        }
+        else{
+            instancePlayer=playerExists(name);
+            }*/
         //need to check if player exists and if player does not create a new one
-        Quiz selectedQuiz=null;
-        PlayerQuizInstance newInstance=new PlayerQuizInstance(playerExists(name), quizExists(id));
-        for(Quiz current:allQuizzes){
-            if(current.getQuizId()==id){
-                selectedQuiz=current;
+        return new PlayerQuizInstance(playerExists(name), quizExists(id));
+    }
+
+    @Override
+    public int calculateQuizScore(PlayerQuizInstance quizInstance, Map<Question, String> guesses) {
+        int playerQuizInstanceScore=0;
+        for(Map.Entry<Question, String> entry: guesses.entrySet()){
+            if(entry.getKey().getCorrectAnswer().equals(entry.getValue())){
+                playerQuizInstanceScore=playerQuizInstanceScore+entry.getKey().getCorrectAnswerPoints();
             }
         }
-        return selectedQuiz;
+       for(PlayerQuizInstance current:playerQuizInstances){
+           if(current.equals(quizInstance)){
+               quizInstance.setTotalScore(playerQuizInstanceScore);
+           }
+       }
+       return playerQuizInstanceScore;
     }
 
     @Override
@@ -78,11 +96,6 @@ public class QuizServer extends UnicastRemoteObject implements QuizService, Seri
             }
         }
         return activeQuizzes;
-    }
-
-
-    private int calculateQuizScore(List<String> userGuesses) {
-        return 0;  //To change body of implemented methods use File | Settings | File Templates.
     }
 
     @Override
@@ -116,17 +129,12 @@ public class QuizServer extends UnicastRemoteObject implements QuizService, Seri
     }
 
     private Player playerExists(String name){
-        Player existingPlayer=null;
         for(Player curr: allPlayers){
             if(curr.getName().equals(name)){
-                existingPlayer=curr;
                 return curr;
             }
-            else{
-                existingPlayer=addNewPlayer(name);
-            }
         }
-         return existingPlayer;
+        return addNewPlayer(name);
     }
 
     @Override

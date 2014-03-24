@@ -5,13 +5,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-/**
- * Created with IntelliJ IDEA.
- * User: liliya
- * Date: 15/03/14
- * Time: 12:56
- * To change this template use File | Settings | File Templates.
- */
 public class QuestionImpl implements Question, Serializable {
 
     private String question;

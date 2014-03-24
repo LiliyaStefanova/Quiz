@@ -6,10 +6,7 @@ import java.rmi.Naming;
 import java.rmi.NotBoundException;
 import java.rmi.Remote;
 import java.rmi.RemoteException;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
 /**
  * This is the player client which will be able to play available quizzes
@@ -29,16 +26,17 @@ public class QuizPlayerClientImpl implements QuizPlayerClient{
     }
 
     public void launchMainMenuPlayer(){
-        System.out.println("What would you like to do: ");
-        System.out.println("0-Play a quiz: ");
-        System.out.println("1-Check your scores: ");
-        System.out.println("2-Exit: ");
-
-        int choice=Integer.parseInt(System.console().readLine());
+        System.out.println("What would you like to do? ");
+        System.out.println("Play a quiz-->0");
+        System.out.println("Check your scores-->1");
+        System.out.println("Exit-->2");
+        System.out.print("-->");
+        Scanner sc=new Scanner(System.in);
+        int choice=sc.nextInt();
 
         switch(choice){
             case 0:
-                selectQuizFromMenu();
+                playQuiz(selectQuizFromMenu());
                 break;
             case 1:
                 //not implemented yet
@@ -52,16 +50,18 @@ public class QuizPlayerClientImpl implements QuizPlayerClient{
 
     }
 
-
     @Override
     public int selectQuizFromMenu() {
+        int choice=0;
         try{
             Remote service= Naming.lookup("//127.0.0.1:1699/quiz");
             QuizService quizPlayer=(QuizService) service;
             System.out.println("Select from the currently available quizzes: ");
             for(Quiz current:quizPlayer.getListActiveQuizzes()){
-                System.out.println(current.getQuizId()+"-"+current.getQuizName());
+                System.out.println(current.getQuizName()+"-->"+current.getQuizId());
             }
+            Scanner sc=new Scanner(System.in);
+            choice=sc.nextInt();
         }
         catch(MalformedURLException ex){
             ex.printStackTrace();
@@ -72,19 +72,21 @@ public class QuizPlayerClientImpl implements QuizPlayerClient{
         catch(NotBoundException ex){
             ex.printStackTrace();
         }
-      return Integer.parseInt(System.console().readLine());
+      return choice;
     }
 
     @Override
     public List<String> playQuiz(int id) {
         System.out.print("Enter your name: ");
-        String playerName=System.console().readLine();
+        Scanner sc=new Scanner(System.in);
+        String playerName=sc.nextLine();
         try{
         Remote service= Naming.lookup("//127.0.0.1:1699/quiz");
         QuizService quizPlayer=(QuizService) service;
-        Quiz chosenQuiz=quizPlayer.loadQuiz(id, playerName);
-        List<String> userGuesses=displayQuizToPlayer(chosenQuiz);
-        //quizPlayer.calculateScore(userGuesses);
+        PlayerQuizInstance playerQuizInstance=quizPlayer.loadQuiz(id, playerName);
+        Map<Question, String> userGuesses=displayQuizToPlayer(playerQuizInstance.getQuiz());
+        System.out.print("Thank you for your responses. Your final score is: ");
+        System.out.println(quizPlayer.calculateQuizScore(playerQuizInstance, userGuesses));
 
         }
         catch(MalformedURLException ex){
@@ -99,17 +101,19 @@ public class QuizPlayerClientImpl implements QuizPlayerClient{
         return null;
     }
 
-    public List<String> displayQuizToPlayer(Quiz playingQuiz){
-           Set<Question> quizQuestions=playingQuiz.getQuizQuestions();
-           List<String> playerGuesses=new ArrayList<String>();
-           for(Question current:quizQuestions){
-               System.out.println(current.getQuestion());
-               for(Map.Entry<String, String> entry:current.getPossibleAnswers().entrySet()){
-                   System.out.println(entry.getKey()+"-"+entry.getValue());
+    private Map<Question, String> displayQuizToPlayer(Quiz playingQuiz){
+           Map<Integer, Question> quizQuestions=playingQuiz.getQuizQuestions();
+           Map<Question,String> playerGuesses=new HashMap<Question, String>();
+           for(Map.Entry<Integer, Question> entryQuestion:playingQuiz.getQuizQuestions().entrySet()){
+               System.out.println(entryQuestion.getKey() +". "+entryQuestion.getValue().getQuestion());
+               for(Map.Entry<String, String> entryAnswer:entryQuestion.getValue().getPossibleAnswers().entrySet()){
+                   System.out.println(entryAnswer.getKey()+"-"+entryAnswer.getValue());
                }
                System.out.print("Your answer: ");
+               Scanner sc=new Scanner(System.in);
+               String playerGuess=sc.nextLine();
                //need a check for an invalid answer here
-               playerGuesses.add(System.console().readLine());
+               playerGuesses.put(entryQuestion.getValue(), playerGuess);
            }
            return playerGuesses;
         }

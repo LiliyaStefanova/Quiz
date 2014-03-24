@@ -7,13 +7,13 @@ public class QuizImpl implements Quiz, Serializable {
 
     private String quizName;
     private int quizId;
-    private Set<Question> quizQuestions;
+    private Map<Integer,Question> quizQuestions;
     //set to false once quiz is closed by user
     private boolean quizActive;
 
-    public QuizImpl(String name, Question [] questions){
+    public QuizImpl(String name, Map<Integer, Question> questions){
         this.quizName=name;
-        this.quizQuestions=convertQuestionToSet(questions);
+        this.quizQuestions=questions;
         this.quizId=QuizIDGenerator.getNewID();
         quizActive=true;
     }
@@ -34,7 +34,7 @@ public class QuizImpl implements Quiz, Serializable {
     }
 
     @Override
-    public Set<Question> getQuizQuestions() {
+    public Map<Integer, Question> getQuizQuestions() {
 
         return quizQuestions;
     }
@@ -55,13 +55,14 @@ public class QuizImpl implements Quiz, Serializable {
     }*/
 
 
-    private Set<Question> convertQuestionToSet(Question [] questions){
-        Set<Question> quizQuestions=new HashSet<Question>();
+  /*  private Map<Integer, Question> convertQuestionToMap(Question [] questions){
+        int questionIndex=0;
+        Map<Integer, Question> quizQuestions=new HashMap<Integer, Question>();
         for(Question curr:questions){
-            quizQuestions.add(curr);
+            quizQuestions.put(questionIndex++, curr);
         }
         return quizQuestions;
-    }
+    }*/
 
     @Override
     public boolean equals(Object o) {

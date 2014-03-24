@@ -38,7 +38,7 @@ public interface Quiz {
      * Gets the quiz questions
      * @return map of questions with id
      */
-    public Set<Question> getQuizQuestions();
+    public Map<Integer, Question> getQuizQuestions();
 
     /**
      * Returns true is the quiz is active and false if closed
