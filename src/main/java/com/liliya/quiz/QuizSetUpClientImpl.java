@@ -11,9 +11,9 @@ import java.util.Scanner;
 
 public class QuizSetUpClientImpl implements QuizSetUpClient {
 
-    public static void main(String [] args){
+    public static void main(String[] args) {
 
-        QuizSetUpClient suc=new QuizSetUpClientImpl();
+        QuizSetUpClient suc = new QuizSetUpClientImpl();
         suc.displayUserOptionsMenu();
 
     }
@@ -26,17 +26,17 @@ public class QuizSetUpClientImpl implements QuizSetUpClient {
         System.out.println("Close quiz-->1");
         System.out.println("Exit-->2");
         System.out.print("-->");
-        Scanner sc=new Scanner(System.in);
-        int choice=sc.nextInt();
+        Scanner sc = new Scanner(System.in);
+        int choice = sc.nextInt();
 
-        switch(choice){
+        switch (choice) {
             case 0:
                 setUpQuiz();
                 break;
             case 1:
                 System.out.print("Enter quiz id: ");
-                Scanner sc1=new Scanner(System.in);
-                int quizID=sc1.nextInt();
+                Scanner sc1 = new Scanner(System.in);
+                int quizID = sc1.nextInt();
                 closeQuiz(quizID);
                 break;
             case 2:
@@ -50,22 +50,19 @@ public class QuizSetUpClientImpl implements QuizSetUpClient {
 
     @Override
     public void setUpQuiz() {
-        try{
-            Remote service= Naming.lookup("//127.0.0.1:1699/quiz");
-            QuizService quizPlayer=(QuizService) service;
+        try {
+            Remote service = Naming.lookup("//127.0.0.1:1699/quiz");
+            QuizService quizPlayer = (QuizService) service;
             System.out.print("Enter quiz name: ");
-            Scanner sc1=new Scanner(System.in);
-            String quizName=sc1.nextLine();
+            Scanner sc1 = new Scanner(System.in);
+            String quizName = sc1.nextLine();
 
-           quizPlayer.generateQuiz(quizName, setUpQuestions());
-        }
-        catch(MalformedURLException ex){
+            quizPlayer.generateQuiz(quizName, setUpQuestions());
+        } catch (MalformedURLException ex) {
             ex.printStackTrace();
-        }
-        catch(RemoteException e){
+        } catch (RemoteException e) {
             e.printStackTrace();
-        }
-        catch(NotBoundException ex){
+        } catch (NotBoundException ex) {
             ex.printStackTrace();
         }
     }
@@ -73,19 +70,16 @@ public class QuizSetUpClientImpl implements QuizSetUpClient {
     @Override
     public void closeQuiz(int quizID) {
 
-        try{
-            Remote service= Naming.lookup("//127.0.0.1:1699/quiz");
-            QuizService quizPlayer=(QuizService) service;
-            PlayerQuizInstance winner=quizPlayer.closeQuiz(quizID);
+        try {
+            Remote service = Naming.lookup("//127.0.0.1:1699/quiz");
+            QuizService quizPlayer = (QuizService) service;
+            PlayerQuizInstance winner = quizPlayer.closeQuiz(quizID);
             displayQuizWinnerDetails(winner);
-        }
-        catch(MalformedURLException ex){
+        } catch (MalformedURLException ex) {
             ex.printStackTrace();
-        }
-        catch(RemoteException e){
+        } catch (RemoteException e) {
             e.printStackTrace();
-        }
-        catch(NotBoundException ex){
+        } catch (NotBoundException ex) {
             ex.printStackTrace();
         }
     }
@@ -98,31 +92,34 @@ public class QuizSetUpClientImpl implements QuizSetUpClient {
         playerWithHighestScore.getTotalScore();
     }
 
-    private Map<Integer, Question> setUpQuestions(){
-        Map<Integer, Question> questions=new HashMap<Integer, Question>();
+    private Map<Integer, Question> setUpQuestions() {
+        Map<Integer, Question> questions = new HashMap<Integer, Question>();
         System.out.print("Choose number of questions: ");
-        Scanner sc1=new Scanner(System.in);
-        int numQuestions=sc1.nextInt();
-        String [] answers=new String[numQuestions];
-        int count=1;
-        while(count<=numQuestions){
+        Scanner sc1 = new Scanner(System.in);
+        int numQuestions = sc1.nextInt();
+        String[] answers = new String[numQuestions];
+        int count = 0;
+        while (count < numQuestions) {
+            Map<Integer, String> possibleAnswers = new HashMap<Integer, String>();
             System.out.print("Enter question: ");
-            Scanner sc2=new Scanner(System.in);
-            String question=sc2.nextLine();
-            System.out.print("Enter possible answers: ");
-            for(int i=0; i>3; i++){
-                Scanner sc3=new Scanner(System.in);
-                String answer=sc1.nextLine();
-                answers[i]=answer;
+            Scanner sc2 = new Scanner(System.in);
+            String question = sc2.nextLine();
+            System.out.println("Enter possible answers: ");
+            for (int i = 1; i <= 4; i++) {
+                System.out.print("Possible answer " + i + ":");
+                Scanner sc3 = new Scanner(System.in);
+                String answer = sc3.nextLine();
+                possibleAnswers.put(i, answer);
             }
             System.out.print("Enter correct answer: ");
-            Scanner sc4=new Scanner(System.in);
-            String correctAnswer=sc4.nextLine();
+            Scanner sc4 = new Scanner(System.in);
+            int correctAnswer = sc4.nextInt();
             System.out.print("Enter correct answer points: ");
-            Scanner sc5=new Scanner(System.in);
-            int correctAnswerPoints=sc5.nextInt();
-            Question newQuestion=new QuestionImpl(question, answers, correctAnswer, correctAnswerPoints);
+            Scanner sc5 = new Scanner(System.in);
+            int correctAnswerPoints = sc5.nextInt();
+            Question newQuestion = new QuestionImpl(question, possibleAnswers, correctAnswer, correctAnswerPoints);
             questions.put(count, newQuestion);
+            count++;
         }
 
         return questions;

@@ -12,29 +12,29 @@ import java.util.*;
  * This is the player client which will be able to play available quizzes
  */
 
-public class QuizPlayerClientImpl implements QuizPlayerClient{
+public class QuizPlayerClientImpl implements QuizPlayerClient {
 
-    public static void main(String [] args){
+    public static void main(String[] args) {
 
        /* if(System.getSecurityManager()==null){
             System.setSecurityManager(new RMISecurityManager());
         }
         */
-            QuizPlayerClient newPlayerClient=new QuizPlayerClientImpl();
-            newPlayerClient.launchMainMenuPlayer();
+        QuizPlayerClient newPlayerClient = new QuizPlayerClientImpl();
+        newPlayerClient.launchMainMenuPlayer();
 
     }
 
-    public void launchMainMenuPlayer(){
+    public void launchMainMenuPlayer() {
         System.out.println("What would you like to do? ");
         System.out.println("Play a quiz-->0");
         System.out.println("Check your scores-->1");
         System.out.println("Exit-->2");
         System.out.print("-->");
-        Scanner sc=new Scanner(System.in);
-        int choice=sc.nextInt();
+        Scanner sc = new Scanner(System.in);
+        int choice = sc.nextInt();
 
-        switch(choice){
+        switch (choice) {
             case 0:
                 playQuiz(selectQuizFromMenu());
                 break;
@@ -52,71 +52,65 @@ public class QuizPlayerClientImpl implements QuizPlayerClient{
 
     @Override
     public int selectQuizFromMenu() {
-        int choice=0;
-        try{
-            Remote service= Naming.lookup("//127.0.0.1:1699/quiz");
-            QuizService quizPlayer=(QuizService) service;
+        int choice = 0;
+        try {
+            Remote service = Naming.lookup("//127.0.0.1:1699/quiz");
+            QuizService quizPlayer = (QuizService) service;
             System.out.println("Select from the currently available quizzes: ");
-            for(Quiz current:quizPlayer.getListActiveQuizzes()){
-                System.out.println(current.getQuizName()+"-->"+current.getQuizId());
+            for (Quiz current : quizPlayer.getListActiveQuizzes()) {
+                System.out.println(current.getQuizName() + "-->" + current.getQuizId());
             }
-            Scanner sc=new Scanner(System.in);
-            choice=sc.nextInt();
-        }
-        catch(MalformedURLException ex){
+            Scanner sc = new Scanner(System.in);
+            choice = sc.nextInt();
+        } catch (MalformedURLException ex) {
             ex.printStackTrace();
-        }
-        catch(RemoteException e){
+        } catch (RemoteException e) {
             e.printStackTrace();
-        }
-        catch(NotBoundException ex){
+        } catch (NotBoundException ex) {
             ex.printStackTrace();
         }
-      return choice;
+        return choice;
     }
 
     @Override
     public List<String> playQuiz(int id) {
         System.out.print("Enter your name: ");
-        Scanner sc=new Scanner(System.in);
-        String playerName=sc.nextLine();
-        try{
-        Remote service= Naming.lookup("//127.0.0.1:1699/quiz");
-        QuizService quizPlayer=(QuizService) service;
-        PlayerQuizInstance playerQuizInstance=quizPlayer.loadQuiz(id, playerName);
-        Map<Question, String> userGuesses=displayQuizToPlayer(playerQuizInstance.getQuiz());
-        System.out.print("Thank you for your responses. Your final score is: ");
-        System.out.println(quizPlayer.calculateQuizScore(playerQuizInstance, userGuesses));
+        Scanner sc = new Scanner(System.in);
+        String playerName = sc.nextLine();
+        try {
+            Remote service = Naming.lookup("//127.0.0.1:1699/quiz");
+            QuizService quizPlayer = (QuizService) service;
+            PlayerQuizInstance playerQuizInstance = quizPlayer.loadQuiz(id, playerName);
+            Map<Question, Integer> userGuesses = displayQuizToPlayer(playerQuizInstance.getQuiz());
+            System.out.print("Thank you for your responses. Your final score is: ");
+            System.out.println(quizPlayer.calculateQuizScore(playerQuizInstance, userGuesses));
 
-        }
-        catch(MalformedURLException ex){
+        } catch (MalformedURLException ex) {
             ex.printStackTrace();
-        }
-        catch(RemoteException e){
+        } catch (RemoteException e) {
             e.printStackTrace();
-        }
-        catch(NotBoundException ex){
+        } catch (NotBoundException ex) {
             ex.printStackTrace();
         }
         return null;
     }
 
-    private Map<Question, String> displayQuizToPlayer(Quiz playingQuiz){
-           Map<Integer, Question> quizQuestions=playingQuiz.getQuizQuestions();
-           Map<Question,String> playerGuesses=new HashMap<Question, String>();
-           for(Map.Entry<Integer, Question> entryQuestion:playingQuiz.getQuizQuestions().entrySet()){
-               System.out.println(entryQuestion.getKey() +". "+entryQuestion.getValue().getQuestion());
-               for(Map.Entry<String, String> entryAnswer:entryQuestion.getValue().getPossibleAnswers().entrySet()){
-                   System.out.println(entryAnswer.getKey()+"-"+entryAnswer.getValue());
-               }
-               System.out.print("Your answer: ");
-               Scanner sc=new Scanner(System.in);
-               String playerGuess=sc.nextLine();
-               //need a check for an invalid answer here
-               playerGuesses.put(entryQuestion.getValue(), playerGuess);
-           }
-           return playerGuesses;
+    private Map<Question, Integer> displayQuizToPlayer(Quiz playingQuiz) {
+        Map<Integer, Question> quizQuestions = playingQuiz.getQuizQuestions();
+        Map<Question, Integer> playerGuesses = new HashMap<Question, Integer>();
+        for (Map.Entry<Integer, Question> entryQuestion : playingQuiz.getQuizQuestions().entrySet()) {
+            System.out.println(entryQuestion.getKey() + ". " + entryQuestion.getValue().getQuestion());
+            for (Map.Entry<Integer, String> entryAnswer : entryQuestion.getValue().getPossibleAnswers().entrySet()) {
+                System.out.println(entryAnswer.getKey() + "-" + entryAnswer.getValue());
+            }
+            System.out.print("Your answer: ");
+            Scanner sc = new Scanner(System.in);
+            int playerGuess = sc.nextInt();
+            //need a check for an invalid answer here
+            playerGuesses.put(entryQuestion.getValue(), playerGuess);
         }
+        return playerGuesses;
+    }
 
 
 }

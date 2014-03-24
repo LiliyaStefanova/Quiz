@@ -13,8 +13,8 @@ public class PlayerImpl implements Player, Serializable {
 
     private String name;
 
-    public PlayerImpl(String name){
-        this.name=name;
+    public PlayerImpl(String name) {
+        this.name = name;
     }
 
     @Override

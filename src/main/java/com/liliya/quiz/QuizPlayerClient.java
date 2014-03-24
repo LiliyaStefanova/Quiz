@@ -9,12 +9,12 @@ public interface QuizPlayerClient {
 
     /**
      * Main menu functionality for the player client
-     *
      */
-     public void launchMainMenuPlayer();
+    public void launchMainMenuPlayer();
 
-   /**
+    /**
      * The menu for players to select from active quizzes
+     *
      * @return the id of the quiz selected by the player;
      */
 
@@ -22,6 +22,7 @@ public interface QuizPlayerClient {
 
     /**
      * Launch
+     *
      * @param id of the quiz
      * @return a list of answers by the player to be scored
      */

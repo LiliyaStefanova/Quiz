@@ -8,7 +8,6 @@ public interface QuizSetUpClient {
 
     /**
      * Displays menu with options for actions the set up user can perform
-     *
      */
     public void displayUserOptionsMenu();
 
@@ -22,8 +21,8 @@ public interface QuizSetUpClient {
 
     /**
      * Closes the quiz when the the set up client provides the id
-     * @param quizID
-     * will display a notification of player with highest score for this game instance
+     *
+     * @param quizID will display a notification of player with highest score for this game instance
      */
 
     public void closeQuiz(int quizID);
@@ -31,6 +30,7 @@ public interface QuizSetUpClient {
     /**
      * takes in the value returned from the server after the quiz is closed and displays it in a formatted
      * version to the client
+     *
      * @param playerWithHighestScore
      */
     public void displayQuizWinnerDetails(PlayerQuizInstance playerWithHighestScore);

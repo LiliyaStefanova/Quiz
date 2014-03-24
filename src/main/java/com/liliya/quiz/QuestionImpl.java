@@ -8,16 +8,16 @@ import java.util.Map;
 public class QuestionImpl implements Question, Serializable {
 
     private String question;
-    //key will be a, b,c, d etc
-    private Map<String, String> possibleAnswers;
-    private String correctAnswer;
+    //key will be 1,2,3,4
+    private Map<Integer, String> possibleAnswers;
+    private Integer correctAnswer;
     private int correctAnswerPoints;
 
-    public QuestionImpl(String question, String [] answers, String correctAnswer, int correctAnswerPoints){
-        this.question=question;
-        this.possibleAnswers=convertAnswersListToQuizFormat(answers);
-        this.correctAnswer=correctAnswer;
-        this.correctAnswerPoints=correctAnswerPoints;
+    public QuestionImpl(String question, Map<Integer, String> possibleAnswers, int correctAnswer, int correctAnswerPoints) {
+        this.question = question;
+        this.possibleAnswers = possibleAnswers;
+        this.correctAnswer = correctAnswer;
+        this.correctAnswerPoints = correctAnswerPoints;
     }
 
     @Override
@@ -27,52 +27,42 @@ public class QuestionImpl implements Question, Serializable {
 
     @Override
     public void setQuestion(String question) {
-            this.question=question;
+        this.question = question;
     }
 
     @Override
-    public Map<String, String> getPossibleAnswers() {
+    public Map<Integer, String> getPossibleAnswers() {
         return possibleAnswers;
     }
 
     @Override
-    public void setPossibleAnswers(String[] possibleAnswers) {
+    public void setPossibleAnswers(Map<Integer, String> possibleAnswers) {
 
-        this.possibleAnswers=convertAnswersListToQuizFormat(possibleAnswers);
+        this.possibleAnswers = possibleAnswers;
     }
 
     @Override
-    public String getCorrectAnswer() {
-        return this.correctAnswer;
+    public int getCorrectAnswer() {
+
+        return correctAnswer;
     }
 
     @Override
-    public void setCorrectAnswer(String answer) {
+    public void setCorrectAnswer(int answer) {
 
-        this.correctAnswer=answer;
+        this.correctAnswer = answer;
 
     }
 
     @Override
     public void setCorrectAnswerPoints(int points) {
 
-        this.correctAnswerPoints=points;
+        this.correctAnswerPoints = points;
     }
 
     @Override
     public int getCorrectAnswerPoints() {
         return correctAnswerPoints;
-    }
-
-    private Map<String, String> convertAnswersListToQuizFormat(String [] answers){
-        String [] questionIdentifiers={"a", "b", "c", "d"};
-        Map<String, String> possibleAnswers=new HashMap<String, String>();
-        possibleAnswers.put(questionIdentifiers[0],answers[0]);
-        possibleAnswers.put(questionIdentifiers[1],answers[1]);
-        possibleAnswers.put(questionIdentifiers[2],answers[2]);
-        possibleAnswers.put(questionIdentifiers[3],answers[3]);
-    //will use fixed number of possible answers to begin with
-        return possibleAnswers;
     }
 
     @Override
@@ -82,6 +72,7 @@ public class QuestionImpl implements Question, Serializable {
 
         QuestionImpl question1 = (QuestionImpl) o;
 
+        if (correctAnswerPoints != question1.correctAnswerPoints) return false;
         if (correctAnswer != null ? !correctAnswer.equals(question1.correctAnswer) : question1.correctAnswer != null)
             return false;
         if (possibleAnswers != null ? !possibleAnswers.equals(question1.possibleAnswers) : question1.possibleAnswers != null)
@@ -96,6 +87,7 @@ public class QuestionImpl implements Question, Serializable {
         int result = question != null ? question.hashCode() : 0;
         result = 31 * result + (possibleAnswers != null ? possibleAnswers.hashCode() : 0);
         result = 31 * result + (correctAnswer != null ? correctAnswer.hashCode() : 0);
+        result = 31 * result + correctAnswerPoints;
         return result;
     }
 }

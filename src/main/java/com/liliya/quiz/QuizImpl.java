@@ -7,15 +7,15 @@ public class QuizImpl implements Quiz, Serializable {
 
     private String quizName;
     private int quizId;
-    private Map<Integer,Question> quizQuestions;
+    private Map<Integer, Question> quizQuestions;
     //set to false once quiz is closed by user
     private boolean quizActive;
 
-    public QuizImpl(String name, Map<Integer, Question> questions){
-        this.quizName=name;
-        this.quizQuestions=questions;
-        this.quizId=QuizIDGenerator.getNewID();
-        quizActive=true;
+    public QuizImpl(String name, Map<Integer, Question> questions) {
+        this.quizName = name;
+        this.quizQuestions = questions;
+        this.quizId = QuizIDGenerator.getNewID();
+        quizActive = true;
     }
 
     @Override
@@ -25,7 +25,7 @@ public class QuizImpl implements Quiz, Serializable {
 
     @Override
     public void setQuizName(String name) {
-        this.quizName=name;
+        this.quizName = name;
     }
 
     @Override
@@ -46,23 +46,8 @@ public class QuizImpl implements Quiz, Serializable {
 
     @Override
     public void setQuizState(boolean state) {
-        this.quizActive=state;
+        this.quizActive = state;
     }
-
-  /*  @Override
-    public void changeQuizQuestions(String searchString) {
-        //To change body of implemented methods use File | Settings | File Templates.
-    }*/
-
-
-  /*  private Map<Integer, Question> convertQuestionToMap(Question [] questions){
-        int questionIndex=0;
-        Map<Integer, Question> quizQuestions=new HashMap<Integer, Question>();
-        for(Question curr:questions){
-            quizQuestions.put(questionIndex++, curr);
-        }
-        return quizQuestions;
-    }*/
 
     @Override
     public boolean equals(Object o) {

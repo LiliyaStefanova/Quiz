@@ -29,13 +29,15 @@ public class QuizServer extends UnicastRemoteObject implements QuizService, Seri
 
     }
 
+    //need to refactor and take this to another method
+    //there should be some way to  mark quizzes as closed
+    //a quiz cannot be closed if there is a player client still playing it
+
     @Override
     public PlayerQuizInstance closeQuiz(int id) throws RemoteException{
         List<PlayerQuizInstance> quizInstances=new ArrayList<PlayerQuizInstance>();
         PlayerQuizInstance winner=null;
         int maxScore=0;
-        //need to refactor and take this to another method
-        //there should be some way to  mark quizzes as closed
         for(Quiz curr:allQuizzes){
             if(curr.getQuizId()==id){
                 curr.setQuizState(false);
@@ -60,22 +62,15 @@ public class QuizServer extends UnicastRemoteObject implements QuizService, Seri
 
     @Override
     public PlayerQuizInstance loadQuiz(int id, String name) {
-        /*Player instancePlayer=null;
-        if(playerExists(name)==null){
-            instancePlayer=addNewPlayer(name);
-        }
-        else{
-            instancePlayer=playerExists(name);
-            }*/
         //need to check if player exists and if player does not create a new one
         return new PlayerQuizInstance(playerExists(name), quizExists(id));
     }
 
     @Override
-    public int calculateQuizScore(PlayerQuizInstance quizInstance, Map<Question, String> guesses) {
+    public int calculateQuizScore(PlayerQuizInstance quizInstance, Map<Question, Integer> guesses) {
         int playerQuizInstanceScore=0;
-        for(Map.Entry<Question, String> entry: guesses.entrySet()){
-            if(entry.getKey().getCorrectAnswer().equals(entry.getValue())){
+        for(Map.Entry<Question, Integer> entry: guesses.entrySet()){
+            if(entry.getKey().getCorrectAnswer()==((entry.getValue()))){
                 playerQuizInstanceScore=playerQuizInstanceScore+entry.getKey().getCorrectAnswerPoints();
             }
         }

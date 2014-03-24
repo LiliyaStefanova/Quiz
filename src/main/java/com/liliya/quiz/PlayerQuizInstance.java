@@ -8,24 +8,24 @@ public class PlayerQuizInstance implements Serializable {
     private Quiz quiz;
     private int totalScore;
 
-    public PlayerQuizInstance(Player player, Quiz quiz){
-        this.player=player;
-        this.quiz=quiz;
+    public PlayerQuizInstance(Player player, Quiz quiz) {
+        this.player = player;
+        this.quiz = quiz;
     }
 
-    public int getTotalScore(){
-        return  this.totalScore;
+    public int getTotalScore() {
+        return this.totalScore;
     }
 
-    public void setTotalScore(int score){
-        this.totalScore=score;
+    public void setTotalScore(int score) {
+        this.totalScore = score;
     }
 
-    public Player getPlayer(){
+    public Player getPlayer() {
         return this.player;
     }
 
-    public Quiz getQuiz(){
+    public Quiz getQuiz() {
         return this.quiz;
     }
 

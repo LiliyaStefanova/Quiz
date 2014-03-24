@@ -6,6 +6,7 @@ package com.liliya.quiz;
 public interface Player {
     /**
      * Retrieve the name of the player
+     *
      * @return player name
      */
     public String getName();
