@@ -13,34 +13,43 @@ public class QuizSetUpClientImpl implements QuizSetUpClient {
 
     public static void main(String[] args) {
 
-        QuizSetUpClient suc = new QuizSetUpClientImpl();
-        suc.displayUserOptionsMenu();
+       QuizSetUpClient suc = new QuizSetUpClientImpl();
+        while(true){
+        suc.menu();
+        }
 
     }
 
     @Override
-    public void displayUserOptionsMenu() {
+    public void menu() {
         //add option to set up quiz from file and one manually
         System.out.println("What would you like to do? ");
-        System.out.println("Set up quiz-->0");
-        System.out.println("Close quiz-->1");
-        System.out.println("Exit-->2");
-        System.out.print("-->");
+        System.out.println(
+                "Select an option: \n" +
+                        "  1) Set up a quiz\n" +
+                        "  2) Close a quiz\n" +
+                        "  3) View players for a quiz \n" +
+                        "  4) Return to main menu\n "
+        );
+        System.out.println(">> ");
         Scanner sc = new Scanner(System.in);
         int choice = sc.nextInt();
 
         switch (choice) {
-            case 0:
+            case 1:
                 setUpQuiz();
                 break;
-            case 1:
+            case 2:
                 System.out.print("Enter quiz id: ");
                 Scanner sc1 = new Scanner(System.in);
                 int quizID = sc1.nextInt();
                 closeQuiz(quizID);
                 break;
-            case 2:
-                System.exit(1);
+            case 3:
+
+                break;
+            case 4:
+                System.exit(0);
                 break;
             default:
                 System.out.print("Choose a valid option");

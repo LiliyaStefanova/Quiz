@@ -9,7 +9,7 @@ public interface QuizSetUpClient {
     /**
      * Displays menu with options for actions the set up user can perform
      */
-    public void displayUserOptionsMenu();
+    public void menu();
 
     /**
      * Provides a name and list of questions for the quiz, calls the generateQuiz method on server
