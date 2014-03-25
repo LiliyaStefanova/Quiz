@@ -11,6 +11,7 @@ import java.util.Scanner;
 
 public class QuizSetUpClientImpl implements QuizSetUpClient {
 
+
     public static void main(String[] args) {
 
        QuizSetUpClient suc = new QuizSetUpClientImpl();
@@ -26,10 +27,10 @@ public class QuizSetUpClientImpl implements QuizSetUpClient {
         System.out.println("What would you like to do? ");
         System.out.println(
                 "Select an option: \n" +
-                        "  1) Set up a quiz\n" +
-                        "  2) Close a quiz\n" +
-                        "  3) View players for a quiz \n" +
-                        "  4) Return to main menu\n "
+                    "  1) Set up a quiz\n" +
+                    "  2) Close a quiz\n" +
+                    "  3) View players for a quiz \n" +
+                    "  4) Return to main menu "
         );
         System.out.println(">> ");
         Scanner sc = new Scanner(System.in);
@@ -66,7 +67,8 @@ public class QuizSetUpClientImpl implements QuizSetUpClient {
             Scanner sc1 = new Scanner(System.in);
             String quizName = sc1.nextLine();
 
-            quizPlayer.generateQuiz(quizName, setUpQuestions());
+            int quizID=quizPlayer.generateQuiz(quizName, setUpQuestions());
+            System.out.println("ID for quiz "+ quizName+" is: "+quizID);
         } catch (MalformedURLException ex) {
             ex.printStackTrace();
         } catch (RemoteException e) {
@@ -103,6 +105,7 @@ public class QuizSetUpClientImpl implements QuizSetUpClient {
 
     private Map<Integer, Question> setUpQuestions() {
         Map<Integer, Question> questions = new HashMap<Integer, Question>();
+        int correctAnswer=0;
         System.out.print("Choose number of questions: ");
         Scanner sc1 = new Scanner(System.in);
         int numQuestions = sc1.nextInt();
@@ -121,8 +124,14 @@ public class QuizSetUpClientImpl implements QuizSetUpClient {
                 possibleAnswers.put(i, answer);
             }
             System.out.print("Enter correct answer: ");
-            Scanner sc4 = new Scanner(System.in);
-            int correctAnswer = sc4.nextInt();
+            try{
+                Scanner sc4 = new Scanner(System.in);
+                correctAnswer = sc4.nextInt();
+            }
+            catch(IllegalArgumentException ex){
+                System.out.println("You need to enter the number of the correct answer");
+            }
+
             System.out.print("Enter correct answer points: ");
             Scanner sc5 = new Scanner(System.in);
             int correctAnswerPoints = sc5.nextInt();
