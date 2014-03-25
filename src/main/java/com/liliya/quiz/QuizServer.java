@@ -28,6 +28,20 @@ public class QuizServer extends UnicastRemoteObject implements QuizService, Seri
         allQuizzes=new ArrayList<Quiz>();
         allPlayers=new HashSet<Player>();
         playerQuizInstances=new ArrayList<PlayerQuizInstance>();
+        File f = new File("."+File.separator+FILENAME);
+        if (f.exists() && f.length() > 0) {
+            decodeData();
+        } else if (f.exists() && f.length() == 0) {
+            System.out.println("File is empty");
+            //warn user if file exists but is empty
+            //wait for file to be written to
+        } else if (!f.exists()) {
+            try {
+                f.createNewFile();
+            } catch (IOException ex) {
+                ex.printStackTrace();
+            }
+        }
 
     }
 
@@ -190,7 +204,7 @@ public class QuizServer extends UnicastRemoteObject implements QuizService, Seri
             }
         };
         final ScheduledFuture<?> saverHandle =
-                persistenceScheduler.scheduleAtFixedRate(saver, 60, 30, TimeUnit.SECONDS);
+                persistenceScheduler.scheduleAtFixedRate(saver,5, 20, TimeUnit.SECONDS);
 
         }
 
@@ -218,4 +232,5 @@ public class QuizServer extends UnicastRemoteObject implements QuizService, Seri
         result = 31 * result + (allPlayers != null ? allPlayers.hashCode() : 0);
         return result;
     }
+
 }
