@@ -8,21 +8,8 @@ import java.rmi.Remote;
 import java.rmi.RemoteException;
 import java.util.*;
 
-/**XMLDecoder decode = null;
-        try {
-            decode = new XMLDecoder(new BufferedInputStream(new FileInputStream("."+File.separator+FILENAME)));
-            allMeetings = (List<Meeting>) decode.readObject();
-            allContacts = (Set<Contact>) decode.readObject();
-
-        } catch (FileNotFoundException ex) {
-            ex.printStackTrace();
-        }
-        finally {
-            if(decode!=null){
-                decode.close();
-            }
-        }
- * This is the player client which will be able to play available quizzes
+/**
+ *  This is the player client which will be able to play available quizzes
  */
 //Client side threading?
 
@@ -35,28 +22,33 @@ public class QuizPlayerClientImpl implements QuizPlayerClient {
         }
         */
         QuizPlayerClient newPlayerClient = new QuizPlayerClientImpl();
+        while(true){
         newPlayerClient.launchMainMenuPlayer();
-
+        }
     }
 
     public void launchMainMenuPlayer() {
         System.out.println("What would you like to do? ");
-        System.out.println("Play a quiz-->0");
-        System.out.println("Check your scores-->1");
-        System.out.println("Exit-->2");
-        System.out.print("-->");
+        System.out.println(
+                "Select an option: \n" +
+                    "  1) Play a quiz\n" +
+                    "  2) Check scores\n" +
+                    "  3) Exit system \n"
+
+                );
+        System.out.println(">> ");
         Scanner sc = new Scanner(System.in);
         int choice = sc.nextInt();
 
         switch (choice) {
-            case 0:
+            case 1:
                 playQuiz(selectQuizFromMenu());
                 break;
-            case 1:
+            case 2:
                 //not implemented yet
                 break;
-            case 2:
-                System.exit(1);
+            case 3:
+                System.exit(0);
                 break;
             default:
                 System.out.print("Choose a valid option");
@@ -72,7 +64,7 @@ public class QuizPlayerClientImpl implements QuizPlayerClient {
             QuizService quizPlayer = (QuizService) service;
             System.out.println("Select from the currently available quizzes: ");
             for (Quiz current : quizPlayer.getListActiveQuizzes()) {
-                System.out.println(current.getQuizName() + "-->" + current.getQuizId());
+                System.out.println(current.getQuizId()+") "+current.getQuizName());
             }
             Scanner sc = new Scanner(System.in);
             choice = sc.nextInt();
