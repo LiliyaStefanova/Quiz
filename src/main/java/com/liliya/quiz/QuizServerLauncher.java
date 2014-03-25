@@ -19,7 +19,7 @@ public class QuizServerLauncher {
 
         try {
             Registry registry = LocateRegistry.createRegistry(1699);
-            QuizServer server = new QuizServer();
+            QuizService server = new QuizServer();
             String registryHost = "//localhost/";
             String serviceName = "quiz";
             registry.rebind(serviceName, server);

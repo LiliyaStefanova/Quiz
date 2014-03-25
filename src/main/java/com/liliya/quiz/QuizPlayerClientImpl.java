@@ -8,9 +8,23 @@ import java.rmi.Remote;
 import java.rmi.RemoteException;
 import java.util.*;
 
-/**
+/**XMLDecoder decode = null;
+        try {
+            decode = new XMLDecoder(new BufferedInputStream(new FileInputStream("."+File.separator+FILENAME)));
+            allMeetings = (List<Meeting>) decode.readObject();
+            allContacts = (Set<Contact>) decode.readObject();
+
+        } catch (FileNotFoundException ex) {
+            ex.printStackTrace();
+        }
+        finally {
+            if(decode!=null){
+                decode.close();
+            }
+        }
  * This is the player client which will be able to play available quizzes
  */
+//Client side threading?
 
 public class QuizPlayerClientImpl implements QuizPlayerClient {
 
