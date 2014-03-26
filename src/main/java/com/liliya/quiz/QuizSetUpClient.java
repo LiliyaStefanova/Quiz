@@ -25,7 +25,7 @@ public interface QuizSetUpClient {
      * @param quizID will display a notification of player with highest score for this game instance
      */
 
-    public void closeQuiz(int quizID);
+    public void requestQuizClose(int quizID);
 
     /**
      * takes in the value returned from the server after the quiz is closed and displays it in a formatted

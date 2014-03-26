@@ -13,6 +13,10 @@ public class PlayerImpl implements Player, Serializable {
 
     private String name;
 
+    public PlayerImpl(){
+        //no args constructor for serialization
+    }
+
     public PlayerImpl(String name) {
         this.name = name;
     }
@@ -38,5 +42,9 @@ public class PlayerImpl implements Player, Serializable {
     @Override
     public int hashCode() {
         return name != null ? name.hashCode() : 0;
+    }
+
+    public void setName(String name) {
+        this.name = name;
     }
 }

@@ -11,6 +11,10 @@ public class QuizImpl implements Quiz, Serializable {
     //set to false once quiz is closed by user
     private boolean quizActive;
 
+    public QuizImpl(){
+        //no args constructor for serialization
+    }
+
     public QuizImpl(String name, Map<Integer, Question> questions) {
         this.quizName = name;
         this.quizQuestions = questions;
@@ -70,5 +74,21 @@ public class QuizImpl implements Quiz, Serializable {
         result = 31 * result + quizId;
         result = 31 * result + (quizQuestions != null ? quizQuestions.hashCode() : 0);
         return result;
+    }
+
+    public void setQuizId(int quizId) {
+        this.quizId = quizId;
+    }
+
+    public void setQuizQuestions(Map<Integer, Question> quizQuestions) {
+        this.quizQuestions = quizQuestions;
+    }
+
+    public boolean isQuizActive() {
+        return quizActive;
+    }
+
+    public void setQuizActive(boolean quizActive) {
+        this.quizActive = quizActive;
     }
 }

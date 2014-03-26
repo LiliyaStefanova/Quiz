@@ -44,13 +44,13 @@ public class QuizSetUpClientImpl implements QuizSetUpClient {
                 System.out.print("Enter quiz id: ");
                 Scanner sc1 = new Scanner(System.in);
                 int quizID = sc1.nextInt();
-                closeQuiz(quizID);
+                requestQuizClose(quizID);
                 break;
             case 3:
 
                 break;
             case 4:
-                System.exit(0);
+                QuizLauncher.launch();
                 break;
             default:
                 System.out.print("Choose a valid option");
@@ -68,7 +68,7 @@ public class QuizSetUpClientImpl implements QuizSetUpClient {
             String quizName = sc1.nextLine();
 
             int quizID=quizPlayer.generateQuiz(quizName, setUpQuestions());
-            System.out.println("ID for quiz "+ quizName+" is: "+quizID);
+            System.out.println("ID for quiz " + quizName + " is: " + quizID);
         } catch (MalformedURLException ex) {
             ex.printStackTrace();
         } catch (RemoteException e) {
@@ -79,13 +79,14 @@ public class QuizSetUpClientImpl implements QuizSetUpClient {
     }
 
     @Override
-    public void closeQuiz(int quizID) {
+    public void requestQuizClose(int quizID) {
 
         try {
             Remote service = Naming.lookup("//127.0.0.1:1699/quiz");
             QuizService quizPlayer = (QuizService) service;
             PlayerQuizInstance winner = quizPlayer.closeQuiz(quizID);
-            displayQuizWinnerDetails(winner);
+            System.out.println("Winner is: "+winner.toString());
+            //displayQuizWinnerDetails(winner);
         } catch (MalformedURLException ex) {
             ex.printStackTrace();
         } catch (RemoteException e) {
@@ -97,10 +98,15 @@ public class QuizSetUpClientImpl implements QuizSetUpClient {
 
     @Override
     public void displayQuizWinnerDetails(PlayerQuizInstance playerWithHighestScore) {
+        try{
         System.out.print("The winner of the game is: ");
         System.out.print(playerWithHighestScore.getPlayer().getName());
         System.out.print("With a score of: ");
         playerWithHighestScore.getTotalScore();
+        }
+        catch(NullPointerException ex){
+            System.out.println("No one has played that game");
+        }
     }
 
     private Map<Integer, Question> setUpQuestions() {

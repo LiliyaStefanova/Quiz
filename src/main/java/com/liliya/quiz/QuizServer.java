@@ -11,7 +11,6 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
-import java.util.concurrent.TimeUnit.*;
 
 public class QuizServer extends UnicastRemoteObject implements QuizService, Serializable {
 
@@ -20,15 +19,20 @@ public class QuizServer extends UnicastRemoteObject implements QuizService, Seri
     private List<PlayerQuizInstance> playerQuizInstances;
     private List<Quiz> allQuizzes;
     private Set<Player> allPlayers;
-    private static final String FILENAME="serverstate.xml";
-    private final ScheduledExecutorService persistenceScheduler= Executors.newScheduledThreadPool(1);
+    private static final String FILENAME = "serverstate.xml";
+    private final ScheduledExecutorService persistenceScheduler = Executors.newScheduledThreadPool(1);
 
-    public QuizServer() throws RemoteException{
 
-        allQuizzes=new ArrayList<Quiz>();
-        allPlayers=new HashSet<Player>();
-        playerQuizInstances=new ArrayList<PlayerQuizInstance>();
-        File f = new File("."+File.separator+FILENAME);
+    public QuizServer() throws RemoteException {
+        this(true);
+    }
+
+    public QuizServer(boolean deserialize) throws RemoteException {
+
+        allQuizzes = new ArrayList<Quiz>();
+        allPlayers = new HashSet<Player>();
+        playerQuizInstances = new ArrayList<PlayerQuizInstance>();
+        File f = new File("." + File.separator + FILENAME);
         if (f.exists() && f.length() > 0) {
             decodeData();
         } else if (f.exists() && f.length() == 0) {
@@ -46,11 +50,13 @@ public class QuizServer extends UnicastRemoteObject implements QuizService, Seri
     }
 
     @Override
-    public int generateQuiz(String name, Map<Integer, Question> questions) throws RemoteException{
+    public synchronized int generateQuiz(String name, Map<Integer, Question> questions) throws RemoteException {
 
-        Quiz newQuiz=new QuizImpl(name, questions);
+        Quiz newQuiz = new QuizImpl(name, questions);
         //need to make a check for duplicate quizzes here
         allQuizzes.add(newQuiz);
+        //encodeData();
+        System.out.println("Size of all quizzes now is: " + allQuizzes.size());
         return newQuiz.getQuizId();
 
     }
@@ -60,59 +66,72 @@ public class QuizServer extends UnicastRemoteObject implements QuizService, Seri
     //a quiz cannot be closed if there is a player client still playing it
 
     @Override
-    public PlayerQuizInstance closeQuiz(int id) throws RemoteException{
-        List<PlayerQuizInstance> quizInstances=new ArrayList<PlayerQuizInstance>();
-        PlayerQuizInstance winner=null;
-        int maxScore=0;
-        for(Quiz curr:allQuizzes){
-            if(curr.getQuizId()==id){
+    public synchronized PlayerQuizInstance closeQuiz(int id) throws RemoteException {
+        List<PlayerQuizInstance> quizInstances = new ArrayList<PlayerQuizInstance>();
+        PlayerQuizInstance winner = new PlayerQuizInstance();
+        int maxScore = 0;
+        //find the quiz to be closed and set it to inactive so other players can't choose it
+        for (Quiz curr : allQuizzes) {
+            if (curr.getQuizId() == id) {
                 curr.setQuizState(false);
-                for(PlayerQuizInstance instance:playerQuizInstances){
-                    if(instance.getQuiz().equals(curr)){
-                        quizInstances.add(instance);
-                    }
-                }
+                // find all instances of the quiz played
+            }
+        }
+        for (PlayerQuizInstance instance : playerQuizInstances) {
+            if (instance.getQuiz().getQuizId() == id) {
+                quizInstances.add(instance);
             }
         }
 
-        for(PlayerQuizInstance instances:quizInstances){
-            if(instances.getTotalScore()>maxScore){
-                maxScore=instances.getTotalScore();
-                winner=instances;
+        for (PlayerQuizInstance instance : quizInstances) {
+            if (instance.getTotalScore() > maxScore) {
+                maxScore = instance.getTotalScore();
+                winner = instance;
             }
+
+        }
+        for (PlayerQuizInstance instance : quizInstances) {
+            if (instance.getTotalScore()==maxScore) {
+                winner = instance;
+            }
+
         }
         //returns the PlayerQuizInstance to the set up client where display will be formatted
+        System.out.println("The winner is:" + winner.getPlayer().getName());
         return winner;
 
     }
 
     @Override
-    public PlayerQuizInstance loadQuiz(int id, String name) {
-        //need to check if player exists and if player does not create a new one
-        return new PlayerQuizInstance(playerExists(name), quizExists(id));
+    public synchronized PlayerQuizInstance loadQuiz(int id, String name) {
+        System.out.println("Size of all instances now is: " + playerQuizInstances.size());
+        PlayerQuizInstance newQuizPlayerInstance = new PlayerQuizInstance(setUpPlayer(name), findQuiz(id));
+        playerQuizInstances.add(newQuizPlayerInstance);
+        System.out.println("Size of all instances now is: " + playerQuizInstances.size());
+        return newQuizPlayerInstance;
     }
 
     @Override
-    public int calculateQuizScore(PlayerQuizInstance quizInstance, Map<Question, Integer> guesses) {
-        int playerQuizInstanceScore=0;
-        for(Map.Entry<Question, Integer> entry: guesses.entrySet()){
-            if(entry.getKey().getCorrectAnswer()==((entry.getValue()))){
-                playerQuizInstanceScore=playerQuizInstanceScore+entry.getKey().getCorrectAnswerPoints();
+    public synchronized int calculateQuizScore(PlayerQuizInstance quizInstance, Map<Question, Integer> guesses) {
+        int playerQuizInstanceScore = 0;
+        for (Map.Entry<Question, Integer> entry : guesses.entrySet()) {
+            if (entry.getKey().getCorrectAnswer() == ((entry.getValue()))) {
+                playerQuizInstanceScore = playerQuizInstanceScore + entry.getKey().getCorrectAnswerPoints();
             }
         }
-       for(PlayerQuizInstance current:playerQuizInstances){
-           if(current.equals(quizInstance)){
-               quizInstance.setTotalScore(playerQuizInstanceScore);
-           }
-       }
-       return playerQuizInstanceScore;
+        for (PlayerQuizInstance current : playerQuizInstances) {
+            if (current.equals(quizInstance)) {
+                quizInstance.setTotalScore(playerQuizInstanceScore);
+            }
+        }
+        return playerQuizInstanceScore;
     }
 
     @Override
-    public List<Quiz> getListActiveQuizzes() {
-        List<Quiz> activeQuizzes=new ArrayList<Quiz>();
-        for(Quiz current:allQuizzes){
-            if(current.getQuizState()){
+    public synchronized List<Quiz> getListActiveQuizzes() {
+        List<Quiz> activeQuizzes = new ArrayList<Quiz>();
+        for (Quiz current : allQuizzes) {
+            if (current.getQuizState()) {
                 activeQuizzes.add(current);
             }
         }
@@ -120,11 +139,12 @@ public class QuizServer extends UnicastRemoteObject implements QuizService, Seri
     }
 
     @Override
-    public Player addNewPlayer(String name) {
+    public synchronized Player addNewPlayer(String name) {
 
-        Player newPlayer=new PlayerImpl(name);
+        Player newPlayer = new PlayerImpl(name);
         allPlayers.add(newPlayer);
-
+        //encodeData();
+        System.out.print("Size of all players now is: " + allPlayers.size());
         return newPlayer;
     }
 
@@ -143,7 +163,7 @@ public class QuizServer extends UnicastRemoteObject implements QuizService, Seri
 
         XMLEncoder encode = null;
         try {
-            encode = new XMLEncoder(new BufferedOutputStream(new FileOutputStream("."+ File.separator+FILENAME)));
+            encode = new XMLEncoder(new BufferedOutputStream(new FileOutputStream("." + File.separator + FILENAME)));
             encode.writeObject(allQuizzes);
             encode.writeObject(allPlayers);
             encode.writeObject(playerQuizInstances);
@@ -162,35 +182,34 @@ public class QuizServer extends UnicastRemoteObject implements QuizService, Seri
 
         XMLDecoder decode = null;
         try {
-            decode = new XMLDecoder(new BufferedInputStream(new FileInputStream("."+File.separator+FILENAME)));
+            decode = new XMLDecoder(new BufferedInputStream(new FileInputStream("." + File.separator + FILENAME)));
             allQuizzes = (List<Quiz>) decode.readObject();
             allPlayers = (Set<Player>) decode.readObject();
-            playerQuizInstances=(List<PlayerQuizInstance>) decode.readObject();
+            playerQuizInstances = (List<PlayerQuizInstance>) decode.readObject();
 
         } catch (FileNotFoundException ex) {
             ex.printStackTrace();
-        }
-        finally {
-            if(decode!=null){
+        } finally {
+            if (decode != null) {
                 decode.close();
             }
         }
     }
 
-    private Quiz quizExists(int id){
-        Quiz existingQuiz=null;
-        for(Quiz curr: allQuizzes){
-            if(curr.getQuizId()==id){
-               existingQuiz=curr;
-                return  existingQuiz;
+    private Quiz findQuiz(int id) {
+        Quiz existingQuiz = null;
+        for (Quiz curr : allQuizzes) {
+            if (curr.getQuizId() == id) {
+                existingQuiz = curr;
+                return existingQuiz;
             }
         }
         return existingQuiz;
     }
 
-    private Player playerExists(String name){
-        for(Player curr: allPlayers){
-            if(curr.getName().equals(name)){
+    private Player setUpPlayer(String name) {
+        for (Player curr : allPlayers) {
+            if (curr.getName().equals(name)) {
                 return curr;
             }
         }
@@ -198,15 +217,15 @@ public class QuizServer extends UnicastRemoteObject implements QuizService, Seri
     }
 
     private void persist() {
-        final Runnable saver= new Runnable() {
+        final Runnable saver = new Runnable() {
             public void run() {
                 encodeData();
             }
         };
         final ScheduledFuture<?> saverHandle =
-                persistenceScheduler.scheduleAtFixedRate(saver,5, 20, TimeUnit.SECONDS);
+                persistenceScheduler.scheduleAtFixedRate(saver, 10, 10, TimeUnit.SECONDS);
 
-        }
+    }
 
     @Override
     public boolean equals(Object o) {
@@ -233,4 +252,27 @@ public class QuizServer extends UnicastRemoteObject implements QuizService, Seri
         return result;
     }
 
+    public List<PlayerQuizInstance> getPlayerQuizInstances() {
+        return playerQuizInstances;
+    }
+
+    public void setPlayerQuizInstances(List<PlayerQuizInstance> playerQuizInstances) {
+        this.playerQuizInstances = playerQuizInstances;
+    }
+
+    public List<Quiz> getAllQuizzes() {
+        return allQuizzes;
+    }
+
+    public void setAllQuizzes(List<Quiz> allQuizzes) {
+        this.allQuizzes = allQuizzes;
+    }
+
+    public Set<Player> getAllPlayers() {
+        return allPlayers;
+    }
+
+    public void setAllPlayers(Set<Player> allPlayers) {
+        this.allPlayers = allPlayers;
+    }
 }

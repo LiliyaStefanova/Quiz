@@ -13,6 +13,10 @@ public class QuestionImpl implements Question, Serializable {
     private Integer correctAnswer;
     private int correctAnswerPoints;
 
+    public QuestionImpl(){
+        //no args constructor for serialization
+    }
+
     public QuestionImpl(String question, Map<Integer, String> possibleAnswers, int correctAnswer, int correctAnswerPoints) {
         this.question = question;
         this.possibleAnswers = possibleAnswers;
@@ -89,5 +93,9 @@ public class QuestionImpl implements Question, Serializable {
         result = 31 * result + (correctAnswer != null ? correctAnswer.hashCode() : 0);
         result = 31 * result + correctAnswerPoints;
         return result;
+    }
+
+    public void setCorrectAnswer(Integer correctAnswer) {
+        this.correctAnswer = correctAnswer;
     }
 }
