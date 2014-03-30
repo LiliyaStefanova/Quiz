@@ -1,48 +1,51 @@
 package com.liliya.quiz;
 
 
+import com.liliya.menu.MenuActions;
+import com.liliya.menu.TextMenu;
+import com.liliya.menu.TextMenuItem;
+
 import java.nio.channels.AlreadyBoundException;
 import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
 import java.rmi.server.ExportException;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 import java.util.Scanner;
 
 public class QuizLauncher {
 
-    public static void main(String [] args){
+    private static final TextMenuItem quizAdmin = new TextMenuItem("Quiz Administration", MenuActions.QUIZ_ADMINISTRATION);
+    private static final TextMenuItem playQuiz = new TextMenuItem("Play quiz", MenuActions.PLAY_QUIZ);
+    private static final TextMenuItem quit = new TextMenuItem("Quit", MenuActions.QUIT);
 
-     QuizLauncher.launch();
+    private static List<TextMenuItem> mainMenu = new ArrayList<TextMenuItem>(Arrays.asList(quizAdmin, playQuiz, quit));
+
+    public static void main(String[] args) {
+
+        QuizLauncher.launch();
 
     }
 
-    public static void launch(){
+    public static void launch() {
 
-    System.out.println(
-                "Select an option: \n" +
-                        "  1) Quiz administration\n" +
-                        "  2) Play\n" +
-                        "  3) Exit game \n"
+        MenuActions action = TextMenu.display("Main Menu", mainMenu);
 
-        );
-        System.out.println(">> ");
-        Scanner sc=new Scanner(System.in);
-        int userType=sc.nextInt();
-
-        switch(userType){
-            case 1:
+        switch (action) {
+            case QUIZ_ADMINISTRATION:
                 QuizSetUpClient suc = new QuizSetUpClientImpl();
                 suc.menu();
                 break;
-            case 2:
+            case PLAY_QUIZ:
                 QuizPlayerClient newPlayerClient = new QuizPlayerClientImpl();
                 newPlayerClient.launchMainMenuPlayer();
                 break;
-            case 3:
-                try{
-               // server.flush();
-                }
-                catch(NullPointerException ex){
+            case QUIT:
+                try {
+                    // server.flush();
+                } catch (NullPointerException ex) {
                     System.out.println("Server does not exist");
                 }
                 System.out.println("Goodbye!");
