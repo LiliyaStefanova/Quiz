@@ -8,6 +8,11 @@ import java.util.List;
 public interface QuizPlayerClient {
 
     /**
+     * Looking up and connecting to the remote service
+     */
+
+    public void connectToServer();
+    /**
      * Main menu functionality for the player client
      */
     public void launchMainMenuPlayer();

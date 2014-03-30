@@ -1,3 +1,4 @@
+
 package com.liliya.quiz;
 
 import java.nio.channels.AlreadyBoundException;
@@ -5,10 +6,11 @@ import java.rmi.registry.Registry;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.RemoteException;
 
+@Deprecated
 public class QuizServerLauncher {
 
 
-    public static void main(String[] args) {
+ public static void main(String[] args) {
 
         QuizServerLauncher qsl = new QuizServerLauncher();
         qsl.launch();
@@ -30,5 +32,5 @@ public class QuizServerLauncher {
         }
     }
 
-
 }
+

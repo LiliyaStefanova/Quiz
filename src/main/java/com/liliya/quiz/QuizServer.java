@@ -4,7 +4,10 @@ package com.liliya.quiz;
 import java.beans.XMLEncoder;
 import java.beans.XMLDecoder;
 import java.io.*;
+import java.nio.channels.AlreadyBoundException;
 import java.rmi.RemoteException;
+import java.rmi.registry.LocateRegistry;
+import java.rmi.registry.Registry;
 import java.rmi.server.UnicastRemoteObject;
 import java.util.*;
 import java.util.concurrent.Executors;
@@ -53,17 +56,23 @@ public class QuizServer extends UnicastRemoteObject implements QuizService, Seri
     public synchronized int generateQuiz(String name, Map<Integer, Question> questions) throws RemoteException {
 
         Quiz newQuiz = new QuizImpl(name, questions);
+        int quizId=0;
         //need to make a check for duplicate quizzes here
         allQuizzes.add(newQuiz);
-        //encodeData();
-        System.out.println("Size of all quizzes now is: " + allQuizzes.size());
-        return newQuiz.getQuizId();
+        System.out.println("Size of all quizzes now is: " + allQuizzes.size());        //debugging-needs removal
+        for(Quiz current:allQuizzes){
+            if(current.getQuizId()==newQuiz.getQuizId()) {
+                     quizId=current.getQuizId();
+            }
+            else quizId=0;
+        }
 
+        return quizId;
     }
 
     //need to refactor and take this to another method
-    //there should be some way to  mark quizzes as closed
-    //a quiz cannot be closed if there is a player client still playing it
+    //a quiz cannot be closed if there is a player client still playing it-needs to be figured out-does synchronized fix this?
+    //exception if there are no players of the quiz or it does not exist
 
     @Override
     public synchronized PlayerQuizInstance closeQuiz(int id) throws RemoteException {
@@ -82,35 +91,18 @@ public class QuizServer extends UnicastRemoteObject implements QuizService, Seri
                 quizInstances.add(instance);
             }
         }
-
-        for (PlayerQuizInstance instance : quizInstances) {
-            if (instance.getTotalScore() > maxScore) {
-                maxScore = instance.getTotalScore();
-                winner = instance;
-            }
-
-        }
-        for (PlayerQuizInstance instance : quizInstances) {
-            if (instance.getTotalScore()==maxScore) {
-                winner = instance;
-            }
-
-        }
-        //returns the PlayerQuizInstance to the set up client where display will be formatted
-        System.out.println("The winner is:" + winner.getPlayer().getName());
-        return winner;
-
+        return determineQuizWinner(quizInstances);
     }
 
     @Override
     public synchronized PlayerQuizInstance loadQuiz(int id, String name) {
-        System.out.println("Size of all instances now is: " + playerQuizInstances.size());
         PlayerQuizInstance newQuizPlayerInstance = new PlayerQuizInstance(setUpPlayer(name), findQuiz(id));
         playerQuizInstances.add(newQuizPlayerInstance);
-        System.out.println("Size of all instances now is: " + playerQuizInstances.size());
+        System.out.println("Size of all instances now is: " + playerQuizInstances.size());   //debugging only-remove
         return newQuizPlayerInstance;
     }
 
+    //takes guesses from player and calculates and returns score
     @Override
     public synchronized int calculateQuizScore(PlayerQuizInstance quizInstance, Map<Question, Integer> guesses) {
         int playerQuizInstanceScore = 0;
@@ -143,8 +135,7 @@ public class QuizServer extends UnicastRemoteObject implements QuizService, Seri
 
         Player newPlayer = new PlayerImpl(name);
         allPlayers.add(newPlayer);
-        //encodeData();
-        System.out.print("Size of all players now is: " + allPlayers.size());
+        System.out.print("Size of all players now is: " + allPlayers.size());       //debugging only-remove
         return newPlayer;
     }
 
@@ -158,8 +149,8 @@ public class QuizServer extends UnicastRemoteObject implements QuizService, Seri
         return null;  //To change body of implemented methods use File | Settings | File Templates.
     }
 
-    @Override
-    public void encodeData() {
+
+    private void encodeData() {
 
         XMLEncoder encode = null;
         try {
@@ -176,9 +167,8 @@ public class QuizServer extends UnicastRemoteObject implements QuizService, Seri
         }
     }
 
-    @Override
     @SuppressWarnings("unchecked")
-    public void decodeData() {
+    private void decodeData() {
 
         XMLDecoder decode = null;
         try {
@@ -201,9 +191,11 @@ public class QuizServer extends UnicastRemoteObject implements QuizService, Seri
         for (Quiz curr : allQuizzes) {
             if (curr.getQuizId() == id) {
                 existingQuiz = curr;
-                return existingQuiz;
+                //return existingQuiz;
             }
         }
+        if(existingQuiz!=null) {
+        System.out.println("Quiz exists");  }  //debugging only remove
         return existingQuiz;
     }
 
@@ -216,16 +208,25 @@ public class QuizServer extends UnicastRemoteObject implements QuizService, Seri
         return addNewPlayer(name);
     }
 
-    private void persist() {
-        final Runnable saver = new Runnable() {
-            public void run() {
-                encodeData();
-            }
-        };
-        final ScheduledFuture<?> saverHandle =
-                persistenceScheduler.scheduleAtFixedRate(saver, 10, 10, TimeUnit.SECONDS);
-
+    public void flush() {
+        encodeData();
     }
+
+    private PlayerQuizInstance determineQuizWinner(List<PlayerQuizInstance> instances){
+            int maxScore=0;
+            PlayerQuizInstance quizWinner=null;
+            for (PlayerQuizInstance instance : instances) {
+                if (instance.getTotalScore() > maxScore) {
+                    maxScore = instance.getTotalScore();
+
+                    quizWinner=instance;
+                }
+
+            }
+            System.out.println("Highest score is:"+maxScore);
+            return quizWinner;
+
+       }
 
     @Override
     public boolean equals(Object o) {
@@ -275,4 +276,19 @@ public class QuizServer extends UnicastRemoteObject implements QuizService, Seri
     public void setAllPlayers(Set<Player> allPlayers) {
         this.allPlayers = allPlayers;
     }
+
+    public static void main(String[] args) {
+        try {
+            Registry registry = LocateRegistry.createRegistry(1699);
+            QuizService server = new QuizServer();
+            String registryHost = "//localhost/";
+            String serviceName = "quiz";
+            registry.rebind(serviceName, server);
+        } catch (RemoteException ex) {
+            ex.printStackTrace();
+        } catch (AlreadyBoundException ex) {
+            ex.printStackTrace();
+        }
+    }
+
 }

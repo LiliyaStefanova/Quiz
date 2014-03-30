@@ -12,7 +12,7 @@ public class QuizImpl implements Quiz, Serializable {
     private boolean quizActive;
 
     public QuizImpl(){
-        //no args constructor for serialization
+        //no args constructor for ser
     }
 
     public QuizImpl(String name, Map<Integer, Question> questions) {

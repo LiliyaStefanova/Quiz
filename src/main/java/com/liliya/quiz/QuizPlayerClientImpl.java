@@ -15,6 +15,9 @@ import java.util.*;
 
 public class QuizPlayerClientImpl implements QuizPlayerClient {
 
+    boolean backToMain=false;
+    QuizService quizPlayer=null;
+
     public static void main(String[] args) {
 
        /* if(System.getSecurityManager()==null){
@@ -22,19 +25,33 @@ public class QuizPlayerClientImpl implements QuizPlayerClient {
         }
         */
         QuizPlayerClient newPlayerClient = new QuizPlayerClientImpl();
-        while(true){
+        newPlayerClient.connectToServer();
         newPlayerClient.launchMainMenuPlayer();
+
+    }
+
+    @Override
+    public void connectToServer() {
+        try {
+            Remote service = Naming.lookup("//127.0.0.1:1699/quiz");
+            quizPlayer = (QuizService) service;
+        } catch (MalformedURLException ex) {
+            ex.printStackTrace();
+        } catch (RemoteException e) {
+            e.printStackTrace();
+        } catch (NotBoundException ex) {
+            ex.printStackTrace();
         }
     }
 
     public void launchMainMenuPlayer() {
+        do{
         System.out.println("What would you like to do? ");
         System.out.println(
                 "Select an option: \n" +
                     "  1) Play a quiz\n" +
                     "  2) Check scores\n" +
                     "  3) Exit system \n"
-
                 );
         System.out.println(">> ");
         Scanner sc = new Scanner(System.in);
@@ -48,33 +65,30 @@ public class QuizPlayerClientImpl implements QuizPlayerClient {
                 //not implemented yet
                 break;
             case 3:
+                backToMain=true;
                 System.exit(0);
                 break;
             default:
                 System.out.print("Choose a valid option");
         }
 
+     } while(!backToMain);
     }
 
     @Override
     public int selectQuizFromMenu() {
         int choice = 0;
-        try {
-            Remote service = Naming.lookup("//127.0.0.1:1699/quiz");
-            QuizService quizPlayer = (QuizService) service;
+
             System.out.println("Select from the currently available quizzes: ");
+            try{
             for (Quiz current : quizPlayer.getListActiveQuizzes()) {
                 System.out.println(current.getQuizId()+") "+current.getQuizName());
             }
             Scanner sc = new Scanner(System.in);
             choice = sc.nextInt();
-        } catch (MalformedURLException ex) {
-            ex.printStackTrace();
-        } catch (RemoteException e) {
-            e.printStackTrace();
-        } catch (NotBoundException ex) {
-            ex.printStackTrace();
-        }
+            } catch(RemoteException ex){
+                ex.printStackTrace();
+            }
         return choice;
     }
 
@@ -84,19 +98,14 @@ public class QuizPlayerClientImpl implements QuizPlayerClient {
         Scanner sc = new Scanner(System.in);
         String playerName = sc.nextLine();
         try {
-            Remote service = Naming.lookup("//127.0.0.1:1699/quiz");
-            QuizService quizPlayer = (QuizService) service;
+
             PlayerQuizInstance playerQuizInstance = quizPlayer.loadQuiz(id, playerName);
             Map<Question, Integer> userGuesses = displayQuizToPlayer(playerQuizInstance.getQuiz());
             System.out.print("Thank you for your responses. Your final score is: ");
             System.out.println(quizPlayer.calculateQuizScore(playerQuizInstance, userGuesses));
 
-        } catch (MalformedURLException ex) {
-            ex.printStackTrace();
         } catch (RemoteException e) {
             e.printStackTrace();
-        } catch (NotBoundException ex) {
-            ex.printStackTrace();
         }
         return null;
     }

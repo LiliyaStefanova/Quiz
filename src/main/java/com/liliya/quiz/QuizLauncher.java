@@ -1,37 +1,50 @@
 package com.liliya.quiz;
 
 
+import java.nio.channels.AlreadyBoundException;
+import java.rmi.RemoteException;
+import java.rmi.registry.LocateRegistry;
+import java.rmi.registry.Registry;
+import java.rmi.server.ExportException;
 import java.util.Scanner;
 
 public class QuizLauncher {
 
     public static void main(String [] args){
 
-
-      // QuizLauncher quizLauncher=new QuizLauncher();
+     QuizLauncher.launch();
 
     }
 
     public static void launch(){
-        //need to fix this to use string
-        System.out.println("Are you  admin(1) or player(2), exit(3)?");
+
+    System.out.println(
+                "Select an option: \n" +
+                        "  1) Quiz administration\n" +
+                        "  2) Play\n" +
+                        "  3) Exit game \n"
+
+        );
+        System.out.println(">> ");
         Scanner sc=new Scanner(System.in);
         int userType=sc.nextInt();
 
         switch(userType){
             case 1:
-                QuizServerLauncher qsl = new QuizServerLauncher();
-                qsl.launch();
                 QuizSetUpClient suc = new QuizSetUpClientImpl();
                 suc.menu();
                 break;
             case 2:
-                QuizServerLauncher qsl1= new QuizServerLauncher();
-                qsl1.launch();
                 QuizPlayerClient newPlayerClient = new QuizPlayerClientImpl();
                 newPlayerClient.launchMainMenuPlayer();
                 break;
             case 3:
+                try{
+               // server.flush();
+                }
+                catch(NullPointerException ex){
+                    System.out.println("Server does not exist");
+                }
                 System.out.println("Goodbye!");
                 System.exit(0);
                 break;

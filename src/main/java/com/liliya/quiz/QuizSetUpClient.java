@@ -7,6 +7,11 @@ package com.liliya.quiz;
 public interface QuizSetUpClient {
 
     /**
+     * Look up the remote service
+     */
+    public void connectToServer();
+
+    /**
      * Displays menu with options for actions the set up user can perform
      */
     public void menu();

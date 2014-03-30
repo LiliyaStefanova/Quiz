@@ -75,10 +75,5 @@ public interface QuizService extends Remote {
      * Persists the data on the server to a file
      */
 
-    public void encodeData() throws RemoteException;
-
-    /**
-     * Loads the data to collections on the server from a file
-     */
-    public void decodeData() throws RemoteException;
+    public void flush() throws RemoteException;
 }
