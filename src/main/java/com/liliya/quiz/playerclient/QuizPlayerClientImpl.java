@@ -1,4 +1,4 @@
-package com.liliya.quiz.client;
+package com.liliya.quiz.playerclient;
 
 import com.liliya.menu.MenuActions;
 import com.liliya.menu.TextMenu;
@@ -117,18 +117,35 @@ public class QuizPlayerClientImpl implements QuizPlayerClient {
     private Map<Question, Integer> displayQuizToPlayer(Quiz playingQuiz) {
         Map<Integer, Question> quizQuestions = playingQuiz.getQuizQuestions();
         Map<Question, Integer> playerGuesses = new HashMap<Question, Integer>();
+        int playerGuess=0;
         for (Map.Entry<Integer, Question> entryQuestion : playingQuiz.getQuizQuestions().entrySet()) {
             System.out.println(entryQuestion.getKey() + ". " + entryQuestion.getValue().getQuestion());
             for (Map.Entry<Integer, String> entryAnswer : entryQuestion.getValue().getPossibleAnswers().entrySet()) {
-                System.out.println(entryAnswer.getKey() + "-" + entryAnswer.getValue());
+                System.out.println(entryAnswer.getKey() + "." + entryAnswer.getValue());
             }
-            System.out.print("Your answer: ");
-            Scanner sc = new Scanner(System.in);
-            int playerGuess = sc.nextInt();
-            //TODO check if any of the answers provided are invalid
-            playerGuesses.put(entryQuestion.getValue(), playerGuess);
+            do{
+
+                try{
+                System.out.print("Your answer(type the answer number): ");
+                Scanner sc = new Scanner(System.in);
+                playerGuess = sc.nextInt();
+                //TODO check if any of the answers provided are invalid
+
+                playerGuesses.put(entryQuestion.getValue(), playerGuess);
+                } catch(IllegalArgumentException ex){
+                    System.out.println("Answer must be number of the question");
+                }
+            } while(!answerValidationCheck(playerGuess));
         }
         return playerGuesses;
+    }
+
+    private boolean answerValidationCheck(int answer){
+        boolean correct=true;
+        if(answer<1 || answer>4){
+            correct=false;
+        }
+        return correct;
     }
 
 
