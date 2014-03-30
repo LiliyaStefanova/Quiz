@@ -18,6 +18,7 @@ public class QuizImpl implements Quiz, Serializable {
     public QuizImpl(String name, Map<Integer, Question> questions) {
         this.quizName = name;
         this.quizQuestions = questions;
+        //TODO implement a different way to generate the quiz id
         this.quizId = QuizIDGenerator.getNewID();
         quizActive = true;
     }
