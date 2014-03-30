@@ -2,8 +2,7 @@ package com.liliya.quiz.server;
 
 import com.liliya.quiz.model.PlayerQuizInstance;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
 
 /**
  * Created with IntelliJ IDEA.
@@ -14,47 +13,51 @@ import java.util.List;
  */
 public class HighScores {
 
-    private static List<PlayerQuizInstance> scores=new ArrayList<PlayerQuizInstance>();
+    private static List<PlayerQuizInstance> scores = new ArrayList<PlayerQuizInstance>();
 
 
-    public static   PlayerQuizInstance getTopPlayerScore(String name){
-        int maxScore=0;
-        PlayerQuizInstance winner=new PlayerQuizInstance();
-        for(PlayerQuizInstance game: scores){
-            if(game.getPlayer().getName().equals(name)){
-                if(game.getTotalScore()>maxScore){
-                    maxScore=game.getTotalScore();
-                    winner=game;
+    public static PlayerQuizInstance getTopPlayerScore(String name) {
+        int maxScore = 0;
+        PlayerQuizInstance winner = new PlayerQuizInstance();
+        for (PlayerQuizInstance game : scores) {
+            if (game.getPlayer().getName().equals(name)) {
+                if (game.getTotalScore() > maxScore) {
+                    maxScore = game.getTotalScore();
+                    winner = game;
                 }
             }
         }
         return winner;
     }
 
-    public static PlayerQuizInstance getTopQuizScore(int id){
-        int maxScore=0;
-        PlayerQuizInstance winner=new PlayerQuizInstance();
-       // try{
-            for(PlayerQuizInstance game: scores){
-                if(game.getQuiz().getQuizId()==id){
-                    if(game.getTotalScore()>maxScore){
-                        maxScore=game.getTotalScore();
-                        System.out.println("Max score is: "+maxScore);
-                    }
-                }
+    public static PlayerQuizInstance getTopQuizScore(int id) {
+        PlayerQuizInstance winner = null;
+        List<PlayerQuizInstance> singleQuizScores = new ArrayList<PlayerQuizInstance>();
+        try{
+        for (PlayerQuizInstance game : scores) {
+            if (game.getQuiz().getQuizId() == id) {
+                singleQuizScores.add(game);
             }
-            for(PlayerQuizInstance game: scores){
-                if(game.getTotalScore()==maxScore){
-                    winner=game;
-                }
+        }
+
+         } catch (NullPointerException ex){
+            System.out.println("No one has played this quiz!");
+         }
+
+        winner = Collections.max(singleQuizScores, new Comparator<PlayerQuizInstance>() {
+            @Override
+            public int compare(PlayerQuizInstance o1, PlayerQuizInstance o2) {
+                if (o1.getTotalScore() > o2.getTotalScore()) {
+                    return 1;
+                } else if ((o1.getTotalScore() < o2.getTotalScore())) {
+                    return -1;
+                } else return 0;
             }
-       // } catch (NullPointerException ex){
-           // System.out.println("No one has played this quiz!");
-       // }
+        });
         return winner;
     }
 
-    public static void updateHighScores(PlayerQuizInstance newScore){
+    public static void updateHighScores(PlayerQuizInstance newScore) {
 
         scores.add(newScore);
     }
@@ -62,5 +65,6 @@ public class HighScores {
     public static List<PlayerQuizInstance> getHighScores() {
         return scores;
     }
+
 
 }
