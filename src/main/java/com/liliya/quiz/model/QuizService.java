@@ -72,8 +72,15 @@ public interface QuizService extends Remote {
     public Map<Player, List<Quiz>> getQuizzesPerPlayer() throws RemoteException;
 
     /**
-     * Persists the data on the server to a file
+     * Loads the file back once the server is restarted
+     */
+    public void reload() throws RemoteException;
+
+    /**
+     * Shuts down the server
+     * Persists all data on the server to file for reloading
+     * @throws RemoteException
      */
 
-    public void flush() throws RemoteException;
+    public void shutdown() throws RemoteException;
 }
