@@ -1,4 +1,4 @@
-package com.liliya.quiz.client;
+package com.liliya.quiz.playerclient;
 
 import java.util.List;
 
