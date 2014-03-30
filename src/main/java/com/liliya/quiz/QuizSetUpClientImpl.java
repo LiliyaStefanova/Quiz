@@ -1,18 +1,26 @@
 package com.liliya.quiz;
 
+import com.liliya.menu.MenuActions;
+import com.liliya.menu.TextMenu;
+import com.liliya.menu.TextMenuItem;
+
 import java.net.MalformedURLException;
 import java.rmi.Naming;
 import java.rmi.NotBoundException;
 import java.rmi.Remote;
 import java.rmi.RemoteException;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Scanner;
+import java.util.*;
 
 public class QuizSetUpClientImpl implements QuizSetUpClient {
 
     boolean backToMain = false;
     private QuizService quizPlayer = null;
+
+    private static final TextMenuItem setUp = new TextMenuItem("Set up quiz", MenuActions.SET_UP_QUIZ);
+    private static final TextMenuItem close = new TextMenuItem("Close quiz", MenuActions.CLOSE_QUIZ);
+    private static final TextMenuItem back = new TextMenuItem("Go Back", MenuActions.BACK);
+
+    private static List<TextMenuItem> setUpClientMenu = new ArrayList<TextMenuItem>(Arrays.asList(setUp, close, back));
 
     public static void main(String[] args) {
 
@@ -21,12 +29,11 @@ public class QuizSetUpClientImpl implements QuizSetUpClient {
         suc.menu();
     }
 
-    public void connectToServer(){
+    public void connectToServer() {
         try {
             Remote service = Naming.lookup("//127.0.0.1:1699/quiz");
             quizPlayer = (QuizService) service;
-        }
-        catch (MalformedURLException ex) {
+        } catch (MalformedURLException ex) {
             ex.printStackTrace();
         } catch (RemoteException e) {
             e.printStackTrace();
@@ -37,34 +44,21 @@ public class QuizSetUpClientImpl implements QuizSetUpClient {
 
     @Override
     public void menu() {
-        //add option to set up quiz from file and one manually
+        //TODO add option to set up quiz from file and one manually
         do {
-            System.out.println("What would you like to do? ");
-            System.out.println(
-                    "Select an option: \n" +
-                            "  1) Set up a quiz\n" +
-                            "  2) Close a quiz\n" +
-                            "  3) View players for a quiz \n" +
-                            "  4) Return to main menu "
-            );
-            System.out.println(">> ");
-            Scanner sc = new Scanner(System.in);
-            int choice = sc.nextInt();
-
-            switch (choice) {
-                case 1:
+            MenuActions action = TextMenu.display("Quiz Administrator", setUpClientMenu);
+            switch (action) {
+                case SET_UP_QUIZ:
                     setUpQuiz();
                     break;
-                case 2:
+                case CLOSE_QUIZ:
+                    //TODO exception if quiz id does not exist
                     System.out.print("Enter quiz id: ");
                     Scanner sc1 = new Scanner(System.in);
                     int quizID = sc1.nextInt();
                     requestQuizClose(quizID);
                     break;
-                case 3:
-
-                    break;
-                case 4:
+                case BACK:
                     backToMain = true;
                     QuizLauncher.launch();
                     break;
@@ -78,31 +72,30 @@ public class QuizSetUpClientImpl implements QuizSetUpClient {
     @Override
     public void setUpQuiz() {
 
-            System.out.print("Enter quiz name: ");
-            Scanner sc1 = new Scanner(System.in);
-            String quizName = sc1.nextLine();
-            try{
-                int quizID = quizPlayer.generateQuiz(quizName, setUpQuestions());
-                System.out.println("ID for quiz " + quizName + " is: " + quizID);
-            }
-            catch(RemoteException ex){
-                ex.printStackTrace();
-            }
+        System.out.print("Enter quiz name: ");
+        Scanner sc1 = new Scanner(System.in);
+        String quizName = sc1.nextLine();
+        try {
+            int quizID = quizPlayer.generateQuiz(quizName, setUpQuestions());
+            System.out.println("ID for quiz " + quizName + " is: " + quizID);
+        } catch (RemoteException ex) {
+            ex.printStackTrace();
+        }
     }
 
     @Override
     public void requestQuizClose(int quizID) {
-            try{
+        try {
             PlayerQuizInstance winner = quizPlayer.closeQuiz(quizID);
             displayQuizWinnerDetails(winner);
-            }
-            catch(RemoteException ex){
-                ex.printStackTrace();
-            }
+        } catch (RemoteException ex) {
+            ex.printStackTrace();
+        }
     }
 
     @Override
     public void displayQuizWinnerDetails(PlayerQuizInstance playerWithHighestScore) {
+        //TODO sort out all exceptions
         try {
             System.out.print("The winner of the game is: ");
             System.out.print(playerWithHighestScore.getPlayer().getName());
@@ -133,6 +126,7 @@ public class QuizSetUpClientImpl implements QuizSetUpClient {
                 String answer = sc3.nextLine();
                 possibleAnswers.put(i, answer);
             }
+            //TODO validation on the range of the correct answer-must be between 1 and 4
             System.out.print("Enter correct answer: ");
             try {
                 Scanner sc4 = new Scanner(System.in);
@@ -140,7 +134,7 @@ public class QuizSetUpClientImpl implements QuizSetUpClient {
             } catch (IllegalArgumentException ex) {
                 System.out.println("You need to enter the number of the correct answer");
             }
-
+            //TODO validation on the range of correct answer points if any; must be number
             System.out.print("Enter correct answer points: ");
             Scanner sc5 = new Scanner(System.in);
             int correctAnswerPoints = sc5.nextInt();
