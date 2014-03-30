@@ -1,8 +1,9 @@
-package com.liliya.quiz;
+package com.liliya.quiz.client;
 
 import com.liliya.menu.MenuActions;
 import com.liliya.menu.TextMenu;
 import com.liliya.menu.TextMenuItem;
+import com.liliya.quiz.model.*;
 
 import java.net.MalformedURLException;
 import java.rmi.Naming;
@@ -85,7 +86,7 @@ public class QuizSetUpClientImpl implements QuizSetUpClient {
 
     @Override
     public void requestQuizClose(int quizID) {
-        try {
+        try{
             PlayerQuizInstance winner = quizPlayer.closeQuiz(quizID);
             displayQuizWinnerDetails(winner);
         } catch (RemoteException ex) {
@@ -96,15 +97,11 @@ public class QuizSetUpClientImpl implements QuizSetUpClient {
     @Override
     public void displayQuizWinnerDetails(PlayerQuizInstance playerWithHighestScore) {
         //TODO sort out all exceptions
-        try {
             System.out.print("The winner of the game is: ");
-            System.out.print(playerWithHighestScore.getPlayer().getName());
-            System.out.print("With a score of: ");
-            playerWithHighestScore.getTotalScore();
-        } catch (NullPointerException ex) {
-            System.out.println("No one has played that game");
+            System.out.println(playerWithHighestScore.getPlayer().getName());
+            System.out.println("With a score of: " + playerWithHighestScore.getTotalScore());
         }
-    }
+
 
     private Map<Integer, Question> setUpQuestions() {
         Map<Integer, Question> questions = new HashMap<Integer, Question>();

@@ -1,4 +1,4 @@
-package com.liliya.quiz;
+package com.liliya.quiz.model;
 
 import java.util.List;
 import java.util.Map;

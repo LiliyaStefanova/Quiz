@@ -1,4 +1,4 @@
-package com.liliya.quiz;
+package com.liliya.quiz.client;
 
 import java.util.List;
 
@@ -29,9 +29,9 @@ public interface QuizPlayerClient {
      * Launch
      *
      * @param id of the quiz
-     * @return a list of answers by the player to be scored
+     *
      */
-    public List<String> playQuiz(int id);
+    public void playQuiz(int id);
 
 
 }

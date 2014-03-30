@@ -1,5 +1,7 @@
 
-package com.liliya.quiz;
+package com.liliya.quiz.model;
+
+import com.liliya.quiz.server.QuizServer;
 
 import java.nio.channels.AlreadyBoundException;
 import java.rmi.registry.Registry;

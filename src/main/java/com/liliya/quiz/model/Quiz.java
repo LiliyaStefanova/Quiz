@@ -1,8 +1,6 @@
-package com.liliya.quiz;
+package com.liliya.quiz.model;
 
-import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
 /**
  * A class used to create new quiz objects

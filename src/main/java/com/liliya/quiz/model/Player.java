@@ -1,4 +1,4 @@
-package com.liliya.quiz;
+package com.liliya.quiz.model;
 
 /**
  * Represents a player who is launching and playing quizzes

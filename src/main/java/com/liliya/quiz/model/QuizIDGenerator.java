@@ -1,4 +1,4 @@
-package com.liliya.quiz;
+package com.liliya.quiz.model;
 
 /**
  * Helper class with a static variable and methods to generate sequential IDs for quizzes

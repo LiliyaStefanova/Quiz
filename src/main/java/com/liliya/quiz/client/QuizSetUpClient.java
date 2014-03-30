@@ -1,4 +1,6 @@
-package com.liliya.quiz;
+package com.liliya.quiz.client;
+
+import com.liliya.quiz.model.PlayerQuizInstance;
 
 /**
  * Public interface for the set up client

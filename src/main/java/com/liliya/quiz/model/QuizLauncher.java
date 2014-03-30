@@ -1,19 +1,17 @@
-package com.liliya.quiz;
+package com.liliya.quiz.model;
 
 
 import com.liliya.menu.MenuActions;
 import com.liliya.menu.TextMenu;
 import com.liliya.menu.TextMenuItem;
+import com.liliya.quiz.client.QuizPlayerClient;
+import com.liliya.quiz.client.QuizPlayerClientImpl;
+import com.liliya.quiz.client.QuizSetUpClient;
+import com.liliya.quiz.client.QuizSetUpClientImpl;
 
-import java.nio.channels.AlreadyBoundException;
-import java.rmi.RemoteException;
-import java.rmi.registry.LocateRegistry;
-import java.rmi.registry.Registry;
-import java.rmi.server.ExportException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import java.util.Scanner;
 
 public class QuizLauncher {
 

@@ -1,8 +1,6 @@
-package com.liliya.quiz;
+package com.liliya.quiz.model;
 
 import java.io.Serializable;
-import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 public class QuestionImpl implements Question, Serializable {

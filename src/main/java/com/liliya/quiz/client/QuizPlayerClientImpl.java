@@ -1,10 +1,13 @@
-package com.liliya.quiz;
+package com.liliya.quiz.client;
 
 import com.liliya.menu.MenuActions;
 import com.liliya.menu.TextMenu;
 import com.liliya.menu.TextMenuItem;
+import com.liliya.quiz.model.PlayerQuizInstance;
+import com.liliya.quiz.model.Question;
+import com.liliya.quiz.model.Quiz;
+import com.liliya.quiz.model.QuizService;
 
-import java.io.Serializable;
 import java.net.MalformedURLException;
 import java.rmi.Naming;
 import java.rmi.NotBoundException;
@@ -94,7 +97,7 @@ public class QuizPlayerClientImpl implements QuizPlayerClient {
     }
 
     @Override
-    public List<String> playQuiz(int id) {
+    public void playQuiz(int id) {
         System.out.print("Enter your name: ");
         Scanner sc = new Scanner(System.in);
         String playerName = sc.nextLine();
@@ -108,7 +111,6 @@ public class QuizPlayerClientImpl implements QuizPlayerClient {
         } catch (RemoteException e) {
             e.printStackTrace();
         }
-        return null;
     }
 
     //TODO quiz to be displayed with numbers starting from 1 not 0

@@ -1,5 +1,7 @@
-package com.liliya.quiz;
+package com.liliya.quiz.server;
 
+
+import com.liliya.quiz.model.*;
 
 import java.beans.XMLEncoder;
 import java.beans.XMLDecoder;
@@ -12,8 +14,6 @@ import java.rmi.server.UnicastRemoteObject;
 import java.util.*;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
-import java.util.concurrent.ScheduledFuture;
-import java.util.concurrent.TimeUnit;
 
 public class QuizServer extends UnicastRemoteObject implements QuizService, Serializable {
 
@@ -75,29 +75,19 @@ public class QuizServer extends UnicastRemoteObject implements QuizService, Seri
 
     @Override
     public synchronized PlayerQuizInstance closeQuiz(int id) throws RemoteException {
-        List<PlayerQuizInstance> quizInstances = new ArrayList<PlayerQuizInstance>();
-        PlayerQuizInstance winner = new PlayerQuizInstance();
-        int maxScore = 0;
+
         //find the quiz to be closed and set it to inactive so other players can't choose it
         for (Quiz curr : allQuizzes) {
             if (curr.getQuizId() == id) {
                 curr.setQuizState(false);
-                // find all instances of the quiz played
             }
         }
-        for (PlayerQuizInstance instance : playerQuizInstances) {
-            if (instance.getQuiz().getQuizId() == id) {
-                quizInstances.add(instance);
-            }
-        }
-        return determineQuizWinner(quizInstances);
+        return HighScores.getTopQuizScore(id);
     }
 
-    @Override
     public synchronized PlayerQuizInstance loadQuiz(int id, String name) {
         PlayerQuizInstance newQuizPlayerInstance = new PlayerQuizInstance(setUpPlayer(name), findQuiz(id));
         playerQuizInstances.add(newQuizPlayerInstance);
-        System.out.println("Size of all instances now is: " + playerQuizInstances.size());   //debugging only-remove
         return newQuizPlayerInstance;
     }
 
@@ -113,8 +103,10 @@ public class QuizServer extends UnicastRemoteObject implements QuizService, Seri
         for (PlayerQuizInstance current : playerQuizInstances) {
             if (current.equals(quizInstance)) {
                 quizInstance.setTotalScore(playerQuizInstanceScore);
+                HighScores.updateHighScores(current);
             }
         }
+
         return playerQuizInstanceScore;
     }
 
@@ -212,7 +204,7 @@ public class QuizServer extends UnicastRemoteObject implements QuizService, Seri
         encodeData();
     }
 
-    private PlayerQuizInstance determineQuizWinner(List<PlayerQuizInstance> instances) {
+    /*private PlayerQuizInstance determineQuizWinner(List<PlayerQuizInstance> instances) {
         int maxScore = 0;
         PlayerQuizInstance quizWinner = null;
         for (PlayerQuizInstance instance : instances) {
@@ -227,7 +219,7 @@ public class QuizServer extends UnicastRemoteObject implements QuizService, Seri
         return quizWinner;
 
     }
-
+*/
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
