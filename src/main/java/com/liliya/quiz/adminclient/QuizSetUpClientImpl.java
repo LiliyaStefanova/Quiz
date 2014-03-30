@@ -1,4 +1,4 @@
-package com.liliya.quiz.client;
+package com.liliya.quiz.adminclient;
 
 import com.liliya.menu.MenuActions;
 import com.liliya.menu.TextMenu;
@@ -20,8 +20,9 @@ public class QuizSetUpClientImpl implements QuizSetUpClient {
     private static final TextMenuItem setUp = new TextMenuItem("Set up quiz", MenuActions.SET_UP_QUIZ);
     private static final TextMenuItem close = new TextMenuItem("Close quiz", MenuActions.CLOSE_QUIZ);
     private static final TextMenuItem back = new TextMenuItem("Go Back", MenuActions.BACK);
+    private static final TextMenuItem quit = new TextMenuItem("Quit", MenuActions.QUIT);
 
-    private static List<TextMenuItem> setUpClientMenu = new ArrayList<TextMenuItem>(Arrays.asList(setUp, close, back));
+    private static List<TextMenuItem> setUpClientMenu = new ArrayList<TextMenuItem>(Arrays.asList(setUp, close, back,quit));
 
     public static void main(String[] args) {
 
@@ -63,6 +64,11 @@ public class QuizSetUpClientImpl implements QuizSetUpClient {
                     backToMain = true;
                     QuizLauncher.launch();
                     break;
+                case QUIT:
+                    closeDownProgram();
+                    System.out.println("Goodbye!");
+                    System.exit(0);
+                    break;
                 default:
                     System.out.print("Choose a valid option");
             }
@@ -86,7 +92,7 @@ public class QuizSetUpClientImpl implements QuizSetUpClient {
 
     @Override
     public void requestQuizClose(int quizID) {
-        try{
+        try {
             PlayerQuizInstance winner = quizPlayer.closeQuiz(quizID);
             displayQuizWinnerDetails(winner);
         } catch (RemoteException ex) {
@@ -97,10 +103,19 @@ public class QuizSetUpClientImpl implements QuizSetUpClient {
     @Override
     public void displayQuizWinnerDetails(PlayerQuizInstance playerWithHighestScore) {
         //TODO sort out all exceptions
-            System.out.print("The winner of the game is: ");
-            System.out.println(playerWithHighestScore.getPlayer().getName());
-            System.out.println("With a score of: " + playerWithHighestScore.getTotalScore());
+        System.out.print("The winner of the game is: ");
+        System.out.println(playerWithHighestScore.getPlayer().getName());
+        System.out.println("With a score of: " + playerWithHighestScore.getTotalScore());
+    }
+
+    @Override
+    public void closeDownProgram() {
+        try{
+        quizPlayer.shutdown();
+        } catch( RemoteException ex){
+            ex.printStackTrace();
         }
+    }
 
 
     private Map<Integer, Question> setUpQuestions() {
@@ -112,34 +127,62 @@ public class QuizSetUpClientImpl implements QuizSetUpClient {
         String[] answers = new String[numQuestions];
         int count = 0;
         while (count < numQuestions) {
-            Map<Integer, String> possibleAnswers = new HashMap<Integer, String>();
-            System.out.print("Enter question: ");
-            Scanner sc2 = new Scanner(System.in);
-            String question = sc2.nextLine();
-            System.out.println("Enter possible answers: ");
-            for (int i = 1; i <= 4; i++) {
-                System.out.print("Possible answer " + i + ":");
-                Scanner sc3 = new Scanner(System.in);
-                String answer = sc3.nextLine();
-                possibleAnswers.put(i, answer);
-            }
-            //TODO validation on the range of the correct answer-must be between 1 and 4
-            System.out.print("Enter correct answer: ");
-            try {
-                Scanner sc4 = new Scanner(System.in);
-                correctAnswer = sc4.nextInt();
-            } catch (IllegalArgumentException ex) {
-                System.out.println("You need to enter the number of the correct answer");
-            }
-            //TODO validation on the range of correct answer points if any; must be number
-            System.out.print("Enter correct answer points: ");
-            Scanner sc5 = new Scanner(System.in);
-            int correctAnswerPoints = sc5.nextInt();
-            Question newQuestion = new QuestionImpl(question, possibleAnswers, correctAnswer, correctAnswerPoints);
+            Question newQuestion = new QuestionImpl(createQuestion(),
+                    createPossibleAnswers(),
+                    setUpCorrectAnswer(),
+                    setCorrectAnswerPoints());
             questions.put(count, newQuestion);
             count++;
         }
-
         return questions;
     }
+
+    private String createQuestion() {
+        System.out.print("Enter question: ");
+        Scanner sc2 = new Scanner(System.in);
+        return sc2.nextLine();
+    }
+
+    private Map<Integer, String> createPossibleAnswers() {
+        Map<Integer, String> possibleAnswers = new HashMap<Integer, String>();
+        System.out.println("Enter possible answers: ");
+        for (int i = 1; i <= 4; i++) {
+            System.out.print("Possible answer " + i + ":");
+            Scanner sc3 = new Scanner(System.in);
+            String answer = sc3.nextLine();
+            possibleAnswers.put(i, answer);
+        }
+        return possibleAnswers;
+    }
+
+    private int setUpCorrectAnswer() {
+        int correctAnswer = 0;
+        System.out.print("Enter correct answer: ");
+        try {
+            Scanner sc4 = new Scanner(System.in);
+            correctAnswer = sc4.nextInt();
+            if (correctAnswer < 1 || correctAnswer > 4) {
+                //need to double check if exception can be thrown here
+                throw new IllegalArgumentException("Correct answer must be between 1 and 4");
+            }
+        } catch (IllegalArgumentException ex) {
+            System.out.println("You need to enter the number of the correct answer");
+        }
+        return correctAnswer;
+    }
+
+    private int setCorrectAnswerPoints() {
+        int correctAnswerPoints = 0;
+        try {
+            System.out.print("Enter correct answer points: ");
+            Scanner sc5 = new Scanner(System.in);
+            correctAnswerPoints = sc5.nextInt();
+
+        } catch (IllegalArgumentException ex) {
+            System.out.println("Please provide points as a number");
+        }
+        return correctAnswerPoints;
+    }
+
+
 }

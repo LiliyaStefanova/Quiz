@@ -1,4 +1,4 @@
-package com.liliya.quiz.client;
+package com.liliya.quiz.adminclient;
 
 import com.liliya.quiz.model.PlayerQuizInstance;
 
@@ -41,5 +41,11 @@ public interface QuizSetUpClient {
      * @param playerWithHighestScore
      */
     public void displayQuizWinnerDetails(PlayerQuizInstance playerWithHighestScore);
+
+    /**
+     * Shuts down server
+     */
+    public void closeDownProgram();
+
 
 }
