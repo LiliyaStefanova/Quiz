@@ -4,10 +4,10 @@ package com.liliya.quiz.model;
 import com.liliya.menu.MenuActions;
 import com.liliya.menu.TextMenu;
 import com.liliya.menu.TextMenuItem;
-import com.liliya.quiz.client.QuizPlayerClient;
-import com.liliya.quiz.client.QuizPlayerClientImpl;
-import com.liliya.quiz.client.QuizSetUpClient;
-import com.liliya.quiz.client.QuizSetUpClientImpl;
+import com.liliya.quiz.playerclient.QuizPlayerClient;
+import com.liliya.quiz.playerclient.QuizPlayerClientImpl;
+import com.liliya.quiz.adminclient.QuizSetUpClient;
+import com.liliya.quiz.adminclient.QuizSetUpClientImpl;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -21,6 +21,9 @@ public class QuizLauncher {
 
     private static List<TextMenuItem> mainMenu = new ArrayList<TextMenuItem>(Arrays.asList(quizAdmin, playQuiz, quit));
 
+
+
+
     public static void main(String[] args) {
 
         QuizLauncher.launch();
@@ -30,22 +33,18 @@ public class QuizLauncher {
     public static void launch() {
 
         MenuActions action = TextMenu.display("Main Menu", mainMenu);
+        QuizSetUpClient suc = new QuizSetUpClientImpl();
+        QuizPlayerClient newPlayerClient = new QuizPlayerClientImpl();
 
         switch (action) {
             case QUIZ_ADMINISTRATION:
-                QuizSetUpClient suc = new QuizSetUpClientImpl();
                 suc.menu();
                 break;
             case PLAY_QUIZ:
-                QuizPlayerClient newPlayerClient = new QuizPlayerClientImpl();
                 newPlayerClient.launchMainMenuPlayer();
                 break;
             case QUIT:
-                try {
-                    // server.flush();
-                } catch (NullPointerException ex) {
-                    System.out.println("Server does not exist");
-                }
+                suc.closeDownProgram();
                 System.out.println("Goodbye!");
                 System.exit(0);
                 break;

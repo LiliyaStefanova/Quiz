@@ -15,11 +15,11 @@ public class QuizImpl implements Quiz, Serializable {
         //no args constructor for ser
     }
 
-    public QuizImpl(String name, Map<Integer, Question> questions) {
+    public QuizImpl(String name, Map<Integer, Question> questions, int id) {
         this.quizName = name;
         this.quizQuestions = questions;
         //TODO implement a different way to generate the quiz id
-        this.quizId = QuizIDGenerator.getNewID();
+        this.quizId=id;
         quizActive = true;
     }
 

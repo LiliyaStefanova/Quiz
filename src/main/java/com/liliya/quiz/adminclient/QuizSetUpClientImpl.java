@@ -54,11 +54,14 @@ public class QuizSetUpClientImpl implements QuizSetUpClient {
                     setUpQuiz();
                     break;
                 case CLOSE_QUIZ:
-                    //TODO exception if quiz id does not exist
+                    try{
                     System.out.print("Enter quiz id: ");
                     Scanner sc1 = new Scanner(System.in);
                     int quizID = sc1.nextInt();
                     requestQuizClose(quizID);
+                    } catch(IllegalArgumentException ex){
+                        System.out.print("This quiz does not exist");
+                    }
                     break;
                 case BACK:
                     backToMain = true;
@@ -99,7 +102,7 @@ public class QuizSetUpClientImpl implements QuizSetUpClient {
             ex.printStackTrace();
         }
     }
-
+    //make this private and remove from interface
     @Override
     public void displayQuizWinnerDetails(PlayerQuizInstance playerWithHighestScore) {
         //TODO sort out all exceptions

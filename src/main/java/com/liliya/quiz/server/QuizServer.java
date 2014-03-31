@@ -23,6 +23,7 @@ public class QuizServer extends UnicastRemoteObject implements QuizService, Seri
     private List<Quiz> allQuizzes;
     private Set<Player> allPlayers;
     private static final String FILENAME = "serverstate.xml";
+    private int quizIDCounter;
 
    /* public QuizServer() throws RemoteException {
         this();
@@ -33,12 +34,14 @@ public class QuizServer extends UnicastRemoteObject implements QuizService, Seri
         allQuizzes = new ArrayList<Quiz>();
         allPlayers = new HashSet<Player>();
         playerQuizInstances = new ArrayList<PlayerQuizInstance>();
+        quizIDCounter=0;
     }
 
     @Override
     public synchronized int generateQuiz(String name, Map<Integer, Question> questions) throws RemoteException {
 
-        Quiz newQuiz = new QuizImpl(name, questions);
+        Quiz newQuiz = new QuizImpl(name, questions, quizIDCounter);
+        quizIDCounter++;        //increment counter for next quiz
         int quizId = 0;
         //need to make a check for duplicate quizzes here
         allQuizzes.add(newQuiz);
@@ -275,6 +278,14 @@ public class QuizServer extends UnicastRemoteObject implements QuizService, Seri
 
     public void setAllPlayers(Set<Player> allPlayers) {
         this.allPlayers = allPlayers;
+    }
+
+    public int getQuizIDCounter() {
+        return quizIDCounter;
+    }
+
+    public void setQuizIDCounter(int quizIDCounter) {
+        this.quizIDCounter = quizIDCounter;
     }
 
     public static void main(String[] args) {
