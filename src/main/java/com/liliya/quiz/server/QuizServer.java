@@ -23,11 +23,7 @@ public class QuizServer extends UnicastRemoteObject implements QuizService, Seri
     private List<Quiz> allQuizzes;
     private Set<Player> allPlayers;
     private static final String FILENAME = "serverstate.xml";
-    private int quizIDCounter;
-
-   /* public QuizServer() throws RemoteException {
-        this();
-    }*/
+    private int quizIDCounter;  //counter which keeps track of the next quiz ID to be assigned
 
     public QuizServer() throws RemoteException {
 
@@ -42,15 +38,10 @@ public class QuizServer extends UnicastRemoteObject implements QuizService, Seri
 
         Quiz newQuiz = new QuizImpl(name, questions, quizIDCounter);
         quizIDCounter++;        //increment counter for next quiz
-        int quizId = 0;
+        int quizId = newQuiz.getQuizId();
         //need to make a check for duplicate quizzes here
         allQuizzes.add(newQuiz);
         System.out.println("Size of all quizzes now is: " + allQuizzes.size());        //debugging-needs removal
-        for (Quiz current : allQuizzes) {
-            if (current.getQuizId() == newQuiz.getQuizId()) {
-                quizId = current.getQuizId();
-            } else quizId = 0;
-        }
 
         return quizId;
     }
@@ -68,7 +59,8 @@ public class QuizServer extends UnicastRemoteObject implements QuizService, Seri
                 curr.setQuizState(false);
             }
         }
-        return HighScores.getTopQuizScore(id);
+       // return HighScores.getTopQuizScore(id);
+        return determineQuizWinner(getAllQuizInstances(id));
     }
 
     public synchronized PlayerQuizInstance loadQuiz(int id, String name) {
@@ -89,7 +81,8 @@ public class QuizServer extends UnicastRemoteObject implements QuizService, Seri
         for (PlayerQuizInstance current : playerQuizInstances) {
             if (current.equals(quizInstance)) {
                 quizInstance.setTotalScore(playerQuizInstanceScore);
-                HighScores.updateHighScores(current);
+                System.out.println("The user score is: "+current.getTotalScore());
+               // HighScores.updateHighScores(current);
             }
         }
 
@@ -164,6 +157,7 @@ public class QuizServer extends UnicastRemoteObject implements QuizService, Seri
             encode.writeObject(allQuizzes);
             encode.writeObject(allPlayers);
             encode.writeObject(playerQuizInstances);
+            encode.writeObject(quizIDCounter);
         } catch (FileNotFoundException ex) {
             System.err.println(ex);
         } finally {
@@ -182,6 +176,7 @@ public class QuizServer extends UnicastRemoteObject implements QuizService, Seri
             allQuizzes = (List<Quiz>) decode.readObject();
             allPlayers = (Set<Player>) decode.readObject();
             playerQuizInstances = (List<PlayerQuizInstance>) decode.readObject();
+            quizIDCounter=(Integer) decode.readObject();
 
         } catch (FileNotFoundException ex) {
             ex.printStackTrace();
@@ -215,20 +210,35 @@ public class QuizServer extends UnicastRemoteObject implements QuizService, Seri
         return addNewPlayer(name);
     }
 
-    @Deprecated
-    private PlayerQuizInstance determineQuizWinner(List<PlayerQuizInstance> instances) {
-        int maxScore = 0;
-        PlayerQuizInstance quizWinner = null;
-        for (PlayerQuizInstance instance : instances) {
-            if (instance.getTotalScore() > maxScore) {
-                maxScore = instance.getTotalScore();
+    private List<PlayerQuizInstance> getAllQuizInstances(int id){
+        List<PlayerQuizInstance> quizPlayInstances=new ArrayList<PlayerQuizInstance>();
 
-                quizWinner = instance;
+        for(PlayerQuizInstance instance: playerQuizInstances){
+            if(instance.getQuiz().getQuizId()==id){
+                quizPlayInstances.add(instance);
             }
-
         }
-        System.out.println("Highest score is:" + maxScore);
-        return quizWinner;
+
+        return quizPlayInstances;
+    }
+
+    private PlayerQuizInstance determineQuizWinner(List<PlayerQuizInstance> quizPlayInstances) {
+        int maxScore = 0;
+        PlayerQuizInstance winner= null;
+        if(playerQuizInstances.isEmpty()){
+            return winner;
+        }
+        winner = Collections.max(quizPlayInstances, new Comparator<PlayerQuizInstance>() {
+            @Override
+            public int compare(PlayerQuizInstance o1, PlayerQuizInstance o2) {
+                if (o1.getTotalScore() > o2.getTotalScore()) {
+                    return 1;
+                } else if ((o1.getTotalScore() < o2.getTotalScore())) {
+                    return -1;
+                } else return 0;
+            }
+        });
+        return winner;
     }
 
     @Override
