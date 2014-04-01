@@ -5,6 +5,7 @@ import com.liliya.menu.TextMenu;
 import com.liliya.menu.TextMenuItem;
 import com.liliya.quiz.model.*;
 
+import java.io.*;
 import java.net.MalformedURLException;
 import java.rmi.Naming;
 import java.rmi.NotBoundException;
@@ -17,12 +18,14 @@ public class QuizSetUpClientImpl implements QuizSetUpClient {
     boolean backToMain = false;
     private QuizService quizPlayer = null;
 
-    private static final TextMenuItem setUp = new TextMenuItem("Set up quiz", MenuActions.SET_UP_QUIZ);
+    private static final TextMenuItem setUpManually = new TextMenuItem("Set up quiz manually", MenuActions.SET_UP_QUIZ_MANUALLY);
+    private static final TextMenuItem setUpFromFile = new TextMenuItem("Set up quiz from file", MenuActions.SET_UP_QUIZ_FROM_FILE);
     private static final TextMenuItem close = new TextMenuItem("Close quiz", MenuActions.CLOSE_QUIZ);
     private static final TextMenuItem back = new TextMenuItem("Go Back", MenuActions.BACK);
     private static final TextMenuItem quit = new TextMenuItem("Quit", MenuActions.QUIT);
 
-    private static List<TextMenuItem> setUpClientMenu = new ArrayList<TextMenuItem>(Arrays.asList(setUp, close, back,quit));
+    private static List<TextMenuItem> setUpClientMenu = new ArrayList<TextMenuItem>(Arrays.asList(setUpManually,
+            setUpFromFile,close, back,quit));
 
     public static void main(String[] args) {
 
@@ -46,12 +49,14 @@ public class QuizSetUpClientImpl implements QuizSetUpClient {
 
     @Override
     public void menu() {
-        //TODO add option to set up quiz from file and one manually
         do {
             MenuActions action = TextMenu.display("Quiz Administrator", setUpClientMenu);
             switch (action) {
-                case SET_UP_QUIZ:
-                    setUpQuiz();
+                case SET_UP_QUIZ_MANUALLY:
+                    setUpQuizManually();
+                    break;
+                case SET_UP_QUIZ_FROM_FILE:
+                    setUpQuizFromFile();
                     break;
                 case CLOSE_QUIZ:
                     try{
@@ -80,13 +85,22 @@ public class QuizSetUpClientImpl implements QuizSetUpClient {
     }
 
     @Override
-    public void setUpQuiz() {
-
-        System.out.print("Enter quiz name: ");
-        Scanner sc1 = new Scanner(System.in);
-        String quizName = sc1.nextLine();
+    public void setUpQuizFromFile() {
+        String quizName=requestQuizName();
         try {
-            int quizID = quizPlayer.generateQuiz(quizName, setUpQuestions());
+            int quizID = quizPlayer.generateQuiz(quizName, setUpQuestionsFromFile());
+            System.out.println("ID for quiz " + quizName + " is: " + quizID);
+        } catch (RemoteException ex) {
+            ex.printStackTrace();
+        }
+    }
+
+    @Override
+    public void setUpQuizManually() {
+
+        String quizName=requestQuizName();
+        try {
+            int quizID = quizPlayer.generateQuiz(quizName, setUpQuestionsManually());
             System.out.println("ID for quiz " + quizName + " is: " + quizID);
         } catch (RemoteException ex) {
             ex.printStackTrace();
@@ -107,8 +121,14 @@ public class QuizSetUpClientImpl implements QuizSetUpClient {
     public void displayQuizWinnerDetails(PlayerQuizInstance playerWithHighestScore) {
         //TODO sort out all exceptions
         System.out.print("The winner of the game is: ");
+        try{
         System.out.println(playerWithHighestScore.getPlayer().getName());
         System.out.println("With a score of: " + playerWithHighestScore.getTotalScore());
+        } catch (NullPointerException ex){
+            System.out.println("No one has played that quiz");
+        }
+
+
     }
 
     @Override
@@ -120,8 +140,19 @@ public class QuizSetUpClientImpl implements QuizSetUpClient {
         }
     }
 
+    private String requestQuizName(){
+        String quizName="";
+        try{
+        System.out.print("Enter quiz name: ");
+        Scanner sc1 = new Scanner(System.in);
+         quizName=sc1.nextLine();
+        } catch(IllegalArgumentException ex){
+            System.out.println("Please provide a quiz name");
+        }
+        return quizName;
+    }
 
-    private Map<Integer, Question> setUpQuestions() {
+    private Map<Integer, Question> setUpQuestionsManually() {
         Map<Integer, Question> questions = new HashMap<Integer, Question>();
         int correctAnswer = 0;
         System.out.print("Choose number of questions: ");
@@ -139,6 +170,43 @@ public class QuizSetUpClientImpl implements QuizSetUpClient {
         }
         return questions;
     }
+
+    private Map<Integer, Question> setUpQuestionsFromFile() {
+        Map<Integer, Question> questions = new HashMap<Integer, Question>();
+        Map<Integer, String> possibleAnswers = new HashMap<Integer, String>();
+        String question;
+        int correctAnswer = 0;
+        int correctAnswerPoints;
+        BufferedReader br = null;
+        int lineCount = 0;
+        System.out.print("Please provide a file name: ");
+        Scanner sc1 = new Scanner(System.in);
+        String questionFile = sc1.nextLine();
+        try {
+            String sCurrentLine;
+            br = new BufferedReader(new FileReader(questionFile));
+            while ((sCurrentLine = br.readLine()) != null) {
+                String[] questionParts = sCurrentLine.split(",");
+                question = questionParts[0];
+                for (int i = 1; i <= 4; i++) {
+                    possibleAnswers.put(i - 1, questionParts[i]);
+                }
+                correctAnswer = Integer.parseInt(questionParts[5]);
+                correctAnswerPoints = Integer.parseInt(questionParts[6]);
+                Question newQuestion = new QuestionImpl(question, possibleAnswers, correctAnswer, correctAnswerPoints);
+                questions.put(lineCount, newQuestion);
+
+                lineCount++;
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        } catch (NullPointerException ex) {
+            ex.printStackTrace();
+        }
+     return questions;
+
+    }
+
 
     private String createQuestion() {
         System.out.print("Enter question: ");

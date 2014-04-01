@@ -22,10 +22,15 @@ public interface QuizSetUpClient {
      * Provides a name and list of questions for the quiz, calls the generateQuiz method on server
      * and generates a new quiz
      * Gets the id back
-     * ids of quizzes set up to be stored by set up client locally to retrieve later
      */
-    public void setUpQuiz();
+    public void setUpQuizManually();
 
+    /**
+     * Generates a collection of questions based on data provided in a csv file
+     * Gets id back from the server
+     *
+     */
+    public void setUpQuizFromFile();
     /**
      * Closes the quiz when the the set up client provides the id
      *

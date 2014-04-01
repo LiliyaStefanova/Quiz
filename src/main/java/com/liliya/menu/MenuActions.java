@@ -7,9 +7,10 @@ public enum MenuActions {
     PLAY_QUIZ,
     QUIT,
     BACK,
-    SET_UP_QUIZ,
+    SET_UP_QUIZ_MANUALLY,
+    SET_UP_QUIZ_FROM_FILE,
     CLOSE_QUIZ,
     SELECT_QUIZ_FROM_LIST,
-    VIEW_HIGH_SCORES;
+    VIEW_HIGH_SCORES
 
 }
