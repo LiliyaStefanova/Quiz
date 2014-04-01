@@ -19,14 +19,15 @@ public interface QuizSetUpClient {
     public void menu();
 
     /**
-     * Provides a name and list of questions for the quiz, calls the generateQuiz method on server
+     * Prompts the user for a name and list of questions for the quiz, calls the generateQuiz method on server
      * and generates a new quiz
      * Gets the id back
      */
     public void setUpQuizManually();
 
     /**
-     * Generates a collection of questions based on data provided in a csv file
+     * Generates a collection of questions based on data provided in a csv file and calls generateQuiz for server to set
+     * up a new quiz
      * Gets id back from the server
      *
      */
@@ -34,18 +35,9 @@ public interface QuizSetUpClient {
     /**
      * Closes the quiz when the the set up client provides the id
      *
-     * @param quizID will display a notification of player with highest score for this game instance
      */
 
-    public void requestQuizClose(int quizID);
-
-    /**
-     * takes in the value returned from the server after the quiz is closed and displays it in a formatted
-     * version to the client
-     *
-     * @param playerWithHighestScore
-     */
-    public void displayQuizWinnerDetails(PlayerQuizInstance playerWithHighestScore);
+    public void requestQuizClose();
 
     /**
      * Shuts down server

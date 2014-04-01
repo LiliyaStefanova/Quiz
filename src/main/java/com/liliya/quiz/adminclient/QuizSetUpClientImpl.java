@@ -25,7 +25,7 @@ public class QuizSetUpClientImpl implements QuizSetUpClient {
     private static final TextMenuItem quit = new TextMenuItem("Quit", MenuActions.QUIT);
 
     private static List<TextMenuItem> setUpClientMenu = new ArrayList<TextMenuItem>(Arrays.asList(setUpManually,
-            setUpFromFile,close, back,quit));
+            setUpFromFile, close, back, quit));
 
     public static void main(String[] args) {
 
@@ -59,14 +59,7 @@ public class QuizSetUpClientImpl implements QuizSetUpClient {
                     setUpQuizFromFile();
                     break;
                 case CLOSE_QUIZ:
-                    try{
-                    System.out.print("Enter quiz id: ");
-                    Scanner sc1 = new Scanner(System.in);
-                    int quizID = sc1.nextInt();
-                    requestQuizClose(quizID);
-                    } catch(IllegalArgumentException ex){
-                        System.out.print("This quiz does not exist");
-                    }
+                    requestQuizClose();
                     break;
                 case BACK:
                     backToMain = true;
@@ -85,20 +78,9 @@ public class QuizSetUpClientImpl implements QuizSetUpClient {
     }
 
     @Override
-    public void setUpQuizFromFile() {
-        String quizName=requestQuizName();
-        try {
-            int quizID = quizPlayer.generateQuiz(quizName, setUpQuestionsFromFile());
-            System.out.println("ID for quiz " + quizName + " is: " + quizID);
-        } catch (RemoteException ex) {
-            ex.printStackTrace();
-        }
-    }
-
-    @Override
     public void setUpQuizManually() {
 
-        String quizName=requestQuizName();
+        String quizName = requestQuizName();
         try {
             int quizID = quizPlayer.generateQuiz(quizName, setUpQuestionsManually());
             System.out.println("ID for quiz " + quizName + " is: " + quizID);
@@ -108,45 +90,58 @@ public class QuizSetUpClientImpl implements QuizSetUpClient {
     }
 
     @Override
-    public void requestQuizClose(int quizID) {
+    public void setUpQuizFromFile() {
+        String quizName = requestQuizName();
         try {
-            PlayerQuizInstance winner = quizPlayer.closeQuiz(quizID);
-            displayQuizWinnerDetails(winner);
+            int quizID = quizPlayer.generateQuiz(quizName, setUpQuestionsFromFile());
+            System.out.println("ID for quiz " + quizName + " is: " + quizID);
         } catch (RemoteException ex) {
             ex.printStackTrace();
         }
     }
-    //make this private and remove from interface
+
     @Override
-    public void displayQuizWinnerDetails(PlayerQuizInstance playerWithHighestScore) {
-        //TODO sort out all exceptions
-        System.out.print("The winner of the game is: ");
-        try{
-        System.out.println(playerWithHighestScore.getPlayer().getName());
-        System.out.println("With a score of: " + playerWithHighestScore.getTotalScore());
-        } catch (NullPointerException ex){
-            System.out.println("No one has played that quiz");
+    public void requestQuizClose() {
+        try {
+            System.out.print("Enter quiz id: ");
+            Scanner sc1 = new Scanner(System.in);
+            int quizID = sc1.nextInt();
+            PlayerQuizInstance winner = quizPlayer.closeQuiz(quizID);
+            displayQuizWinnerDetails(winner);
+        } catch (RemoteException ex) {
+            ex.printStackTrace();
+        } catch (IllegalArgumentException ex) {
+            System.out.print("This quiz does not exist");
         }
-
-
     }
 
     @Override
     public void closeDownProgram() {
-        try{
-        quizPlayer.shutdown();
-        } catch( RemoteException ex){
+        try {
+            quizPlayer.shutdown();
+        } catch (RemoteException ex) {
             ex.printStackTrace();
         }
     }
 
-    private String requestQuizName(){
-        String quizName="";
-        try{
-        System.out.print("Enter quiz name: ");
-        Scanner sc1 = new Scanner(System.in);
-         quizName=sc1.nextLine();
-        } catch(IllegalArgumentException ex){
+    private void displayQuizWinnerDetails(PlayerQuizInstance playerWithHighestScore) {
+        //TODO sort out all exceptions
+        System.out.print("The winner of the game is: ");
+        try {
+            System.out.println(playerWithHighestScore.getPlayer().getName());
+            System.out.println("With a score of: " + playerWithHighestScore.getTotalScore());
+        } catch (NullPointerException ex) {
+            System.out.println("No one has played that quiz");
+        }
+    }
+
+    private String requestQuizName() {
+        String quizName = "";
+        try {
+            System.out.print("Enter quiz name: ");
+            Scanner sc1 = new Scanner(System.in);
+            quizName = sc1.nextLine();
+        } catch (IllegalArgumentException ex) {
             System.out.println("Please provide a quiz name");
         }
         return quizName;
@@ -172,8 +167,8 @@ public class QuizSetUpClientImpl implements QuizSetUpClient {
     }
 
     private Map<Integer, Question> setUpQuestionsFromFile() {
+
         Map<Integer, Question> questions = new HashMap<Integer, Question>();
-        Map<Integer, String> possibleAnswers = new HashMap<Integer, String>();
         String question;
         int correctAnswer = 0;
         int correctAnswerPoints;
@@ -186,10 +181,11 @@ public class QuizSetUpClientImpl implements QuizSetUpClient {
             String sCurrentLine;
             br = new BufferedReader(new FileReader(questionFile));
             while ((sCurrentLine = br.readLine()) != null) {
+                Map<Integer, String> possibleAnswers = new HashMap<Integer, String>();
                 String[] questionParts = sCurrentLine.split(",");
                 question = questionParts[0];
                 for (int i = 1; i <= 4; i++) {
-                    possibleAnswers.put(i - 1, questionParts[i]);
+                    possibleAnswers.put(i, questionParts[i]);
                 }
                 correctAnswer = Integer.parseInt(questionParts[5]);
                 correctAnswerPoints = Integer.parseInt(questionParts[6]);
@@ -203,7 +199,7 @@ public class QuizSetUpClientImpl implements QuizSetUpClient {
         } catch (NullPointerException ex) {
             ex.printStackTrace();
         }
-     return questions;
+        return questions;
 
     }
 
