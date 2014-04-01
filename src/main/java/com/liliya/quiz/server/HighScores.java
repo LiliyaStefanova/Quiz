@@ -4,13 +4,7 @@ import com.liliya.quiz.model.PlayerQuizInstance;
 
 import java.util.*;
 
-/**
- * Created with IntelliJ IDEA.
- * User: liliya
- * Date: 30/03/14
- * Time: 14:43
- * To change this template use File | Settings | File Templates.
- */
+@Deprecated
 public class HighScores {
 
     private static List<PlayerQuizInstance> scores = new ArrayList<PlayerQuizInstance>();
