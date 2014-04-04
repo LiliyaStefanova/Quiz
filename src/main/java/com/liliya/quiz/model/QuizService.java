@@ -62,14 +62,6 @@ public interface QuizService extends Remote {
      *
      * @return list of players for quiz
      */
-    public Map<Quiz, List<Player>> getPlayersForQuiz() throws RemoteException;
-
-    /**
-     * returns the list of quizzes that a player has played
-     *
-     * @return list of quizzes per player
-     */
-    public Map<Player, List<Quiz>> getQuizzesPerPlayer() throws RemoteException;
 
     /**
      * Loads the file back once the server is restarted

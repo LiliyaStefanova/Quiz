@@ -22,7 +22,7 @@ public class QuizServer extends UnicastRemoteObject implements QuizService, Seri
     private List<PlayerQuizInstance> playerQuizInstances;
     private List<Quiz> allQuizzes;
     private Set<Player> allPlayers;
-    private static final String FILENAME = "serverstate.xml";
+    private static final String FILENAME = "server_state.xml";
     private int quizIDCounter;  //counter which keeps track of the next quiz ID to be assigned
 
     public QuizServer() throws RemoteException {
@@ -109,46 +109,6 @@ public class QuizServer extends UnicastRemoteObject implements QuizService, Seri
         return newPlayer;
     }
 
-    @Override
-    public Map<Quiz, List<Player>> getPlayersForQuiz() {
-        return null;  //To change body of implemented methods use File | Settings | File Templates.
-    }
-
-    @Override
-    public Map<Player, List<Quiz>> getQuizzesPerPlayer() {
-        return null;  //To change body of implemented methods use File | Settings | File Templates.
-    }
-
-    @Override
-    public void reload() throws RemoteException {
-        File f = new File("." + File.separator + FILENAME);
-        if (f.exists() && f.length() > 0) {
-            decodeData();
-        } else if (f.exists() && f.length() == 0) {
-            System.out.println("File is empty");
-            //warn user if file exists but is empty
-            //wait for file to be written to
-        } else if (!f.exists()) {
-            try {
-                f.createNewFile();
-            } catch (IOException ex) {
-                ex.printStackTrace();
-            }
-        }
-    }
-
-    @Override
-    public void shutdown() throws RemoteException {
-        encodeData();
-        Registry registry=LocateRegistry.getRegistry(1699);
-        try{
-            registry.unbind(SERVICE_NAME);
-            UnicastRemoteObject.unexportObject(this, true);
-        } catch(NotBoundException ex){
-            throw new RemoteException("Could not un-register, quitting anyway...", ex);
-        }
-    }
-
     private void encodeData() {
 
         XMLEncoder encode = null;
@@ -186,6 +146,39 @@ public class QuizServer extends UnicastRemoteObject implements QuizService, Seri
             }
         }
     }
+
+
+    @Override
+    public void reload() throws RemoteException {
+        File f = new File("." + File.separator + FILENAME);
+        if (f.exists() && f.length() > 0) {
+            decodeData();
+        } else if (f.exists() && f.length() == 0) {
+            System.out.println("File is empty");
+            //warn user if file exists but is empty
+            //wait for file to be written to
+        } else if (!f.exists()) {
+            try {
+                f.createNewFile();
+            } catch (IOException ex) {
+                ex.printStackTrace();
+            }
+        }
+    }
+
+    @Override
+    public void shutdown() throws RemoteException {
+        encodeData();
+        Registry registry=LocateRegistry.getRegistry(1699);
+        try{
+            registry.unbind(SERVICE_NAME);
+            UnicastRemoteObject.unexportObject(this, true);
+        } catch(NotBoundException ex){
+            throw new RemoteException("Could not un-register, quitting anyway...", ex);
+        }
+    }
+
+
 
     private Quiz findQuiz(int id) {
         Quiz existingQuiz = null;
