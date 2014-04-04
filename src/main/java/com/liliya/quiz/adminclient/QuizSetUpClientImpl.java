@@ -4,6 +4,7 @@ import com.liliya.menu.MenuActions;
 import com.liliya.menu.TextMenu;
 import com.liliya.menu.TextMenuItem;
 import com.liliya.quiz.model.*;
+import com.liliya.quiz.model.UserInputManager;
 
 import java.io.*;
 import java.net.MalformedURLException;
@@ -26,6 +27,9 @@ public class QuizSetUpClientImpl implements QuizSetUpClient {
 
     private static List<TextMenuItem> setUpClientMenu = new ArrayList<TextMenuItem>(Arrays.asList(setUpManually,
             setUpFromFile, close, back, quit));
+
+    private UserInputManager userInputManager = new UserInputManager();
+
 
     public static void main(String[] args) {
 
@@ -80,7 +84,7 @@ public class QuizSetUpClientImpl implements QuizSetUpClient {
     @Override
     public void setUpQuizManually() {
 
-        String quizName = requestQuizName();
+        String quizName = userInputManager.provideQuizName();
         try {
             int quizID = quizPlayer.generateQuiz(quizName, setUpQuestionsManually());
             System.out.println("ID for quiz " + quizName + " is: " + quizID);
@@ -91,7 +95,7 @@ public class QuizSetUpClientImpl implements QuizSetUpClient {
 
     @Override
     public void setUpQuizFromFile() {
-        String quizName = requestQuizName();
+        String quizName = userInputManager.provideQuizName();
         try {
             int quizID = quizPlayer.generateQuiz(quizName, setUpQuestionsFromFile());
             System.out.println("ID for quiz " + quizName + " is: " + quizID);
@@ -103,10 +107,7 @@ public class QuizSetUpClientImpl implements QuizSetUpClient {
     @Override
     public void requestQuizClose() {
         try {
-            System.out.print("Enter quiz id: ");
-            Scanner sc1 = new Scanner(System.in);
-            int quizID = sc1.nextInt();
-            PlayerQuizInstance winner = quizPlayer.closeQuiz(quizID);
+            PlayerQuizInstance winner = quizPlayer.closeQuiz(userInputManager.requestQuizId());
             displayQuizWinnerDetails(winner);
         } catch (RemoteException ex) {
             ex.printStackTrace();
@@ -135,33 +136,17 @@ public class QuizSetUpClientImpl implements QuizSetUpClient {
         }
     }
 
-    private String requestQuizName() {
-        String quizName = "";
-        try {
-            System.out.print("Enter quiz name: ");
-            Scanner sc1 = new Scanner(System.in);
-            quizName = sc1.nextLine();
-        } catch (IllegalArgumentException ex) {
-            System.out.println("Please provide a quiz name");
-        }
-        return quizName;
-    }
-
     private Map<Integer, Question> setUpQuestionsManually() {
         Map<Integer, Question> questions = new HashMap<Integer, Question>();
         int correctAnswer = 0;
-        System.out.print("Choose number of questions: ");
-        Scanner sc1 = new Scanner(System.in);
-        int numQuestions = sc1.nextInt();
-        String[] answers = new String[numQuestions];
-        int count = 0;
-        while (count < numQuestions) {
-            Question newQuestion = new QuestionImpl(createQuestion(),
-                    createPossibleAnswers(),
-                    setUpCorrectAnswer(),
-                    setCorrectAnswerPoints());
-            questions.put(count, newQuestion);
-            count++;
+        int countQuestionEntries = userInputManager.setNumberOfQuestions();
+        while (countQuestionEntries > 0) {
+            Question newQuestion = new QuestionImpl(userInputManager.provideQuestion(),
+                    userInputManager.providePossibleAnswers(),
+                    userInputManager.provideCorrectAnswer(),
+                    userInputManager.provideCorrectAnswerPoints());
+            questions.put(countQuestionEntries, newQuestion);
+            countQuestionEntries--;
         }
         return questions;
     }
@@ -174,12 +159,9 @@ public class QuizSetUpClientImpl implements QuizSetUpClient {
         int correctAnswerPoints;
         BufferedReader br = null;
         int lineCount = 0;
-        System.out.print("Please provide a file name: ");
-        Scanner sc1 = new Scanner(System.in);
-        String questionFile = sc1.nextLine();
         try {
             String sCurrentLine;
-            br = new BufferedReader(new FileReader(questionFile));
+            br = new BufferedReader(new FileReader(userInputManager.inputFileName()));
             while ((sCurrentLine = br.readLine()) != null) {
                 Map<Integer, String> possibleAnswers = new HashMap<Integer, String>();
                 String[] questionParts = sCurrentLine.split(",");
@@ -201,54 +183,6 @@ public class QuizSetUpClientImpl implements QuizSetUpClient {
         }
         return questions;
 
-    }
-
-
-    private String createQuestion() {
-        System.out.print("Enter question: ");
-        Scanner sc2 = new Scanner(System.in);
-        return sc2.nextLine();
-    }
-
-    private Map<Integer, String> createPossibleAnswers() {
-        Map<Integer, String> possibleAnswers = new HashMap<Integer, String>();
-        System.out.println("Enter possible answers: ");
-        for (int i = 1; i <= 4; i++) {
-            System.out.print("Possible answer " + i + ":");
-            Scanner sc3 = new Scanner(System.in);
-            String answer = sc3.nextLine();
-            possibleAnswers.put(i, answer);
-        }
-        return possibleAnswers;
-    }
-
-    private int setUpCorrectAnswer() {
-        int correctAnswer = 0;
-        System.out.print("Enter correct answer: ");
-        try {
-            Scanner sc4 = new Scanner(System.in);
-            correctAnswer = sc4.nextInt();
-            if (correctAnswer < 1 || correctAnswer > 4) {
-                //need to double check if exception can be thrown here
-                throw new IllegalArgumentException("Correct answer must be between 1 and 4");
-            }
-        } catch (IllegalArgumentException ex) {
-            System.out.println("You need to enter the number of the correct answer");
-        }
-        return correctAnswer;
-    }
-
-    private int setCorrectAnswerPoints() {
-        int correctAnswerPoints = 0;
-        try {
-            System.out.print("Enter correct answer points: ");
-            Scanner sc5 = new Scanner(System.in);
-            correctAnswerPoints = sc5.nextInt();
-
-        } catch (IllegalArgumentException ex) {
-            System.out.println("Please provide points as a number");
-        }
-        return correctAnswerPoints;
     }
 
 
