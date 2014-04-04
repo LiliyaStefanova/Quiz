@@ -3,10 +3,7 @@ package com.liliya.quiz.playerclient;
 import com.liliya.menu.MenuActions;
 import com.liliya.menu.TextMenu;
 import com.liliya.menu.TextMenuItem;
-import com.liliya.quiz.model.PlayerQuizInstance;
-import com.liliya.quiz.model.Question;
-import com.liliya.quiz.model.Quiz;
-import com.liliya.quiz.model.QuizService;
+import com.liliya.quiz.model.*;
 
 import java.net.MalformedURLException;
 import java.rmi.Naming;
@@ -29,6 +26,9 @@ public class QuizPlayerClientImpl implements QuizPlayerClient {
 
     boolean backToMain = false;
     QuizService quizPlayer = null;
+    String playerName = "";
+
+    UserInputManager userInputManager = new UserInputManager();
 
     public static void main(String[] args) {
         //TODO sort out the security manager
@@ -57,15 +57,15 @@ public class QuizPlayerClientImpl implements QuizPlayerClient {
     }
 
     public void launchMainMenuPlayer() {
+
         do {
-
-            MenuActions action = TextMenu.display("Quiz Play", playerMenu);
-
+            MenuActions action = TextMenu.display("Quiz Player Menu", playerMenu);
             switch (action) {
                 case SELECT_QUIZ_FROM_LIST:
                     playQuiz(selectQuizFromMenu());
                     break;
                 case VIEW_HIGH_SCORES:
+                    userInputManager.providePlayerName();
                     //not implemented yet
                     break;
                 case BACK:
@@ -82,12 +82,16 @@ public class QuizPlayerClientImpl implements QuizPlayerClient {
     @Override
     public int selectQuizFromMenu() {
         int choice = 0;
-
-        System.out.println("Select from the currently available quizzes: ");
+        System.out.print("Select from the currently available quizzes: ");
         try {
+            if (quizPlayer.getListActiveQuizzes().isEmpty()) {
+                System.out.println("There are no quizzes available at this time");
+
+            }
             for (Quiz current : quizPlayer.getListActiveQuizzes()) {
                 System.out.println(current.getQuizId() + ") " + current.getQuizName());
             }
+            System.out.print(">>");
             Scanner sc = new Scanner(System.in);
             choice = sc.nextInt();
         } catch (RemoteException ex) {
@@ -98,13 +102,11 @@ public class QuizPlayerClientImpl implements QuizPlayerClient {
 
     @Override
     public void playQuiz(int id) {
-        System.out.print("Enter your name: ");
-        Scanner sc = new Scanner(System.in);
-        String playerName = sc.nextLine();
+
         try {
 
             PlayerQuizInstance playerQuizInstance = quizPlayer.loadQuiz(id, playerName);
-            Map<Question, Integer> userGuesses = displayQuizToPlayer(playerQuizInstance.getQuiz());
+            Map<Question, Integer> userGuesses = submitAnswersForScoring(playerQuizInstance.getQuiz());
             System.out.print("Thank you for your responses. Your final score is: ");
             System.out.println(quizPlayer.calculateQuizScore(playerQuizInstance, userGuesses));
 
@@ -114,39 +116,20 @@ public class QuizPlayerClientImpl implements QuizPlayerClient {
     }
 
     //TODO quiz to be displayed with numbers starting from 1 not 0
-    private Map<Question, Integer> displayQuizToPlayer(Quiz playingQuiz) {
+    private Map<Question, Integer> submitAnswersForScoring(Quiz playingQuiz) {
         Map<Integer, Question> quizQuestions = playingQuiz.getQuizQuestions();
         Map<Question, Integer> playerGuesses = new HashMap<Question, Integer>();
-        int playerGuess=0;
         for (Map.Entry<Integer, Question> entryQuestion : playingQuiz.getQuizQuestions().entrySet()) {
             System.out.println(entryQuestion.getKey() + ". " + entryQuestion.getValue().getQuestion());
             for (Map.Entry<Integer, String> entryAnswer : entryQuestion.getValue().getPossibleAnswers().entrySet()) {
                 System.out.println(entryAnswer.getKey() + "." + entryAnswer.getValue());
             }
-            do{
-
-                try{
-                System.out.print("Your answer(type the answer number): ");
-                Scanner sc = new Scanner(System.in);
-                playerGuess = sc.nextInt();
-                //TODO check if any of the answers provided are invalid
-
-                playerGuesses.put(entryQuestion.getValue(), playerGuess);
-                } catch(IllegalArgumentException ex){
-                    System.out.println("Answer must be number of the question");
-                }
-            } while(!answerValidationCheck(playerGuess));
+            playerGuesses.put(entryQuestion.getValue(), userInputManager.provideSelectedAnswer());
         }
         return playerGuesses;
     }
 
-    private boolean answerValidationCheck(int answer){
-        boolean correct=true;
-        if(answer<1 || answer>4){
-            correct=false;
-        }
-        return correct;
-    }
 
+    //TODO check if the player has already entered their name and do not ask repeatedly
 
 }
