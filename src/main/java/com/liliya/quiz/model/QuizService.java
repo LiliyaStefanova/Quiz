@@ -64,11 +64,6 @@ public interface QuizService extends Remote {
      */
 
     /**
-     * Loads the file back once the server is restarted
-     */
-    public void reload() throws RemoteException;
-
-    /**
      * Shuts down the server
      * Persists all data on the server to file for reloading
      * @throws RemoteException

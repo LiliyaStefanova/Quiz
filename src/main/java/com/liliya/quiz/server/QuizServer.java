@@ -18,7 +18,7 @@ public class QuizServer extends UnicastRemoteObject implements QuizService, Seri
 
     //list of all players with all quizzes they have taken(including multiple attempts at same one
     //stores quiz id and score
-    private static final String SERVICE_NAME ="quiz";
+    private static final transient String SERVICE_NAME = "quiz";
     private List<PlayerQuizInstance> playerQuizInstances;
     private List<Quiz> allQuizzes;
     private Set<Player> allPlayers;
@@ -26,11 +26,10 @@ public class QuizServer extends UnicastRemoteObject implements QuizService, Seri
     private int quizIDCounter;  //counter which keeps track of the next quiz ID to be assigned
 
     public QuizServer() throws RemoteException {
-
         allQuizzes = new ArrayList<Quiz>();
         allPlayers = new HashSet<Player>();
         playerQuizInstances = new ArrayList<PlayerQuizInstance>();
-        quizIDCounter=0;
+        quizIDCounter = 0;
     }
 
     @Override
@@ -59,7 +58,7 @@ public class QuizServer extends UnicastRemoteObject implements QuizService, Seri
                 curr.setQuizState(false);
             }
         }
-       // return HighScores.getTopQuizScore(id);
+        // return HighScores.getTopQuizScore(id);
         return determineQuizWinner(getAllQuizInstances(id));
     }
 
@@ -81,8 +80,8 @@ public class QuizServer extends UnicastRemoteObject implements QuizService, Seri
         for (PlayerQuizInstance current : playerQuizInstances) {
             if (current.equals(quizInstance)) {
                 quizInstance.setTotalScore(playerQuizInstanceScore);
-                System.out.println("The user score is: "+current.getTotalScore());
-               // HighScores.updateHighScores(current);
+                System.out.println("The user score is: " + current.getTotalScore());
+                // HighScores.updateHighScores(current);
             }
         }
 
@@ -109,76 +108,32 @@ public class QuizServer extends UnicastRemoteObject implements QuizService, Seri
         return newPlayer;
     }
 
-    private void encodeData() {
-
-        XMLEncoder encode = null;
-        try {
-            encode = new XMLEncoder(new BufferedOutputStream(new FileOutputStream("." + File.separator + FILENAME)));
-            encode.writeObject(allQuizzes);
-            encode.writeObject(allPlayers);
-            encode.writeObject(playerQuizInstances);
-            encode.writeObject(quizIDCounter);
-        } catch (FileNotFoundException ex) {
-            System.err.println(ex);
-        } finally {
-            if (encode != null) {
-                encode.close();
-            }
-        }
-    }
-
-    @SuppressWarnings("unchecked")
-    private void decodeData() {
-
-        XMLDecoder decode = null;
-        try {
-            decode = new XMLDecoder(new BufferedInputStream(new FileInputStream("." + File.separator + FILENAME)));
-            allQuizzes = (List<Quiz>) decode.readObject();
-            allPlayers = (Set<Player>) decode.readObject();
-            playerQuizInstances = (List<PlayerQuizInstance>) decode.readObject();
-            quizIDCounter=(Integer) decode.readObject();
-
-        } catch (FileNotFoundException ex) {
-            ex.printStackTrace();
-        } finally {
-            if (decode != null) {
-                decode.close();
-            }
-        }
-    }
-
-
-    @Override
-    public void reload() throws RemoteException {
-        File f = new File("." + File.separator + FILENAME);
-        if (f.exists() && f.length() > 0) {
-            decodeData();
-        } else if (f.exists() && f.length() == 0) {
-            System.out.println("File is empty");
-            //warn user if file exists but is empty
-            //wait for file to be written to
-        } else if (!f.exists()) {
-            try {
-                f.createNewFile();
-            } catch (IOException ex) {
-                ex.printStackTrace();
-            }
-        }
-    }
-
     @Override
     public void shutdown() throws RemoteException {
-        encodeData();
-        Registry registry=LocateRegistry.getRegistry(1699);
-        try{
+        Serializer serializer = new Serializer();
+        serializer.encodeData(this);
+        Registry registry = LocateRegistry.getRegistry(1699);
+        try {
             registry.unbind(SERVICE_NAME);
-            UnicastRemoteObject.unexportObject(this, true);
-        } catch(NotBoundException ex){
+            UnicastRemoteObject.unexportObject(this, false);
+        } catch (NotBoundException ex) {
             throw new RemoteException("Could not un-register, quitting anyway...", ex);
         }
+
+        new Thread() {
+            @Override
+            public void run() {
+                System.out.println("Shutting down...");
+                try {
+                    sleep(2000);
+                } catch (InterruptedException ex) {
+                    //nothing to do here
+                }
+                System.out.println("done");
+                System.exit(0);
+            }
+        }.start();
     }
-
-
 
     private Quiz findQuiz(int id) {
         Quiz existingQuiz = null;
@@ -203,11 +158,11 @@ public class QuizServer extends UnicastRemoteObject implements QuizService, Seri
         return addNewPlayer(name);
     }
 
-    private List<PlayerQuizInstance> getAllQuizInstances(int id){
-        List<PlayerQuizInstance> quizPlayInstances=new ArrayList<PlayerQuizInstance>();
+    private List<PlayerQuizInstance> getAllQuizInstances(int id) {
+        List<PlayerQuizInstance> quizPlayInstances = new ArrayList<PlayerQuizInstance>();
 
-        for(PlayerQuizInstance instance: playerQuizInstances){
-            if(instance.getQuiz().getQuizId()==id){
+        for (PlayerQuizInstance instance : playerQuizInstances) {
+            if (instance.getQuiz().getQuizId() == id) {
                 quizPlayInstances.add(instance);
             }
         }
@@ -217,8 +172,8 @@ public class QuizServer extends UnicastRemoteObject implements QuizService, Seri
 
     private PlayerQuizInstance determineQuizWinner(List<PlayerQuizInstance> quizPlayInstances) {
         int maxScore = 0;
-        PlayerQuizInstance winner= null;
-        if(playerQuizInstances.isEmpty()){
+        PlayerQuizInstance winner = null;
+        if (playerQuizInstances.isEmpty()) {
             return winner;
         }
         winner = Collections.max(quizPlayInstances, new Comparator<PlayerQuizInstance>() {
@@ -296,11 +251,12 @@ public class QuizServer extends UnicastRemoteObject implements QuizService, Seri
 
         try {
             Registry registry = LocateRegistry.createRegistry(1699);
-            QuizService server = new QuizServer();
-            server.reload();
+            Serializer serializer = new Serializer();
+            QuizService server;
+            server = serializer.decodeData();
             String registryHost = "//localhost/";
-            String serviceName = SERVICE_NAME;
-            registry.rebind(serviceName, server);
+            //String serviceName = SERVICE_NAME;
+            registry.rebind(SERVICE_NAME, server);
         } catch (RemoteException ex) {
             ex.printStackTrace();
         } catch (AlreadyBoundException ex) {
