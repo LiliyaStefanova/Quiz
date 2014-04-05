@@ -91,7 +91,9 @@ public class QuizPlayerClientImpl implements QuizPlayerClient {
             for (Quiz current : quizPlayer.getListActiveQuizzes()) {
                 System.out.println(current.getQuizId() + ") " + current.getQuizName());
             }
-            userInputManager.chooseQuiz();
+            System.out.print(">>");
+            Scanner sc = new Scanner(System.in);
+            return sc.nextInt();
         } catch (RemoteException ex) {
             ex.printStackTrace();
         }
@@ -122,12 +124,13 @@ public class QuizPlayerClientImpl implements QuizPlayerClient {
     private Map<Question, Integer> submitAnswersForScoring(Quiz quizPlayed) {
         Map<Integer, Question> quizQuestions = quizPlayed.getQuizQuestions();
         Map<Question, Integer> playerGuesses = new HashMap<Question, Integer>();
-        for (Map.Entry<Integer, Question> currentQuestion : quizQuestions.entrySet()) {
+        for (Map.Entry<Integer, Question> currentQuestion : quizPlayed.getQuizQuestions().entrySet()) {
             System.out.println(currentQuestion.getKey() + ". " + currentQuestion.getValue().getQuestion());
             for (Map.Entry<Integer, String> currentPossibleAnswer : currentQuestion.getValue().getPossibleAnswers().entrySet()) {
                 System.out.println(currentPossibleAnswer.getKey() + "." + currentPossibleAnswer.getValue());
             }
             playerGuesses.put(currentQuestion.getValue(), userInputManager.provideSelectedAnswer());
+
         }
         return playerGuesses;
     }

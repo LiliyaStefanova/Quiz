@@ -33,5 +33,10 @@ public interface QuizPlayerClient {
      */
     public void playQuiz(int id);
 
+    /**
+     * Displays the top score of the user for all quizzes played so far
+     */
+    public void seeTopScore();
+
 
 }

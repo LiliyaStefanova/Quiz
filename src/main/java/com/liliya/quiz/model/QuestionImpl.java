@@ -8,7 +8,7 @@ public class QuestionImpl implements Question, Serializable {
     private String question;
     //key will be 1,2,3,4
     private Map<Integer, String> possibleAnswers;
-    private Integer correctAnswer;
+    private int correctAnswer;
     private int correctAnswerPoints;
 
     public QuestionImpl(){
@@ -75,8 +75,7 @@ public class QuestionImpl implements Question, Serializable {
         QuestionImpl question1 = (QuestionImpl) o;
 
         if (correctAnswerPoints != question1.correctAnswerPoints) return false;
-        if (correctAnswer != null ? !correctAnswer.equals(question1.correctAnswer) : question1.correctAnswer != null)
-            return false;
+        if (correctAnswer != question1.correctAnswer) return false;
         if (possibleAnswers != null ? !possibleAnswers.equals(question1.possibleAnswers) : question1.possibleAnswers != null)
             return false;
         if (question != null ? !question.equals(question1.question) : question1.question != null) return false;
@@ -88,12 +87,8 @@ public class QuestionImpl implements Question, Serializable {
     public int hashCode() {
         int result = question != null ? question.hashCode() : 0;
         result = 31 * result + (possibleAnswers != null ? possibleAnswers.hashCode() : 0);
-        result = 31 * result + (correctAnswer != null ? correctAnswer.hashCode() : 0);
+        result = 31 * result + correctAnswer;
         result = 31 * result + correctAnswerPoints;
         return result;
-    }
-
-    public void setCorrectAnswer(Integer correctAnswer) {
-        this.correctAnswer = correctAnswer;
     }
 }

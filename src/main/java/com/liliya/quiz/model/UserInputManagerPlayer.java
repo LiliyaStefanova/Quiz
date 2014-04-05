@@ -9,12 +9,6 @@ import java.util.Scanner;
 
 public class UserInputManagerPlayer {
 
-   public int chooseQuiz(){
-       System.out.print(">>");
-       Scanner sc = new Scanner(System.in);
-       return sc.nextInt();
-   }
-
     public int provideSelectedAnswer(){
         int playerGuess=0;
         do{

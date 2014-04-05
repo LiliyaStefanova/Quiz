@@ -58,7 +58,6 @@ public class QuizServer extends UnicastRemoteObject implements QuizService, Seri
                 curr.setQuizState(false);
             }
         }
-        // return HighScores.getTopQuizScore(id);
         return determineQuizWinner(getAllQuizInstances(id));
     }
 
@@ -73,7 +72,7 @@ public class QuizServer extends UnicastRemoteObject implements QuizService, Seri
     public synchronized int calculateQuizScore(PlayerQuizInstance quizInstance, Map<Question, Integer> guesses) {
         int playerQuizInstanceScore = 0;
         for (Map.Entry<Question, Integer> entry : guesses.entrySet()) {
-            if (entry.getKey().getCorrectAnswer() == ((entry.getValue()))) {
+            if (entry.getKey().getCorrectAnswer() == entry.getValue()) {
                 playerQuizInstanceScore = playerQuizInstanceScore + entry.getKey().getCorrectAnswerPoints();
             }
         }
@@ -81,7 +80,6 @@ public class QuizServer extends UnicastRemoteObject implements QuizService, Seri
             if (current.equals(quizInstance)) {
                 quizInstance.setTotalScore(playerQuizInstanceScore);
                 System.out.println("The user score is: " + current.getTotalScore());
-                // HighScores.updateHighScores(current);
             }
         }
 
@@ -125,7 +123,7 @@ public class QuizServer extends UnicastRemoteObject implements QuizService, Seri
             public void run() {
                 System.out.println("Shutting down...");
                 try {
-                    sleep(2000);
+                    sleep(500);
                 } catch (InterruptedException ex) {
                     //nothing to do here
                 }
@@ -255,7 +253,6 @@ public class QuizServer extends UnicastRemoteObject implements QuizService, Seri
             QuizService server;
             server = serializer.decodeData();
             String registryHost = "//localhost/";
-            //String serviceName = SERVICE_NAME;
             registry.rebind(SERVICE_NAME, server);
         } catch (RemoteException ex) {
             ex.printStackTrace();
