@@ -4,7 +4,7 @@ import com.liliya.menu.MenuActions;
 import com.liliya.menu.TextMenu;
 import com.liliya.menu.TextMenuItem;
 import com.liliya.quiz.model.*;
-import com.liliya.quiz.model.UserInputManager;
+import com.liliya.quiz.model.UserInputManagerAdmin;
 
 import java.io.*;
 import java.net.MalformedURLException;
@@ -28,7 +28,7 @@ public class QuizSetUpClientImpl implements QuizSetUpClient {
     private static List<TextMenuItem> setUpClientMenu = new ArrayList<TextMenuItem>(Arrays.asList(setUpManually,
             setUpFromFile, close, back, quit));
 
-    private UserInputManager userInputManager = new UserInputManager();
+    private UserInputManagerAdmin userInputManager = new UserInputManagerAdmin();
 
 
     public static void main(String[] args) {
@@ -184,6 +184,5 @@ public class QuizSetUpClientImpl implements QuizSetUpClient {
         return questions;
 
     }
-
 
 }

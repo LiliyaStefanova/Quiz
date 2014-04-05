@@ -28,7 +28,7 @@ public class QuizPlayerClientImpl implements QuizPlayerClient {
     QuizService quizPlayer = null;
     String playerName = "";
 
-    UserInputManager userInputManager = new UserInputManager();
+    UserInputManagerPlayer userInputManager = new UserInputManagerPlayer();
 
     public static void main(String[] args) {
         //TODO sort out the security manager
@@ -65,7 +65,6 @@ public class QuizPlayerClientImpl implements QuizPlayerClient {
                     playQuiz(selectQuizFromMenu());
                     break;
                 case VIEW_HIGH_SCORES:
-                    userInputManager.providePlayerName();
                     //not implemented yet
                     break;
                 case BACK:
@@ -81,19 +80,18 @@ public class QuizPlayerClientImpl implements QuizPlayerClient {
 
     @Override
     public int selectQuizFromMenu() {
+
         int choice = 0;
-        System.out.print("Select from the currently available quizzes: ");
+        System.out.println("Select from the currently available quizzes: ");
         try {
             if (quizPlayer.getListActiveQuizzes().isEmpty()) {
                 System.out.println("There are no quizzes available at this time");
-
+                launchMainMenuPlayer();
             }
             for (Quiz current : quizPlayer.getListActiveQuizzes()) {
                 System.out.println(current.getQuizId() + ") " + current.getQuizName());
             }
-            System.out.print(">>");
-            Scanner sc = new Scanner(System.in);
-            choice = sc.nextInt();
+            userInputManager.chooseQuiz();
         } catch (RemoteException ex) {
             ex.printStackTrace();
         }
@@ -102,33 +100,37 @@ public class QuizPlayerClientImpl implements QuizPlayerClient {
 
     @Override
     public void playQuiz(int id) {
-
+        if(playerName.equals("")){
+            playerName=userInputManager.providePlayerName();
+        }
         try {
-
-            PlayerQuizInstance playerQuizInstance = quizPlayer.loadQuiz(id, playerName);
-            Map<Question, Integer> userGuesses = submitAnswersForScoring(playerQuizInstance.getQuiz());
+            PlayerQuizInstance newInstanceQuizPlayer = quizPlayer.loadQuiz(id, playerName);
+            Map<Question, Integer> userGuesses = submitAnswersForScoring(newInstanceQuizPlayer.getQuiz());
             System.out.print("Thank you for your responses. Your final score is: ");
-            System.out.println(quizPlayer.calculateQuizScore(playerQuizInstance, userGuesses));
+            System.out.println(quizPlayer.calculateQuizScore(newInstanceQuizPlayer, userGuesses));
 
         } catch (RemoteException e) {
             e.printStackTrace();
         }
     }
 
-    //TODO quiz to be displayed with numbers starting from 1 not 0
-    private Map<Question, Integer> submitAnswersForScoring(Quiz playingQuiz) {
-        Map<Integer, Question> quizQuestions = playingQuiz.getQuizQuestions();
+    @Override
+    public void seeTopScore() {
+        //To change body of implemented methods use File | Settings | File Templates.
+    }
+
+    private Map<Question, Integer> submitAnswersForScoring(Quiz quizPlayed) {
+        Map<Integer, Question> quizQuestions = quizPlayed.getQuizQuestions();
         Map<Question, Integer> playerGuesses = new HashMap<Question, Integer>();
-        for (Map.Entry<Integer, Question> entryQuestion : playingQuiz.getQuizQuestions().entrySet()) {
-            System.out.println(entryQuestion.getKey() + ". " + entryQuestion.getValue().getQuestion());
-            for (Map.Entry<Integer, String> entryAnswer : entryQuestion.getValue().getPossibleAnswers().entrySet()) {
-                System.out.println(entryAnswer.getKey() + "." + entryAnswer.getValue());
+        for (Map.Entry<Integer, Question> currentQuestion : quizQuestions.entrySet()) {
+            System.out.println(currentQuestion.getKey() + ". " + currentQuestion.getValue().getQuestion());
+            for (Map.Entry<Integer, String> currentPossibleAnswer : currentQuestion.getValue().getPossibleAnswers().entrySet()) {
+                System.out.println(currentPossibleAnswer.getKey() + "." + currentPossibleAnswer.getValue());
             }
-            playerGuesses.put(entryQuestion.getValue(), userInputManager.provideSelectedAnswer());
+            playerGuesses.put(currentQuestion.getValue(), userInputManager.provideSelectedAnswer());
         }
         return playerGuesses;
     }
-
 
     //TODO check if the player has already entered their name and do not ask repeatedly
 
