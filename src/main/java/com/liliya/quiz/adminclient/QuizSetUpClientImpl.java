@@ -17,7 +17,7 @@ import java.util.*;
 public class QuizSetUpClientImpl implements QuizSetUpClient {
 
     boolean backToMain = false;
-    private QuizService quizPlayer = null;
+    private QuizService quizAdmin = null;
 
     private static final TextMenuItem setUpManually = new TextMenuItem("Set up quiz manually", MenuActions.SET_UP_QUIZ_MANUALLY);
     private static final TextMenuItem setUpFromFile = new TextMenuItem("Set up quiz from file", MenuActions.SET_UP_QUIZ_FROM_FILE);
@@ -41,7 +41,7 @@ public class QuizSetUpClientImpl implements QuizSetUpClient {
     public void connectToServer() {
         try {
             Remote service = Naming.lookup("//127.0.0.1:1699/quiz");
-            quizPlayer = (QuizService) service;
+            quizAdmin = (QuizService) service;
         } catch (MalformedURLException ex) {
             ex.printStackTrace();
         } catch (RemoteException e) {
@@ -86,7 +86,7 @@ public class QuizSetUpClientImpl implements QuizSetUpClient {
 
         String quizName = userInputManager.provideQuizName();
         try {
-            int quizID = quizPlayer.generateQuiz(quizName, setUpQuestionsManually());
+            int quizID = quizAdmin.generateQuiz(quizName, setUpQuestionsManually());
             System.out.println("ID for quiz " + quizName + " is: " + quizID);
         } catch (RemoteException ex) {
             ex.printStackTrace();
@@ -97,7 +97,7 @@ public class QuizSetUpClientImpl implements QuizSetUpClient {
     public void setUpQuizFromFile() {
         String quizName = userInputManager.provideQuizName();
         try {
-            int quizID = quizPlayer.generateQuiz(quizName, setUpQuestionsFromFile());
+            int quizID = quizAdmin.generateQuiz(quizName, setUpQuestionsFromFile());
             System.out.println("ID for quiz " + quizName + " is: " + quizID);
         } catch (RemoteException ex) {
             ex.printStackTrace();
@@ -107,7 +107,7 @@ public class QuizSetUpClientImpl implements QuizSetUpClient {
     @Override
     public void requestQuizClose() {
         try {
-            PlayerQuizInstance winner = quizPlayer.closeQuiz(userInputManager.requestQuizId());
+            PlayerQuizInstance winner = quizAdmin.closeQuiz(userInputManager.requestQuizId());
             displayQuizWinnerDetails(winner);
         } catch (RemoteException ex) {
             ex.printStackTrace();
@@ -119,7 +119,7 @@ public class QuizSetUpClientImpl implements QuizSetUpClient {
     @Override
     public void closeDownProgram() {
         try {
-            quizPlayer.shutdown();
+            quizAdmin.shutdown();
         } catch (RemoteException ex) {
             ex.printStackTrace();
         }

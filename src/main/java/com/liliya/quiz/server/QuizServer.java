@@ -19,6 +19,7 @@ public class QuizServer extends UnicastRemoteObject implements QuizService, Seri
     //list of all players with all quizzes they have taken(including multiple attempts at same one
     //stores quiz id and score
     private static final transient String SERVICE_NAME = "quiz";
+
     private List<PlayerQuizInstance> playerQuizInstances;
     private List<Quiz> allQuizzes;
     private Set<Player> allPlayers;
@@ -78,7 +79,7 @@ public class QuizServer extends UnicastRemoteObject implements QuizService, Seri
         }
         for (PlayerQuizInstance current : playerQuizInstances) {
             if (current.equals(quizInstance)) {
-                quizInstance.setTotalScore(playerQuizInstanceScore);
+                current.setTotalScore(playerQuizInstanceScore);
                 System.out.println("The user score is: " + current.getTotalScore());
             }
         }
