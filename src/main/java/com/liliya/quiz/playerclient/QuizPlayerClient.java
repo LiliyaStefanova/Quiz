@@ -23,7 +23,7 @@ public interface QuizPlayerClient {
      * @return the id of the quiz selected by the player;
      */
 
-    public int selectQuizFromMenu();
+    public int selectQuizToPlay();
 
     /**
      * Launch

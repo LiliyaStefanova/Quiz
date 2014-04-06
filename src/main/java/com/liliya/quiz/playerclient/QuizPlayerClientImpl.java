@@ -28,7 +28,14 @@ public class QuizPlayerClientImpl implements QuizPlayerClient {
     QuizService quizPlayer = null;
     String playerName = "";
 
-    UserInputManagerPlayer userInputManager = new UserInputManagerPlayer();
+    UserInputManagerPlayer userInputManager;
+
+
+    public QuizPlayerClientImpl(UserInputManagerPlayer userInputManager, QuizService server){
+        this.userInputManager=userInputManager;
+        this.quizPlayer=server;
+
+    }
 
     public static void main(String[] args) {
         //TODO sort out the security manager
@@ -36,7 +43,7 @@ public class QuizPlayerClientImpl implements QuizPlayerClient {
             System.setSecurityManager(new RMISecurityManager());
         }
         */
-        QuizPlayerClient newPlayerClient = new QuizPlayerClientImpl();
+        QuizPlayerClient newPlayerClient = new QuizPlayerClientImpl(new UserInputManagerPlayer(), null);
         newPlayerClient.connectToServer();
         newPlayerClient.launchMainMenuPlayer();
 
@@ -62,7 +69,7 @@ public class QuizPlayerClientImpl implements QuizPlayerClient {
             MenuActions action = TextMenu.display("Quiz Player Menu", playerMenu);
             switch (action) {
                 case SELECT_QUIZ_FROM_LIST:
-                    playQuiz(selectQuizFromMenu());
+                    playQuiz(selectQuizToPlay());
                     break;
                 case VIEW_HIGH_SCORES:
                     //not implemented yet
@@ -79,21 +86,20 @@ public class QuizPlayerClientImpl implements QuizPlayerClient {
     }
 
     @Override
-    public int selectQuizFromMenu() {
+    public int selectQuizToPlay() {
 
         int choice = 0;
         System.out.println("Select from the currently available quizzes: ");
         try {
-            if (quizPlayer.getListActiveQuizzes().isEmpty()) {
+            List<Quiz> availableQuizzes = quizPlayer.getListAvailableQuizzes();
+            if (availableQuizzes.isEmpty()) {
                 System.out.println("There are no quizzes available at this time");
                 launchMainMenuPlayer();
             }
-            for (Quiz current : quizPlayer.getListActiveQuizzes()) {
-                System.out.println(current.getQuizId() + ") " + current.getQuizName());
+            for (Quiz current : availableQuizzes) {
+                System.out.println(current.getQuizId() + ". " + current.getQuizName());
             }
-            System.out.print(">>");
-            Scanner sc = new Scanner(System.in);
-            return sc.nextInt();
+            userInputManager.selectQuizToPlayFromList();
         } catch (RemoteException ex) {
             ex.printStackTrace();
         }
@@ -106,10 +112,10 @@ public class QuizPlayerClientImpl implements QuizPlayerClient {
             playerName=userInputManager.providePlayerName();
         }
         try {
-            PlayerQuizInstance newInstanceQuizPlayer = quizPlayer.loadQuiz(id, playerName);
+            PlayerQuizInstance newInstanceQuizPlayer = quizPlayer.loadQuizForPlay(id, playerName);
             Map<Question, Integer> userGuesses = submitAnswersForScoring(newInstanceQuizPlayer.getQuiz());
             System.out.print("Thank you for your responses. Your final score is: ");
-            System.out.println(quizPlayer.calculateQuizScore(newInstanceQuizPlayer, userGuesses));
+            System.out.println(quizPlayer.calculateIndividualScore(newInstanceQuizPlayer, userGuesses));
 
         } catch (RemoteException e) {
             e.printStackTrace();
