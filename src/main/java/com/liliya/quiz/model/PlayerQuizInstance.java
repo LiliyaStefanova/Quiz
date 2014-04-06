@@ -61,4 +61,5 @@ public class PlayerQuizInstance implements Serializable {
     public void setQuiz(Quiz quiz) {
         this.quiz = quiz;
     }
+
 }

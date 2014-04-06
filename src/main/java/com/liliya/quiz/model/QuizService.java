@@ -5,6 +5,7 @@ import java.rmi.Remote;
 import java.rmi.RemoteException;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 /**
  * The server functionality of the quiz system
@@ -51,6 +52,13 @@ public interface QuizService extends Remote {
      * @return list of current quizzes
      */
     public List<Quiz> getListAvailableQuizzes() throws RemoteException;
+
+    /**
+     * Returns a set of all instances of quizzes played by this player for the client to use
+     * @param name
+     * @return set of PlayerQuizInstance
+     */
+    public List<PlayerQuizInstance> getQuizzesPlayedByPlayer(String name) throws RemoteException;
 
     /**
      * Adds new player to the existing list of players

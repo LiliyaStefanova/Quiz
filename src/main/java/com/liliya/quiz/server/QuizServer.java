@@ -95,6 +95,17 @@ public class QuizServer extends UnicastRemoteObject implements QuizService, Seri
     }
 
     @Override
+    public List<PlayerQuizInstance> getQuizzesPlayedByPlayer(String name) throws RemoteException {
+        List<PlayerQuizInstance> quizInstancesForPlayer=new ArrayList<PlayerQuizInstance>();
+        for(PlayerQuizInstance currentInstance:playerQuizInstances){
+            if(currentInstance.getPlayer().getName().equals(name)){
+                quizInstancesForPlayer.add(currentInstance);
+            }
+        }
+        return quizInstancesForPlayer;
+    }
+
+    @Override
     public synchronized Player addNewPlayer(String name) throws RemoteException {
 
         Player newPlayer = new PlayerImpl(name);

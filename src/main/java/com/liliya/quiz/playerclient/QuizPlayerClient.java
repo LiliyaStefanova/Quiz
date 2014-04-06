@@ -38,12 +38,11 @@ public interface QuizPlayerClient {
     /**
      * Displays the top three scores of the user for all quizzes played so far
      */
-    public void seeTopScore();
+    public void viewHighScores();
 
     /**
      * Shuts down the player client process
      */
-
     public void closeDownProgram();
 
 

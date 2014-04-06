@@ -1,5 +1,6 @@
 package com.liliya.quiz.playerclient;
 
+import com.liliya.contactmanager.Meeting;
 import com.liliya.menu.MenuActions;
 import com.liliya.menu.TextMenu;
 import com.liliya.menu.TextMenuItem;
@@ -72,7 +73,7 @@ public class QuizPlayerClientImpl implements QuizPlayerClient {
                     playQuiz(selectQuizToPlay());
                     break;
                 case VIEW_HIGH_SCORES:
-                    //not implemented yet
+                    viewHighScores();
                     break;
                 case BACK:
                     backToMain = true;
@@ -126,8 +127,29 @@ public class QuizPlayerClientImpl implements QuizPlayerClient {
     }
 
     @Override
-    public void seeTopScore() {
-        //To change body of implemented methods use File | Settings | File Templates.
+    public void viewHighScores() {
+        if (playerName.equals("")) {
+            playerName = userInputManager.providePlayerName();
+        }
+        List<PlayerQuizInstance> quizInstancesForPlayer=new ArrayList<PlayerQuizInstance>();
+        List<PlayerQuizInstance> topThreeScores=new ArrayList<PlayerQuizInstance>();
+        try{
+        quizInstancesForPlayer = quizPlayer.getQuizzesPlayedByPlayer(playerName);
+        } catch(RemoteException ex){
+            ex.printStackTrace();
+        }
+        Collections.sort(quizInstancesForPlayer, new Comparator<PlayerQuizInstance>() {
+           @Override
+           public int compare(PlayerQuizInstance o1, PlayerQuizInstance o2) {
+               return o2.getTotalScore()-o1.getTotalScore();
+           }
+       });
+        topThreeScores=quizInstancesForPlayer.subList(0, 3);
+        System.out.println("Top three scores so far: ");
+        for(PlayerQuizInstance currentInstance:topThreeScores){
+            System.out.println(currentInstance.getQuiz().getQuizName() + "-" + currentInstance.getTotalScore() + " points");
+        }
+
     }
 
     @Override
