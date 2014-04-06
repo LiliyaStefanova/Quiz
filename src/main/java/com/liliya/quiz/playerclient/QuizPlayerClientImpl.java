@@ -21,8 +21,9 @@ public class QuizPlayerClientImpl implements QuizPlayerClient {
     private static final TextMenuItem selectFromList = new TextMenuItem("Select quiz", MenuActions.SELECT_QUIZ_FROM_LIST);
     private static final TextMenuItem viewHighScores = new TextMenuItem("View high scores", MenuActions.VIEW_HIGH_SCORES);
     private static final TextMenuItem back = new TextMenuItem("Go Back", MenuActions.BACK);
+    private static final TextMenuItem quit = new TextMenuItem("Quit", MenuActions.QUIT);
 
-    private static List<TextMenuItem> playerMenu = new ArrayList<TextMenuItem>(Arrays.asList(selectFromList, viewHighScores, back));
+    private static List<TextMenuItem> playerMenu = new ArrayList<TextMenuItem>(Arrays.asList(selectFromList, viewHighScores, back, quit));
 
     boolean backToMain = false;
     QuizService quizPlayer = null;
@@ -45,7 +46,7 @@ public class QuizPlayerClientImpl implements QuizPlayerClient {
         */
         QuizPlayerClient newPlayerClient = new QuizPlayerClientImpl(new UserInputManagerPlayer(), null);
         newPlayerClient.connectToServer();
-        newPlayerClient.launchMainMenuPlayer();
+        newPlayerClient.mainMenu();
     }
 
     @Override
@@ -62,8 +63,8 @@ public class QuizPlayerClientImpl implements QuizPlayerClient {
         }
     }
 
-    public void launchMainMenuPlayer() {
-
+    public void mainMenu() {
+        //TODO implement high scores functionality
         do {
             MenuActions action = TextMenu.display("Quiz Player Menu", playerMenu);
             switch (action) {
@@ -75,8 +76,9 @@ public class QuizPlayerClientImpl implements QuizPlayerClient {
                     break;
                 case BACK:
                     backToMain = true;
-                    System.exit(0);
                     break;
+                case QUIT:
+                    closeDownProgram();
                 default:
                     System.out.print("Choose a valid option");
             }
@@ -93,7 +95,7 @@ public class QuizPlayerClientImpl implements QuizPlayerClient {
             List<Quiz> availableQuizzes = quizPlayer.getListAvailableQuizzes();
             if (availableQuizzes.isEmpty()) {
                 System.out.println("There are no quizzes available at this time");
-                launchMainMenuPlayer();
+                mainMenu();
             }
             for (Quiz current : availableQuizzes) {
                 System.out.println(current.getQuizId() + ". " + current.getQuizName());
@@ -116,7 +118,7 @@ public class QuizPlayerClientImpl implements QuizPlayerClient {
             PlayerQuizInstance newInstanceQuizPlayer = quizPlayer.loadQuizForPlay(id, playerName);
             Map<Question, Integer> userGuesses = submitAnswersForScoring(newInstanceQuizPlayer.getQuiz());
             System.out.print("Thank you for your responses. Your final score is: ");
-            System.out.println(quizPlayer.calculateIndividualScore(newInstanceQuizPlayer, userGuesses));
+            System.out.println(quizPlayer.calculatePlayerScore(newInstanceQuizPlayer, userGuesses));
 
         } catch (RemoteException e) {
             e.printStackTrace();
@@ -127,6 +129,13 @@ public class QuizPlayerClientImpl implements QuizPlayerClient {
     public void seeTopScore() {
         //To change body of implemented methods use File | Settings | File Templates.
     }
+
+    @Override
+    public void closeDownProgram() {
+        System.out.println("Goodbye!");
+        System.exit(0);
+    }
+
 
     Map<Question, Integer> submitAnswersForScoring(Quiz quizPlayed) {
         Map<Integer, Question> quizQuestions = quizPlayed.getQuizQuestions();

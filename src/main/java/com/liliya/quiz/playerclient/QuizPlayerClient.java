@@ -12,13 +12,15 @@ public interface QuizPlayerClient {
      */
 
     public void connectToServer();
-    /**
-     * Main menu functionality for the player client
-     */
-    public void launchMainMenuPlayer();
 
     /**
-     * The menu for players to select from active quizzes
+     * Displays menu and launches functionality for the player client
+     */
+    public void mainMenu();
+
+    /**
+     * Retrieves a list of currently available quizzes from the server
+     * Displays list to client and accepts player choice
      *
      * @return the id of the quiz selected by the player;
      */
@@ -26,17 +28,23 @@ public interface QuizPlayerClient {
     public int selectQuizToPlay();
 
     /**
-     * Launch
+     * Takes a quiz id and launches a new quiz game for the player to play
+     * Displays the total score achieved for the quiz at the end of the game
      *
      * @param id of the quiz
-     *
      */
     public void playQuiz(int id);
 
     /**
-     * Displays the top score of the user for all quizzes played so far
+     * Displays the top three scores of the user for all quizzes played so far
      */
     public void seeTopScore();
+
+    /**
+     * Shuts down the player client process
+     */
+
+    public void closeDownProgram();
 
 
 }
