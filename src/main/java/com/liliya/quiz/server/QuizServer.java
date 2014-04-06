@@ -17,8 +17,6 @@ import java.util.logging.Logger;
 
 public class QuizServer extends UnicastRemoteObject implements QuizService, Serializable {
 
-    private static final transient String SERVICE_NAME = "quiz";
-
     private List<PlayerQuizInstance> playerQuizInstances;   //list of all instances of a quiz played, player and score
     private List<Quiz> allQuizzes;
     private Set<Player> allPlayers;
@@ -42,8 +40,6 @@ public class QuizServer extends UnicastRemoteObject implements QuizService, Seri
         quizIDCounter++;        //increment counter for next quiz
         int quizId = newQuiz.getQuizId();
         allQuizzes.add(newQuiz);
-
-        serverLogger.info("There are now " + allQuizzes.size() + " quizzes generated");
 
         return quizId;
     }
@@ -71,7 +67,7 @@ public class QuizServer extends UnicastRemoteObject implements QuizService, Seri
 
     //takes player guesses and calculates and returns score
     @Override
-    public synchronized int calculateIndividualScore(PlayerQuizInstance quizInstance, Map<Question, Integer> guesses) throws RemoteException {
+    public synchronized int calculatePlayerScore(PlayerQuizInstance quizInstance, Map<Question, Integer> guesses) throws RemoteException {
         int playerQuizInstanceScore = 0;
         for (Map.Entry<Question, Integer> entry : guesses.entrySet()) {
             if (entry.getKey().getCorrectAnswer() == entry.getValue()) {
@@ -99,43 +95,18 @@ public class QuizServer extends UnicastRemoteObject implements QuizService, Seri
     }
 
     @Override
-    public synchronized Player addNewPlayer(String name) {
+    public synchronized Player addNewPlayer(String name) throws RemoteException {
 
         Player newPlayer = new PlayerImpl(name);
         allPlayers.add(newPlayer);
-
-        serverLogger.info("There are now " + allPlayers.size() + " players on the server");
 
         return newPlayer;
     }
 
     @Override
-    public void shutdown() throws RemoteException {
+    public void flush() throws RemoteException {
         Serializer serializer = new Serializer();
         serializer.encodeData(this);
-        Registry registry = LocateRegistry.getRegistry(1699);
-        try {
-            registry.unbind(SERVICE_NAME);
-            UnicastRemoteObject.unexportObject(this, false);
-        } catch (NotBoundException ex) {
-            throw new RemoteException("Could not un-register, quitting anyway...", ex);
-        }
-
-        new Thread() {
-            @Override
-            public void run() {
-
-                serverLogger.info("Shutting down...");
-
-                try {
-                    sleep(500);
-                } catch (InterruptedException ex) {
-                    //nothing to do here
-                }
-                serverLogger.info("Done");
-                System.exit(0);
-            }
-        }.start();
     }
 
     Quiz findQuiz(int id) {
@@ -145,13 +116,10 @@ public class QuizServer extends UnicastRemoteObject implements QuizService, Seri
                 existingQuiz = curr;
             }
         }
-        if (existingQuiz != null) {
-            serverLogger.info("Quiz exists");
-        }
         return existingQuiz;
     }
-
-    Player setUpPlayer(String name) {
+    //find the existing player or create a new one
+    Player setUpPlayer(String name) throws RemoteException {
         for (Player curr : allPlayers) {
             if (curr.getName().equals(name)) {
                 return curr;
@@ -253,18 +221,6 @@ public class QuizServer extends UnicastRemoteObject implements QuizService, Seri
 
     public static void main(String[] args) {
         //TODO security manager on the server side
-        try {
-            serverLogger.info("Loading server...");
-            Registry registry = LocateRegistry.createRegistry(1699);
-            Serializer serializer = new Serializer();
-            QuizService server = serializer.decodeData();
-            String registryHost = "//localhost/";
-            registry.rebind(SERVICE_NAME, server);
-        } catch (RemoteException ex) {
-            ex.printStackTrace();
-        } catch (AlreadyBoundException ex) {
-            ex.printStackTrace();
-        }
 
     }
 
