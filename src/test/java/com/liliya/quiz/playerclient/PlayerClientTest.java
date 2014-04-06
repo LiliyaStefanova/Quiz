@@ -1,18 +1,12 @@
-package com.liliya.quiz;
+package com.liliya.quiz.playerclient;
 
-import com.liliya.quiz.adminclient.QuizSetUpClient;
-import com.liliya.quiz.adminclient.QuizSetUpClientImpl;
+import com.liliya.quiz.model.QuizTestData;
 import com.liliya.quiz.model.*;
-import com.liliya.quiz.playerclient.QuizPlayerClient;
-import com.liliya.quiz.playerclient.QuizPlayerClientImpl;
 import org.junit.*;
-import org.junit.Assert.*;
 
 import java.rmi.RemoteException;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import static junit.framework.Assert.assertEquals;
 import static org.mockito.Mockito.mock;
@@ -66,10 +60,10 @@ public class PlayerClientTest {
         playerClient.playQuiz(3);
 
         verify(quizServerMock).loadQuizForPlay(3, "John");
-        verify(quizServerMock).calculateIndividualScore(quizTestData.newInstance,quizTestData.playerGuesses);
+        verify(quizServerMock).calculateIndividualScore(quizTestData.newInstance, quizTestData.playerGuesses);
 
         assertEquals(10, quizServerMock.calculateIndividualScore(quizTestData.newInstance, quizTestData.playerGuesses));
-
+        // TODO why does this test not work with the correct answer value?
 
     }
 

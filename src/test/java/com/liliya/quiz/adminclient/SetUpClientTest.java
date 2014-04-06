@@ -1,7 +1,6 @@
-package com.liliya.quiz;
+package com.liliya.quiz.adminclient;
 
-import com.liliya.quiz.adminclient.QuizSetUpClient;
-import com.liliya.quiz.adminclient.QuizSetUpClientImpl;
+import com.liliya.quiz.model.QuizTestData;
 import com.liliya.quiz.model.*;
 import org.junit.Test;
 

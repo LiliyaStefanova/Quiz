@@ -1,9 +1,10 @@
-package com.liliya.quiz;
+package com.liliya.quiz.model;
 
 
+import com.liliya.quiz.model.Player;
+import com.liliya.quiz.model.PlayerImpl;
 import org.junit.Test;
 import static org.junit.Assert.*;
-import  org.junit.*;
 
 public class PlayerTest {
 

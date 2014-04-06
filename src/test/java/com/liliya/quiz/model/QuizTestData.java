@@ -1,4 +1,4 @@
-package com.liliya.quiz;
+package com.liliya.quiz.model;
 
 import com.liliya.quiz.model.*;
 import com.liliya.quiz.model.PlayerQuizInstance;
@@ -35,7 +35,7 @@ public class QuizTestData {
         newInstance = new PlayerQuizInstance(newPlayer, newQuiz);
         //newInstance.setTotalScore(5);
         playerGuesses=new HashMap<Question, Integer>();
-        playerGuesses.put(question1, 3);
+        playerGuesses.put(question1, 0);
     }
 }
 
