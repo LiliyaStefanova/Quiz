@@ -12,17 +12,19 @@ import java.util.Map;
 
 public interface QuizService extends Remote {
     /**
-     * Creates a new quiz based on a list of questions provided by user
+     * Creates a new quiz based on a list of questions provided by the set up client
      *
+     * @param name      of the quiz specified by the set up client
      * @param questions of the quiz specified by the set up client
      * @return id of the quiz
      */
-    public int generateQuiz(String name, Map<Integer, Question> questions) throws RemoteException;
+    public int createNewQuiz(String name, Map<Integer, Question> questions) throws RemoteException;
 
     /**
      * Stops the quiz instance upon request by set up client
      *
-     * @return list of all players for this quiz instance
+     * @return a PlayerQuizInstance object with the highest score for this quiz
+     *         The object contains the score and details of the player for the set up client to display
      */
     public PlayerQuizInstance closeQuiz(int id) throws RemoteException;
 
@@ -32,42 +34,35 @@ public interface QuizService extends Remote {
      *
      * @return the score of the user at the end of the quiz
      */
-    public PlayerQuizInstance loadQuiz(int id, String name) throws RemoteException;
+    public PlayerQuizInstance loadQuizForPlay(int id, String name) throws RemoteException;
 
     /**
-     * Calculates the total score of a user attempt
+     * Calculates the total score of a user attempt based on guess provided by client
      *
      * @param quizInstance
      * @param guesses
      * @return total score for attempt
      */
-    public int calculateQuizScore(PlayerQuizInstance quizInstance, Map<Question, Integer> guesses) throws RemoteException;
+    public int calculatePlayerScore(PlayerQuizInstance quizInstance, Map<Question, Integer> guesses) throws RemoteException;
 
     /**
-     * Returns a list of current quizzes for the user to choose from
+     * Returns a list of currently available quizzes for the user to choose from
      *
      * @return list of current quizzes
      */
-    public List<Quiz> getListActiveQuizzes() throws RemoteException;
+    public List<Quiz> getListAvailableQuizzes() throws RemoteException;
 
     /**
-     * Adds new player to the existing list
+     * Adds new player to the existing list of players
      *
      * @param name of the player
      */
     public Player addNewPlayer(String name) throws RemoteException;
 
     /**
-     * Returns the list of players who have played a quiz
-     *
-     * @return list of players for quiz
-     */
-
-    /**
-     * Shuts down the server
      * Persists all data on the server to file for reloading
+     *
      * @throws RemoteException
      */
-
-    public void shutdown() throws RemoteException;
+    public void flush() throws RemoteException;
 }
