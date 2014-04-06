@@ -31,9 +31,9 @@ public class QuizPlayerClientImpl implements QuizPlayerClient {
     UserInputManagerPlayer userInputManager;
 
 
-    public QuizPlayerClientImpl(UserInputManagerPlayer userInputManager, QuizService server){
-        this.userInputManager=userInputManager;
-        this.quizPlayer=server;
+    public QuizPlayerClientImpl(UserInputManagerPlayer userInputManager, QuizService server) {
+        this.userInputManager = userInputManager;
+        this.quizPlayer = server;
 
     }
 
@@ -46,7 +46,6 @@ public class QuizPlayerClientImpl implements QuizPlayerClient {
         QuizPlayerClient newPlayerClient = new QuizPlayerClientImpl(new UserInputManagerPlayer(), null);
         newPlayerClient.connectToServer();
         newPlayerClient.launchMainMenuPlayer();
-
     }
 
     @Override
@@ -99,17 +98,19 @@ public class QuizPlayerClientImpl implements QuizPlayerClient {
             for (Quiz current : availableQuizzes) {
                 System.out.println(current.getQuizId() + ". " + current.getQuizName());
             }
-            userInputManager.selectQuizToPlayFromList();
+            choice = userInputManager.selectQuizToPlayFromList();
         } catch (RemoteException ex) {
             ex.printStackTrace();
+        } catch(InputMismatchException ex){
+            throw new RuntimeException("Enter the quiz number", ex);
         }
         return choice;
     }
 
     @Override
     public void playQuiz(int id) {
-        if(playerName.equals("")){
-            playerName=userInputManager.providePlayerName();
+        if (playerName.equals("")) {
+            playerName = userInputManager.providePlayerName();
         }
         try {
             PlayerQuizInstance newInstanceQuizPlayer = quizPlayer.loadQuizForPlay(id, playerName);
@@ -127,13 +128,13 @@ public class QuizPlayerClientImpl implements QuizPlayerClient {
         //To change body of implemented methods use File | Settings | File Templates.
     }
 
-    private Map<Question, Integer> submitAnswersForScoring(Quiz quizPlayed) {
+    Map<Question, Integer> submitAnswersForScoring(Quiz quizPlayed) {
         Map<Integer, Question> quizQuestions = quizPlayed.getQuizQuestions();
         Map<Question, Integer> playerGuesses = new HashMap<Question, Integer>();
         for (Map.Entry<Integer, Question> currentQuestion : quizPlayed.getQuizQuestions().entrySet()) {
             System.out.println(currentQuestion.getKey() + ". " + currentQuestion.getValue().getQuestion());
-            for (Map.Entry<Integer, String> currentPossibleAnswer : currentQuestion.getValue().getPossibleAnswers().entrySet()) {
-                System.out.println(currentPossibleAnswer.getKey() + "." + currentPossibleAnswer.getValue());
+            for (Map.Entry<Integer, String> currentPossAns : currentQuestion.getValue().getPossibleAnswers().entrySet()) {
+                System.out.println(currentPossAns.getKey() + "." + currentPossAns.getValue());
             }
             playerGuesses.put(currentQuestion.getValue(), userInputManager.provideSelectedAnswer());
 
