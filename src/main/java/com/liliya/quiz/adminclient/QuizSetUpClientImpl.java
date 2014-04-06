@@ -16,6 +16,7 @@ import java.util.*;
 
 public class QuizSetUpClientImpl implements QuizSetUpClient {
 
+
     boolean backToMain = false;
     private QuizService quizAdmin = null;
 
@@ -28,12 +29,16 @@ public class QuizSetUpClientImpl implements QuizSetUpClient {
     private static List<TextMenuItem> setUpClientMenu = new ArrayList<TextMenuItem>(Arrays.asList(setUpManually,
             setUpFromFile, close, back, quit));
 
-    private UserInputManagerAdmin userInputManager = new UserInputManagerAdmin();
+    private UserInputManagerAdmin userInputManager;
 
+    public QuizSetUpClientImpl(UserInputManagerAdmin userInputManager, QuizService service) {
+        this.userInputManager = userInputManager;
+        this.quizAdmin = service;
+    }
 
     public static void main(String[] args) {
 
-        QuizSetUpClient suc = new QuizSetUpClientImpl();
+        QuizSetUpClient suc = new QuizSetUpClientImpl(new UserInputManagerAdmin(), null);
         suc.connectToServer();
         suc.menu();
     }
@@ -71,8 +76,6 @@ public class QuizSetUpClientImpl implements QuizSetUpClient {
                     break;
                 case QUIT:
                     closeDownProgram();
-                    System.out.println("Goodbye!");
-                    System.exit(0);
                     break;
                 default:
                     System.out.print("Choose a valid option");
@@ -86,7 +89,7 @@ public class QuizSetUpClientImpl implements QuizSetUpClient {
 
         String quizName = userInputManager.provideQuizName();
         try {
-            int quizID = quizAdmin.generateQuiz(quizName, setUpQuestionsManually());
+            int quizID = quizAdmin.createNewQuiz(quizName, setUpQuestionsManually());
             System.out.println("ID for quiz " + quizName + " is: " + quizID);
         } catch (RemoteException ex) {
             ex.printStackTrace();
@@ -97,7 +100,7 @@ public class QuizSetUpClientImpl implements QuizSetUpClient {
     public void setUpQuizFromFile() {
         String quizName = userInputManager.provideQuizName();
         try {
-            int quizID = quizAdmin.generateQuiz(quizName, setUpQuestionsFromFile());
+            int quizID = quizAdmin.createNewQuiz(quizName, setUpQuestionsFromFile());
             System.out.println("ID for quiz " + quizName + " is: " + quizID);
         } catch (RemoteException ex) {
             ex.printStackTrace();
@@ -118,11 +121,8 @@ public class QuizSetUpClientImpl implements QuizSetUpClient {
 
     @Override
     public void closeDownProgram() {
-        try {
-            quizAdmin.shutdown();
-        } catch (RemoteException ex) {
-            ex.printStackTrace();
-        }
+        System.out.println("Goodbye!");
+        System.exit(0);
     }
 
     private void displayQuizWinnerDetails(PlayerQuizInstance playerWithHighestScore) {
