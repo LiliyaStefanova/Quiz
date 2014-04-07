@@ -110,17 +110,44 @@ public class QuizSetUpClientImpl implements QuizSetUpClient {
     @Override
     public void requestQuizClose() {
         try {
-            PlayerQuizInstance winner = quizAdmin.closeQuiz(userInputManager.requestQuizId());
+            PlayerQuizInstance winner = quizAdmin.closeQuiz(displayActiveQuizzes());
             displayQuizWinnerDetails(winner);
         } catch (RemoteException ex) {
             ex.printStackTrace();
-        } catch (IllegalArgumentException ex) {
-            System.out.print("This quiz does not exist");
-        }
+        } /*catch (NoSuchElementException ex) {
+            System.out.println("This quiz does not exist. Try again...");
+        }*/
     }
 
+    private int displayActiveQuizzes(){
+        int choice = 0;
+        System.out.println("Select from the currently available quizzes: ");
+        try {
+            List<Quiz> availableQuizzes = quizAdmin.getListAvailableQuizzes();
+            if (availableQuizzes.isEmpty()) {
+                System.out.println("There are no quizzes available at this time");
+                menu();
+            }
+            for (Quiz current : availableQuizzes) {
+                System.out.println(current.getQuizId() + ". " + current.getQuizName());
+            }
+            choice = userInputManager.selectQuizToCloseFromList();
+        } catch (RemoteException ex) {
+            ex.printStackTrace();
+        } catch(InputMismatchException ex){
+            throw new RuntimeException("Enter the quiz number", ex);
+        }
+        return choice;
+    }
+
+    //TODO prompt to ask user if sure they want to exit
     @Override
     public void closeDownProgram() {
+        try{
+        quizAdmin.flush();
+        } catch(RemoteException ex){
+            ex.printStackTrace();
+        }
         System.out.println("Goodbye!");
         System.exit(0);
     }

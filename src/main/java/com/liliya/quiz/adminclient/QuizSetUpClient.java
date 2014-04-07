@@ -42,8 +42,10 @@ public interface QuizSetUpClient {
     public void requestQuizClose();
 
     /**
-     * Shuts down the set up client process (also referred to as admin client
+     * Shuts down the set up client process (also referred to as admin client)
+     * Writes all data from server prior to exiting
      */
+    //TODO check if this is impacted by concurrency issues
     public void closeDownProgram();
 
 
