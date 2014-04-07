@@ -3,14 +3,8 @@ package com.liliya.quiz.server;
 
 import com.liliya.quiz.model.*;
 
-import java.beans.XMLEncoder;
-import java.beans.XMLDecoder;
 import java.io.*;
-import java.nio.channels.AlreadyBoundException;
-import java.rmi.NotBoundException;
 import java.rmi.RemoteException;
-import java.rmi.registry.LocateRegistry;
-import java.rmi.registry.Registry;
 import java.rmi.server.UnicastRemoteObject;
 import java.util.*;
 import java.util.logging.Logger;
@@ -40,12 +34,11 @@ public class QuizServer extends UnicastRemoteObject implements QuizService, Seri
         quizIDCounter++;        //increment counter for next quiz
         int quizId = newQuiz.getQuizId();
         allQuizzes.add(newQuiz);
-
+        serverLogger.info(allPlayers.size()+" quizzes created");
         return quizId;
     }
 
     //TODO a quiz cannot be closed if there is a player client still playing it-needs to be figured out-does synchronized fix this?
-    // TODO exception if there are no players of the quiz or it does not exist
 
     @Override
     public synchronized PlayerQuizInstance closeQuiz(int id) throws RemoteException {
@@ -157,7 +150,7 @@ public class QuizServer extends UnicastRemoteObject implements QuizService, Seri
     PlayerQuizInstance determineQuizWinner(List<PlayerQuizInstance> quizPlayInstances) {
         int maxScore = 0;
         PlayerQuizInstance winner = null;
-        if (playerQuizInstances.isEmpty()) {
+        if (quizPlayInstances.isEmpty()) {
             return winner;
         }
         winner = Collections.max(quizPlayInstances, new Comparator<PlayerQuizInstance>() {
