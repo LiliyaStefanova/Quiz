@@ -65,7 +65,6 @@ public class QuizPlayerClientImpl implements QuizPlayerClient {
     }
 
     public void mainMenu() {
-        //TODO implement high scores functionality
         do {
             MenuActions action = TextMenu.display("Quiz Player Menu", playerMenu);
             switch (action) {
@@ -112,7 +111,7 @@ public class QuizPlayerClientImpl implements QuizPlayerClient {
 
     @Override
     public void playQuiz(int id) {
-        if (playerName.equals("")) {
+        while(playerName.equals("")){
             playerName = userInputManager.providePlayerName();
         }
         try {
@@ -125,7 +124,7 @@ public class QuizPlayerClientImpl implements QuizPlayerClient {
             e.printStackTrace();
         }
     }
-
+    //TODO return in a Tree set to avoid duplicates which same quiz,same player and same score
     @Override
     public void viewHighScores() {
         if (playerName.equals("")) {
@@ -158,7 +157,6 @@ public class QuizPlayerClientImpl implements QuizPlayerClient {
         System.exit(0);
     }
 
-
     Map<Question, Integer> submitAnswersForScoring(Quiz quizPlayed) {
         Map<Integer, Question> quizQuestions = quizPlayed.getQuizQuestions();
         Map<Question, Integer> playerGuesses = new HashMap<Question, Integer>();
@@ -172,7 +170,5 @@ public class QuizPlayerClientImpl implements QuizPlayerClient {
         }
         return playerGuesses;
     }
-
-    //TODO check if the player has already entered their name and do not ask repeatedly
 
 }
