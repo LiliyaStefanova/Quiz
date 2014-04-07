@@ -4,7 +4,6 @@ import com.liliya.quiz.model.QuizTestData;
 import com.liliya.quiz.adminclient.QuizSetUpClient;
 import com.liliya.quiz.model.*;
 import com.liliya.quiz.playerclient.QuizPlayerClient;
-import com.liliya.quiz.playerclient.QuizPlayerClientImpl;
 import org.junit.*;
 
 import java.rmi.RemoteException;
@@ -69,7 +68,7 @@ public class QuizServerTest{
 
         PlayerQuizInstance newInstance=quizServer.loadQuizForPlay(quizId, "John");
 
-        assertEquals(6, quizServer.calculateIndividualScore(newInstance, quizTestData.playerGuesses));
+        assertEquals(6, quizServer.calculatePlayerScore(newInstance, quizTestData.playerGuesses));
     }
 
     @Test
@@ -83,13 +82,20 @@ public class QuizServerTest{
         assertEquals("My test quiz", quizServer.getListAvailableQuizzes().get(0).getQuizName());
 
     }
+    //Checks that if there are no quizzes an empty list will be returned
+    public void getListAvailableQuizzesNoQuizTest() throws RemoteException{
+        QuizTestData quizTestData=new QuizTestData();
+        QuizServer quizServer=new QuizServer();
+
+        assertTrue(quizServer.getListAvailableQuizzes().isEmpty());
+    }
 
     /**
      * Checks that if quizzes were all set to inactive nothing will be returned to the client
      * @throws RemoteException
      */
     @Test
-    public void getListAvailableQuizzesEmpty() throws RemoteException{
+    public void getListAvailableQuizzesInactiveOnly() throws RemoteException{
 
         QuizTestData quizTestData=new QuizTestData();
         QuizServer quizServer=new QuizServer();
@@ -98,7 +104,6 @@ public class QuizServerTest{
         quizServer.findQuiz(quizID).setQuizState(false);
 
         assertTrue(quizServer.getListAvailableQuizzes().isEmpty());
-
     }
 
     @Test

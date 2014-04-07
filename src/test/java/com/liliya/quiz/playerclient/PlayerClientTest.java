@@ -6,12 +6,11 @@ import org.junit.*;
 
 import java.rmi.RemoteException;
 import java.util.ArrayList;
+import java.util.InputMismatchException;
 import java.util.List;
 
 import static junit.framework.Assert.assertEquals;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 
 public class PlayerClientTest {
 
@@ -43,6 +42,40 @@ public class PlayerClientTest {
         verify(quizServerMock).getListAvailableQuizzes();
     }
 
+     //TODO need to figure out how to test this
+    @Test
+    public void selectQuizToPlayNoActiveQuizzes() throws RemoteException{
+
+        QuizTestData quizTestData=new QuizTestData();
+
+        UserInputManagerPlayer userInputManagerMock=mock(UserInputManagerPlayer.class);
+        QuizService quizServerMock=mock(QuizService.class);
+
+        QuizPlayerClient playerClient=new QuizPlayerClientImpl(userInputManagerMock, quizServerMock);
+
+        List<Quiz> activeQuizzes=new ArrayList<Quiz>();
+
+        when(quizServerMock.getListAvailableQuizzes()).thenReturn(activeQuizzes);
+
+        playerClient.selectQuizToPlay();
+
+        verify(quizServerMock).getListAvailableQuizzes();
+    }
+    //TODO user choice is not an int or is invalid
+    @Test
+    public void selectQuizToPlayIncorrectUserChoice(){
+
+        QuizTestData quizTestData=new QuizTestData();
+
+        UserInputManagerPlayer userInputManagerMock=mock(UserInputManagerPlayer.class);
+
+        when(userInputManagerMock.selectQuizToPlayFromList()).thenReturn(0);
+
+
+        //doThrow(new InputMismatchException()).when(userInputManagerMock.selectQuizToPlayFromList());
+
+    }
+
     @Test
     public void playQuizTest() throws RemoteException{
 
@@ -55,15 +88,37 @@ public class PlayerClientTest {
 
         when(userInputManagerMock.providePlayerName()).thenReturn("John");
         when(quizServerMock.loadQuizForPlay(3, "John")).thenReturn(quizTestData.newInstance);
-        when(quizServerMock.calculateIndividualScore(quizTestData.newInstance, quizTestData.playerGuesses)).thenReturn(10);
+        when(quizServerMock.calculatePlayerScore(quizTestData.newInstance, quizTestData.playerGuesses)).thenReturn(10);
 
         playerClient.playQuiz(3);
 
         verify(quizServerMock).loadQuizForPlay(3, "John");
-        verify(quizServerMock).calculateIndividualScore(quizTestData.newInstance, quizTestData.playerGuesses);
+        verify(quizServerMock).calculatePlayerScore(quizTestData.newInstance, quizTestData.playerGuesses);
 
-        assertEquals(10, quizServerMock.calculateIndividualScore(quizTestData.newInstance, quizTestData.playerGuesses));
+        assertEquals(10, quizServerMock.calculatePlayerScore(quizTestData.newInstance, quizTestData.playerGuesses));
         // TODO why does this test not work with the correct answer value?
+
+    }
+
+    @Test
+    public void playQuizTestNameNotProvided() throws RemoteException{
+        QuizTestData quizTestData=new QuizTestData();
+
+        UserInputManagerPlayer userInputManagerMock=mock(UserInputManagerPlayer.class);
+        QuizService quizServerMock=mock(QuizService.class);
+
+        QuizPlayerClient playerClient=new QuizPlayerClientImpl(userInputManagerMock, quizServerMock);
+
+        when(userInputManagerMock.providePlayerName()).thenReturn(null);
+        when(quizServerMock.loadQuizForPlay(3, "John")).thenReturn(quizTestData.newInstance);
+        when(quizServerMock.calculatePlayerScore(quizTestData.newInstance, quizTestData.playerGuesses)).thenReturn(10);
+
+        playerClient.playQuiz(3);
+
+        verify(quizServerMock).loadQuizForPlay(3, "John");
+        verify(quizServerMock).calculatePlayerScore(quizTestData.newInstance, quizTestData.playerGuesses);
+
+        assertEquals(10, quizServerMock.calculatePlayerScore(quizTestData.newInstance, quizTestData.playerGuesses));
 
     }
 

@@ -64,7 +64,7 @@ public class QuestionTest {
     @Test
     public void getCorrectAnswer(){
 
-        //assertEquals(0, newQuestion.getCorrectAnswer());
+        assertEquals(0, newQuestion.getCorrectAnswer());
     }
 
     @Test
@@ -80,7 +80,7 @@ public class QuestionTest {
         Question newQuestion=new QuestionImpl(question, possibleAnswers1, correctAnswer, pointsAwarded);
         newQuestion.setCorrectAnswer(1);
 
-       // assertEquals(1, newQuestion.getCorrectAnswer());
+       assertEquals(1, newQuestion.getCorrectAnswer());
     }
 
 
@@ -105,7 +105,5 @@ public class QuestionTest {
 
         assertEquals(10, newQuestion.getCorrectAnswerPoints());
     }
-
-
 
 }
