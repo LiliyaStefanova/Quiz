@@ -24,6 +24,21 @@ public class UserInputManagerAdmin {
         return quizName;
     }
 
+    public int selectQuizToCloseFromList() {
+        int choice = 0;
+        do {
+            try {
+                System.out.print(">>");
+                Scanner sc = new Scanner(System.in);
+                choice = sc.nextInt();
+            } catch (InputMismatchException e) {
+                throw new RuntimeException("You need to enter the quiz number", e);
+            }
+        } while (choice == 0);
+
+        return choice;
+    }
+
     public int setNumberOfQuestions() {
         System.out.print("Choose number of questions: ");
         Scanner sc1 = new Scanner(System.in);
@@ -55,25 +70,24 @@ public class UserInputManagerAdmin {
             Scanner sc4 = new Scanner(System.in);
             correctAnswer = sc4.nextInt();
             if (correctAnswer < 1 || correctAnswer > 4) {
-                //need to double check if exception can be thrown here
                 throw new IllegalArgumentException("Correct answer must be between 1 and 4");
             }
         } catch (IllegalArgumentException ex) {
-            System.out.println("You need to enter the number of the correct answer");
+            throw new RuntimeException("You need to enter the number of the correct answer", ex);
         }
         return correctAnswer;
     }
 
-    public int provideCorrectAnswerPoints() {
+    public int provideCorrectAnswerPoints () {
         int correctAnswerPoints = 0;
-        try {
+            try{
             System.out.print("Enter correct answer points: ");
             Scanner sc5 = new Scanner(System.in);
             correctAnswerPoints = sc5.nextInt();
+            }catch(InputMismatchException ex){
+                    throw new RuntimeException("Answer points must be provided as number", ex);
+                }
 
-        } catch (IllegalArgumentException ex) {
-            System.out.println("Please provide points as a number");
-        }
         return correctAnswerPoints;
     }
 
@@ -85,10 +99,13 @@ public class UserInputManagerAdmin {
     }
 
     public int requestQuizId() {
+        try{
         System.out.print("Enter quiz id: ");
         Scanner sc1 = new Scanner(System.in);
         return sc1.nextInt();
-
+        }catch(InputMismatchException ex){
+            throw new RuntimeException("Quiz id must be number", ex);
+        }
     }
 
     /**

@@ -11,9 +11,16 @@ public class UserInputManagerPlayer {
 
     public int selectQuizToPlayFromList() {
         int choice = 0;
-        System.out.print(">>");
-        Scanner sc = new Scanner(System.in);
-        choice = sc.nextInt();
+        do {
+            try {
+                System.out.print(">>");
+                Scanner sc = new Scanner(System.in);
+                choice = sc.nextInt();
+            } catch (InputMismatchException e) {
+                System.out.println("You need to enter the quiz number");
+            }
+        } while (choice == 0);
+
         return choice;
     }
 
