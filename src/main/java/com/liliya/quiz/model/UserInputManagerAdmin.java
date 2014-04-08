@@ -10,17 +10,17 @@ import java.util.Scanner;
  */
 public class UserInputManagerAdmin {
 
-    //TODO input mismatch exceptions for all applicable methods
-
     public String provideQuizName() {
         String quizName = "";
-        try {
-            System.out.print("Enter quiz name: ");
-            Scanner sc1 = new Scanner(System.in);
-            quizName = sc1.nextLine();
-        } catch (IllegalArgumentException ex) {
-            System.out.println("Please provide a quiz name");
-        }
+        do {
+            try {
+                System.out.print("Enter quiz name: ");
+                Scanner sc1 = new Scanner(System.in);
+                quizName = sc1.nextLine();
+            } catch (IllegalArgumentException ex) {
+                System.out.println("Please provide a quiz name");
+            }
+        } while (quizName.trim().equals(""));
         return quizName;
     }
 
@@ -40,77 +40,106 @@ public class UserInputManagerAdmin {
     }
 
     public int setNumberOfQuestions() {
-        System.out.print("Choose number of questions: ");
-        Scanner sc1 = new Scanner(System.in);
-        return sc1.nextInt();
+        try {
+            System.out.print("Choose number of questions: ");
+            Scanner sc1 = new Scanner(System.in);
+            return sc1.nextInt();
+        } catch (InputMismatchException ex) {
+            throw new RuntimeException("Number of questions required", ex);
+        }
     }
 
     public String provideQuestion() {
-        System.out.print("Enter question: ");
-        Scanner sc2 = new Scanner(System.in);
-        return sc2.nextLine();
+        String question = "";
+        do {
+            try {
+                System.out.print("Enter question: ");
+                Scanner sc2 = new Scanner(System.in);
+                question = sc2.nextLine();
+            } catch (IllegalArgumentException ex) {
+                System.out.println("You must enter a question");
+            }
+        } while (question.trim().equals(""));
+        return question;
     }
 
     public Map<Integer, String> providePossibleAnswers() {
         Map<Integer, String> possibleAnswers = new HashMap<Integer, String>();
+        String answer = "";
         System.out.println("Enter possible answers: ");
         for (int i = 1; i <= 4; i++) {
-            System.out.print("Possible answer " + i + ":");
-            Scanner sc3 = new Scanner(System.in);
-            String answer = sc3.nextLine();
-            possibleAnswers.put(i, answer);
+            do {
+                System.out.print("Possible answer " + i + ":");
+                try {
+
+                    Scanner sc3 = new Scanner(System.in);
+                    answer = sc3.nextLine();
+                } catch (IllegalArgumentException ex) {
+                    System.out.println("Possible answer entry required");
+                }
+                possibleAnswers.put(i, answer);
+
+            } while (answer.trim().equals(""));
         }
         return possibleAnswers;
     }
 
     public int provideCorrectAnswer() {
         int correctAnswer = 0;
-        System.out.print("Enter correct answer: ");
-        try {
-            Scanner sc4 = new Scanner(System.in);
-            correctAnswer = sc4.nextInt();
-            if (correctAnswer < 1 || correctAnswer > 4) {
-                throw new IllegalArgumentException("Correct answer must be between 1 and 4");
+        do {
+            try {
+                System.out.print("Enter correct answer(between 1 and 4): ");
+                Scanner sc4 = new Scanner(System.in);
+                correctAnswer = sc4.nextInt();
+            } catch (IllegalArgumentException ex) {
+                System.out.println("You need to enter the number of the correct answer");
             }
-        } catch (IllegalArgumentException ex) {
-            throw new RuntimeException("You need to enter the number of the correct answer", ex);
-        }
+        } while (correctAnswer < 1 || correctAnswer > 4);
         return correctAnswer;
     }
 
-    public int provideCorrectAnswerPoints () {
+    //a question can never have 0 points for a correct answer
+    public int provideCorrectAnswerPoints() {
         int correctAnswerPoints = 0;
-            try{
-            System.out.print("Enter correct answer points: ");
-            Scanner sc5 = new Scanner(System.in);
-            correctAnswerPoints = sc5.nextInt();
-            }catch(InputMismatchException ex){
-                    throw new RuntimeException("Answer points must be provided as number", ex);
-                }
-
+        do {
+            try {
+                System.out.print("Enter correct answer points: ");
+                Scanner sc5 = new Scanner(System.in);
+                correctAnswerPoints = sc5.nextInt();
+            } catch (InputMismatchException ex) {
+                System.out.println("Answer points must be provided as number");
+            }
+        } while (correctAnswerPoints == 0);
         return correctAnswerPoints;
     }
 
-
     public String inputFileName() {
-        System.out.print("Please provide a file name: ");
-        Scanner sc1 = new Scanner(System.in);
-        return sc1.nextLine();
+        String filename = "";
+        System.out.print("Please provide a file path: ");
+        do {
+            try {
+                Scanner sc1 = new Scanner(System.in);
+                filename = sc1.nextLine();
+            } catch (InputMismatchException ex) {
+                throw new RuntimeException("Invalid file path");
+            }
+        } while (filename.trim().equals(""));
+        return filename;
     }
 
     public int requestQuizId() {
-        try{
         System.out.print("Enter quiz id: ");
-        Scanner sc1 = new Scanner(System.in);
-        return sc1.nextInt();
-        }catch(InputMismatchException ex){
-            throw new RuntimeException("Quiz id must be number", ex);
-        }
+        int quizId = -1;
+        do {
+            try {
+                Scanner sc1 = new Scanner(System.in);
+                quizId = sc1.nextInt();
+            } catch (InputMismatchException ex) {
+                System.out.println("Quiz id must be number");
+            }
+        } while (quizId == -1);
+        return quizId;
     }
-
-    /**
-     * Methods which handle user input for the Player client
-     */
 
 
 }
