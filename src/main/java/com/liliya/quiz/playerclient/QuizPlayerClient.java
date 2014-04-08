@@ -11,7 +11,7 @@ public interface QuizPlayerClient {
      * Looking up and connecting to the remote service
      */
 
-    public void connectToServer();
+    public void connectToService();
 
     /**
      * Displays menu and launches functionality for the player client

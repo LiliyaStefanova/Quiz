@@ -34,7 +34,7 @@ public class UserInputManagerPlayer {
             } catch (InputMismatchException ex) {
                 System.out.println("Answer must be number of the question.Try again!");
             }
-        } while (!answerRangeValidationCheck(playerGuess));
+        } while (!answerRangeValidationCheck(playerGuess) || playerGuess == 0);
 
         return playerGuess;
     }
@@ -48,9 +48,13 @@ public class UserInputManagerPlayer {
     }
 
     public String providePlayerName() {
-        System.out.print("Enter your name: ");
-        Scanner sc = new Scanner(System.in);
-        return sc.nextLine();
+        String name = "";
+        do {
+            System.out.print("Enter your name: ");
+            Scanner sc = new Scanner(System.in);
+            name = sc.nextLine();
+        } while (name.trim().equals(""));
+        return name;
     }
 
 }

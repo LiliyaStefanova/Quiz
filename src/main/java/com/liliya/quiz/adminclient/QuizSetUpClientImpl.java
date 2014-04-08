@@ -17,17 +17,14 @@ import java.util.*;
 public class QuizSetUpClientImpl implements QuizSetUpClient {
 
 
-    boolean backToMain = false;
     private QuizService quizAdmin = null;
 
     private static final TextMenuItem setUpManually = new TextMenuItem("Set up quiz manually", MenuActions.SET_UP_QUIZ_MANUALLY);
     private static final TextMenuItem setUpFromFile = new TextMenuItem("Set up quiz from file", MenuActions.SET_UP_QUIZ_FROM_FILE);
     private static final TextMenuItem close = new TextMenuItem("Close quiz", MenuActions.CLOSE_QUIZ);
-    private static final TextMenuItem back = new TextMenuItem("Go Back", MenuActions.BACK);
     private static final TextMenuItem quit = new TextMenuItem("Quit", MenuActions.QUIT);
 
-    private static List<TextMenuItem> setUpClientMenu = new ArrayList<TextMenuItem>(Arrays.asList(setUpManually,
-            setUpFromFile, close, back, quit));
+    private static List<TextMenuItem> setUpClientMenu = new ArrayList<TextMenuItem>(Arrays.asList(setUpManually,setUpFromFile, close, quit));
 
     private UserInputManagerAdmin userInputManager;
 
@@ -39,11 +36,11 @@ public class QuizSetUpClientImpl implements QuizSetUpClient {
     public static void main(String[] args) {
 
         QuizSetUpClient suc = new QuizSetUpClientImpl(new UserInputManagerAdmin(), null);
-        suc.connectToServer();
+        suc.connectToService();
         suc.menu();
     }
 
-    public void connectToServer() {
+    public void connectToService() {
         try {
             Remote service = Naming.lookup("//127.0.0.1:1699/quiz");
             quizAdmin = (QuizService) service;
@@ -70,10 +67,6 @@ public class QuizSetUpClientImpl implements QuizSetUpClient {
                 case CLOSE_QUIZ:
                     requestQuizClose();
                     break;
-                case BACK:
-                    backToMain = true;
-                    QuizLauncher.launch();
-                    break;
                 case QUIT:
                     closeDownProgram();
                     break;
@@ -81,7 +74,7 @@ public class QuizSetUpClientImpl implements QuizSetUpClient {
                     System.out.print("Choose a valid option");
             }
 
-        } while (!backToMain);
+        } while (true);
     }
 
     @Override

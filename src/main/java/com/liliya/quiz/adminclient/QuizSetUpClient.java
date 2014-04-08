@@ -11,7 +11,7 @@ public interface QuizSetUpClient {
     /**
      * Look up the remote service
      */
-    public void connectToServer();
+    public void connectToService();
 
     /**
      * Displays menu with options for actions the set up user can perform

@@ -1,6 +1,5 @@
 package com.liliya.quiz.playerclient;
 
-import com.liliya.contactmanager.Meeting;
 import com.liliya.menu.MenuActions;
 import com.liliya.menu.TextMenu;
 import com.liliya.menu.TextMenuItem;
@@ -19,19 +18,16 @@ import java.util.*;
 
 public class QuizPlayerClientImpl implements QuizPlayerClient {
 
-    private static final TextMenuItem selectFromList = new TextMenuItem("Select quiz", MenuActions.SELECT_QUIZ_FROM_LIST);
-    private static final TextMenuItem viewHighScores = new TextMenuItem("View high scores", MenuActions.VIEW_HIGH_SCORES);
-    private static final TextMenuItem back = new TextMenuItem("Go Back", MenuActions.BACK);
-    private static final TextMenuItem quit = new TextMenuItem("Quit", MenuActions.QUIT);
+    private static final TextMenuItem selectFromList = new TextMenuItem("SELECT QUIZ TO PLAY", MenuActions.SELECT_QUIZ_FROM_LIST);
+    private static final TextMenuItem viewHighScores = new TextMenuItem("VIEW HIGH SCORES", MenuActions.VIEW_HIGH_SCORES);
+    private static final TextMenuItem quit = new TextMenuItem("QUIT", MenuActions.QUIT);
 
-    private static List<TextMenuItem> playerMenu = new ArrayList<TextMenuItem>(Arrays.asList(selectFromList, viewHighScores, back, quit));
+    private static List<TextMenuItem> playerMenu = new ArrayList<TextMenuItem>(Arrays.asList(selectFromList, viewHighScores, quit));
 
-    boolean backToMain = false;
     QuizService quizPlayer = null;
     String playerName = "";
 
     UserInputManagerPlayer userInputManager;
-
 
     public QuizPlayerClientImpl(UserInputManagerPlayer userInputManager, QuizService server) {
         this.userInputManager = userInputManager;
@@ -46,12 +42,12 @@ public class QuizPlayerClientImpl implements QuizPlayerClient {
         }
         */
         QuizPlayerClient newPlayerClient = new QuizPlayerClientImpl(new UserInputManagerPlayer(), null);
-        newPlayerClient.connectToServer();
+        newPlayerClient.connectToService();
         newPlayerClient.mainMenu();
     }
 
     @Override
-    public void connectToServer() {
+    public void connectToService() {
         try {
             Remote service = Naming.lookup("//127.0.0.1:1699/quiz");
             quizPlayer = (QuizService) service;
@@ -66,7 +62,8 @@ public class QuizPlayerClientImpl implements QuizPlayerClient {
 
     public void mainMenu() {
         do {
-            MenuActions action = TextMenu.display("Quiz Player Menu", playerMenu);
+            System.out.println();
+            MenuActions action = TextMenu.display("QUIZ PLAYER MENU", playerMenu);
             switch (action) {
                 case SELECT_QUIZ_FROM_LIST:
                     playQuiz(selectQuizToPlay());
@@ -74,16 +71,13 @@ public class QuizPlayerClientImpl implements QuizPlayerClient {
                 case VIEW_HIGH_SCORES:
                     viewHighScores();
                     break;
-                case BACK:
-                    backToMain = true;
-                    break;
                 case QUIT:
                     closeDownProgram();
                 default:
                     System.out.print("Choose a valid option");
             }
 
-        } while (!backToMain);
+        } while (true);
     }
 
     @Override
@@ -103,7 +97,7 @@ public class QuizPlayerClientImpl implements QuizPlayerClient {
             choice = userInputManager.selectQuizToPlayFromList();
         } catch (RemoteException ex) {
             ex.printStackTrace();
-        } catch(InputMismatchException ex){
+        } catch (InputMismatchException ex) {
             throw new RuntimeException("Enter the quiz number", ex);
         }
         return choice;
@@ -111,7 +105,7 @@ public class QuizPlayerClientImpl implements QuizPlayerClient {
 
     @Override
     public void playQuiz(int id) {
-        while(playerName.equals("")){
+        while (playerName.equals("")) {
             playerName = userInputManager.providePlayerName();
         }
         try {
@@ -124,28 +118,35 @@ public class QuizPlayerClientImpl implements QuizPlayerClient {
             e.printStackTrace();
         }
     }
-    //TODO return in a Tree set to avoid duplicates which same quiz,same player and same score
+
     @Override
     public void viewHighScores() {
         if (playerName.equals("")) {
             playerName = userInputManager.providePlayerName();
         }
-        List<PlayerQuizInstance> quizInstancesForPlayer=new ArrayList<PlayerQuizInstance>();
-        List<PlayerQuizInstance> topThreeScores=new ArrayList<PlayerQuizInstance>();
-        try{
-        quizInstancesForPlayer = quizPlayer.getQuizzesPlayedByPlayer(playerName);
-        } catch(RemoteException ex){
+        List<PlayerQuizInstance> quizInstancesForPlayer = new ArrayList<PlayerQuizInstance>();
+        List<PlayerQuizInstance> topScores = new ArrayList<PlayerQuizInstance>();
+        try {
+            quizInstancesForPlayer = quizPlayer.getQuizzesPlayedByPlayer(playerName);
+        } catch (RemoteException ex) {
             ex.printStackTrace();
         }
         Collections.sort(quizInstancesForPlayer, new Comparator<PlayerQuizInstance>() {
-           @Override
-           public int compare(PlayerQuizInstance o1, PlayerQuizInstance o2) {
-               return o2.getTotalScore()-o1.getTotalScore();
-           }
-       });
-        topThreeScores=quizInstancesForPlayer.subList(0, 3);
-        System.out.println("Top three scores so far: ");
-        for(PlayerQuizInstance currentInstance:topThreeScores){
+            @Override
+            public int compare(PlayerQuizInstance o1, PlayerQuizInstance o2) {
+                return o2.getTotalScore() - o1.getTotalScore();
+            }
+        });
+        //will return only top 3 scores or all scores if less are available
+        if (quizInstancesForPlayer.size() == 0) {
+            System.out.println("You have not played any quizzes");
+        } else if (quizInstancesForPlayer.size() < 3) {
+            topScores = quizInstancesForPlayer;
+        } else {
+            topScores = quizInstancesForPlayer.subList(0, 3);
+        }
+        System.out.println("Top scores so far: ");
+        for (PlayerQuizInstance currentInstance : topScores) {
             System.out.println(currentInstance.getQuiz().getQuizName() + "-" + currentInstance.getTotalScore() + " points");
         }
 
