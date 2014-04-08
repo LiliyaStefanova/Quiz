@@ -76,6 +76,7 @@ public class QuizPlayerClientImpl implements QuizPlayerClient {
                 default:
                     System.out.print("Choose a valid option");
             }
+            System.out.println();
 
         } while (true);
     }
@@ -85,6 +86,7 @@ public class QuizPlayerClientImpl implements QuizPlayerClient {
 
         int choice = 0;
         System.out.println("Select from the currently available quizzes: ");
+        System.out.println();
         try {
             List<Quiz> availableQuizzes = quizPlayer.getListAvailableQuizzes();
             if (availableQuizzes.isEmpty()) {
@@ -113,6 +115,7 @@ public class QuizPlayerClientImpl implements QuizPlayerClient {
             Map<Question, Integer> userGuesses = submitAnswersForScoring(newInstanceQuizPlayer.getQuiz());
             System.out.print("Thank you for your responses. Your final score is: ");
             System.out.println(quizPlayer.calculatePlayerScore(newInstanceQuizPlayer, userGuesses));
+            System.out.println();
 
         } catch (RemoteException e) {
             e.printStackTrace();
