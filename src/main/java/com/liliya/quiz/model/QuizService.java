@@ -73,4 +73,10 @@ public interface QuizService extends Remote {
      * @throws RemoteException
      */
     public void flush() throws RemoteException;
+
+    /**
+     * Shuts down the server
+     * @throws RemoteException
+     */
+    public void shutDown() throws RemoteException;
 }

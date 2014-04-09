@@ -24,11 +24,11 @@ public class QuizServerLauncher {
 
     private static Logger serverLogger = Logger.getLogger(QuizServer.class.getName());
 
-    private static final TextMenuItem startServer = new TextMenuItem("Launch quiz server", MenuActions.LAUNCH_SERVER);
-    private static final TextMenuItem shutDownServer = new TextMenuItem("Shutdown server", MenuActions.SHUTDOWN_SERVER);
-    private static final TextMenuItem writeToFIle = new TextMenuItem("Write to file", MenuActions.WRITE_TO_FILE);
+    private static final TextMenuItem startServer = new TextMenuItem("LAUNCH SERVER", MenuActions.LAUNCH_SERVER);
+    private static final TextMenuItem writeToFIle = new TextMenuItem("WRITE TO FILE", MenuActions.WRITE_TO_FILE);
+    private static final TextMenuItem quit= new TextMenuItem("QUIT MENU", MenuActions.QUIT);
 
-    private static List<TextMenuItem> serverMenu = new ArrayList<TextMenuItem>(Arrays.asList(startServer, shutDownServer, writeToFIle));
+    private static List<TextMenuItem> serverMenu = new ArrayList<TextMenuItem>(Arrays.asList(startServer, writeToFIle, quit));
 
     private QuizService service;
 
@@ -39,29 +39,28 @@ public class QuizServerLauncher {
     }
 
     public void launchMainMenuServer() {
+        boolean menuActive=true;
 
         do {
-            MenuActions action = TextMenu.display("Quiz Server Menu", serverMenu);
+            MenuActions action = TextMenu.display("QUIZ SERVER MENU", serverMenu);
             switch (action) {
                 case LAUNCH_SERVER:
                     launchServer();
                     break;
-                case SHUTDOWN_SERVER:
+                case WRITE_TO_FILE:
                     try {
                         service.flush();
-                        shutdownServer();
                     } catch (RemoteException ex) {
                         ex.printStackTrace();
                     }
-                    System.exit(0);
                     break;
-                case WRITE_TO_FILE:
-                    //
+                case QUIT:              //can be used to close menu when the server is shut down
+                    menuActive=false;
                     break;
                 default:
                     System.out.print("Choose a valid option");
             }
-        } while (true);
+        } while (menuActive);
     }
 
 
@@ -81,29 +80,4 @@ public class QuizServerLauncher {
         }
     }
 
-    public void shutdownServer() throws RemoteException {
-        Registry registry = LocateRegistry.getRegistry(1699);
-        try {
-            registry.unbind(SERVICE_NAME);
-            UnicastRemoteObject.unexportObject(service, false);
-        } catch (NotBoundException ex) {
-            throw new RemoteException("Could not un-register, quitting anyway...", ex);
-        }
-
-        new Thread() {
-            @Override
-            public void run() {
-
-                serverLogger.info("Shutting down...");
-
-                try {
-                    sleep(500);
-                } catch (InterruptedException ex) {
-                    //nothing to do here
-                }
-                serverLogger.info("Done");
-                System.exit(0);
-            }
-        }.start();
-    }
 }

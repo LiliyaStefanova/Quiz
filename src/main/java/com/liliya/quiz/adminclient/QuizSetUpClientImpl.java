@@ -5,6 +5,7 @@ import com.liliya.menu.TextMenu;
 import com.liliya.menu.TextMenuItem;
 import com.liliya.quiz.model.*;
 import com.liliya.quiz.model.UserInputManagerAdmin;
+import com.liliya.quiz.server.QuizServer;
 
 import java.io.*;
 import java.net.MalformedURLException;
@@ -12,19 +13,29 @@ import java.rmi.Naming;
 import java.rmi.NotBoundException;
 import java.rmi.Remote;
 import java.rmi.RemoteException;
+import java.rmi.registry.LocateRegistry;
+import java.rmi.registry.Registry;
+import java.rmi.server.UnicastRemoteObject;
 import java.util.*;
+import java.util.logging.Logger;
 
 public class QuizSetUpClientImpl implements QuizSetUpClient {
 
 
     private QuizService quizAdmin = null;
 
-    private static final TextMenuItem setUpManually = new TextMenuItem("Set up quiz manually", MenuActions.SET_UP_QUIZ_MANUALLY);
-    private static final TextMenuItem setUpFromFile = new TextMenuItem("Set up quiz from file", MenuActions.SET_UP_QUIZ_FROM_FILE);
-    private static final TextMenuItem close = new TextMenuItem("Close quiz", MenuActions.CLOSE_QUIZ);
-    private static final TextMenuItem quit = new TextMenuItem("Quit", MenuActions.QUIT);
+    private static final String SERVICE_NAME = "quiz";
 
-    private static List<TextMenuItem> setUpClientMenu = new ArrayList<TextMenuItem>(Arrays.asList(setUpManually,setUpFromFile, close, quit));
+    private static Logger serverLogger = Logger.getLogger(QuizServer.class.getName());
+
+    private static final TextMenuItem setUpManually = new TextMenuItem("MANUAL QUIZ SET UP", MenuActions.SET_UP_QUIZ_MANUALLY);
+    private static final TextMenuItem setUpFromFile = new TextMenuItem("SET UP QUIZ FROM FILE", MenuActions.SET_UP_QUIZ_FROM_FILE);
+    private static final TextMenuItem close = new TextMenuItem("CLOSE QUIZ", MenuActions.CLOSE_QUIZ);
+    private static final TextMenuItem shutdownServer=new TextMenuItem("SHUTDOWN SERVER", MenuActions.SHUTDOWN_SERVER);
+    private static final TextMenuItem quit = new TextMenuItem("QUIT", MenuActions.QUIT);
+
+    private static List<TextMenuItem> setUpClientMenu = new ArrayList<TextMenuItem>(Arrays.asList(setUpManually,setUpFromFile, close,
+            shutdownServer,quit));
 
     private UserInputManagerAdmin userInputManager;
 
@@ -56,7 +67,8 @@ public class QuizSetUpClientImpl implements QuizSetUpClient {
     @Override
     public void menu() {
         do {
-            MenuActions action = TextMenu.display("Quiz Administrator", setUpClientMenu);
+            System.out.println();
+            MenuActions action = TextMenu.display("QUIZ ADMINISTRATOR MENU", setUpClientMenu);
             switch (action) {
                 case SET_UP_QUIZ_MANUALLY:
                     setUpQuizManually();
@@ -67,8 +79,11 @@ public class QuizSetUpClientImpl implements QuizSetUpClient {
                 case CLOSE_QUIZ:
                     requestQuizClose();
                     break;
+                case SHUTDOWN_SERVER:
+                    closeDownServer();
+                    break;
                 case QUIT:
-                    closeDownProgram();
+                    closeDownClient();
                     break;
                 default:
                     System.out.print("Choose a valid option");
@@ -112,6 +127,17 @@ public class QuizSetUpClientImpl implements QuizSetUpClient {
         }*/
     }
 
+    @Override
+    public void closeDownServer()  {
+        try{
+            quizAdmin.flush();
+            quizAdmin.shutDown();
+        } catch(RemoteException ex){
+            ex.printStackTrace();
+        }
+    }
+
+
     private int displayActiveQuizzes(){
         int choice = 0;
         System.out.println("Select from the currently available quizzes: ");
@@ -135,12 +161,7 @@ public class QuizSetUpClientImpl implements QuizSetUpClient {
 
     //TODO prompt to ask user if sure they want to exit
     @Override
-    public void closeDownProgram() {
-        try{
-        quizAdmin.flush();
-        } catch(RemoteException ex){
-            ex.printStackTrace();
-        }
+    public void closeDownClient() {
         System.out.println("Goodbye!");
         System.exit(0);
     }

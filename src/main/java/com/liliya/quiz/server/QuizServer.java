@@ -4,7 +4,10 @@ package com.liliya.quiz.server;
 import com.liliya.quiz.model.*;
 
 import java.io.*;
+import java.rmi.NotBoundException;
 import java.rmi.RemoteException;
+import java.rmi.registry.LocateRegistry;
+import java.rmi.registry.Registry;
 import java.rmi.server.UnicastRemoteObject;
 import java.util.*;
 import java.util.logging.Logger;
@@ -16,6 +19,8 @@ public class QuizServer extends UnicastRemoteObject implements QuizService, Seri
     private Set<Player> allPlayers;
     private static final String FILENAME = "server_state.xml";
     private int quizIDCounter;  //keeps track of the next quiz ID to be assigned
+
+    private static final String SERVICE_NAME = "quiz";
 
     private static Logger serverLogger = Logger.getLogger(QuizServer.class.getName());
 
@@ -111,6 +116,33 @@ public class QuizServer extends UnicastRemoteObject implements QuizService, Seri
     public void flush() throws RemoteException {
         Serializer serializer = new Serializer();
         serializer.encodeData(this);
+    }
+
+    @Override
+    public void shutDown() throws RemoteException {
+        try {
+            Registry registry = LocateRegistry.getRegistry(1699);
+            registry.unbind(SERVICE_NAME);
+            UnicastRemoteObject.unexportObject(this, false);
+        } catch (NotBoundException ex) {
+            throw new RemoteException("Could not un-register, quitting anyway...", ex);
+        }
+
+        new Thread() {
+            @Override
+            public void run() {
+
+                serverLogger.info("Shutting down...");
+
+                try {
+                    sleep(500);
+                } catch (InterruptedException ex) {
+                    //nothing to do here
+                }
+                serverLogger.info("Done");
+                System.exit(0);
+            }
+        }.start();
     }
 
     Quiz findQuiz(int id) {
