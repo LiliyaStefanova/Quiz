@@ -35,18 +35,24 @@ public class QuizServer extends UnicastRemoteObject implements QuizService, Seri
     @Override
     public synchronized int createNewQuiz(String name, Map<Integer, Question> questions) throws RemoteException {
 
-        Quiz newQuiz = new QuizImpl(name, questions, quizIDCounter);
-        quizIDCounter++;        //increment counter for next quiz
-        int quizId = newQuiz.getQuizId();
-        allQuizzes.add(newQuiz);
-        serverLogger.info(allPlayers.size()+" quizzes created");
-        return quizId;
+        if (questions == null) {
+            throw new NullPointerException("Questions cannot be null");
+        } else if (questions.isEmpty()) {
+            throw new IllegalArgumentException("Questions cannot be empty");
+        } else {
+            Quiz newQuiz = new QuizImpl(name, questions, quizIDCounter);
+            quizIDCounter++;        //increment counter for next quiz
+            int quizId = newQuiz.getQuizId();
+            allQuizzes.add(newQuiz);
+            serverLogger.info(allPlayers.size() + " quizzes created");
+            return quizId;
+        }
     }
 
     //TODO a quiz cannot be closed if there is a player client still playing it-needs to be figured out-does synchronized fix this?
 
     @Override
-    public synchronized PlayerQuizInstance closeQuiz(int id) throws RemoteException {
+    public synchronized List<PlayerQuizInstance> closeQuiz(int id) throws RemoteException {
 
         //find the quiz to be closed and set it to inactive so other players can't choose it
         for (Quiz curr : allQuizzes) {
@@ -179,13 +185,13 @@ public class QuizServer extends UnicastRemoteObject implements QuizService, Seri
 
     //finds the player with highest score out of all quiz instances
     //TODO functionality to deal with multiple players with the highest score
-    PlayerQuizInstance determineQuizWinner(List<PlayerQuizInstance> quizPlayInstances) {
-        int maxScore = 0;
-        PlayerQuizInstance winner = null;
+    List<PlayerQuizInstance> determineQuizWinner(List<PlayerQuizInstance> quizPlayInstances) {
+        PlayerQuizInstance maxScore = null;
+        List<PlayerQuizInstance> winners=new ArrayList<PlayerQuizInstance>();
         if (quizPlayInstances.isEmpty()) {
-            return winner;
+            return winners;
         }
-        winner = Collections.max(quizPlayInstances, new Comparator<PlayerQuizInstance>() {
+        maxScore = Collections.max(quizPlayInstances, new Comparator<PlayerQuizInstance>() {
             @Override
             public int compare(PlayerQuizInstance o1, PlayerQuizInstance o2) {
                 if (o1.getTotalScore() > o2.getTotalScore()) {
@@ -195,7 +201,13 @@ public class QuizServer extends UnicastRemoteObject implements QuizService, Seri
                 } else return 0;
             }
         });
-        return winner;
+        for(PlayerQuizInstance current:quizPlayInstances){
+            if(maxScore.getTotalScore()==current.getTotalScore()){
+                winners.add(current);
+            }
+        }
+
+        return winners;
     }
 
     @Override

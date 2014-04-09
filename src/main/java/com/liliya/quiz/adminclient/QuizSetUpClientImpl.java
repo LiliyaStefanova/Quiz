@@ -31,11 +31,11 @@ public class QuizSetUpClientImpl implements QuizSetUpClient {
     private static final TextMenuItem setUpManually = new TextMenuItem("MANUAL QUIZ SET UP", MenuActions.SET_UP_QUIZ_MANUALLY);
     private static final TextMenuItem setUpFromFile = new TextMenuItem("SET UP QUIZ FROM FILE", MenuActions.SET_UP_QUIZ_FROM_FILE);
     private static final TextMenuItem close = new TextMenuItem("CLOSE QUIZ", MenuActions.CLOSE_QUIZ);
-    private static final TextMenuItem shutdownServer=new TextMenuItem("SHUTDOWN SERVER", MenuActions.SHUTDOWN_SERVER);
+    private static final TextMenuItem shutdownServer = new TextMenuItem("SHUTDOWN SERVER", MenuActions.SHUTDOWN_SERVER);
     private static final TextMenuItem quit = new TextMenuItem("QUIT", MenuActions.QUIT);
 
-    private static List<TextMenuItem> setUpClientMenu = new ArrayList<TextMenuItem>(Arrays.asList(setUpManually,setUpFromFile, close,
-            shutdownServer,quit));
+    private static List<TextMenuItem> setUpClientMenu = new ArrayList<TextMenuItem>(Arrays.asList(setUpManually, setUpFromFile, close,
+            shutdownServer, quit));
 
     private UserInputManagerAdmin userInputManager;
 
@@ -118,8 +118,8 @@ public class QuizSetUpClientImpl implements QuizSetUpClient {
     @Override
     public void requestQuizClose() {
         try {
-            PlayerQuizInstance winner = quizAdmin.closeQuiz(displayActiveQuizzes());
-            displayQuizWinnerDetails(winner);
+            List<PlayerQuizInstance> winners = quizAdmin.closeQuiz(displayActiveQuizzes());
+            displayQuizWinnerDetails(winners);
         } catch (RemoteException ex) {
             ex.printStackTrace();
         } /*catch (NoSuchElementException ex) {
@@ -128,17 +128,17 @@ public class QuizSetUpClientImpl implements QuizSetUpClient {
     }
 
     @Override
-    public void closeDownServer()  {
-        try{
+    public void closeDownServer() {
+        try {
             quizAdmin.flush();
             quizAdmin.shutDown();
-        } catch(RemoteException ex){
+        } catch (RemoteException ex) {
             ex.printStackTrace();
         }
     }
 
 
-    private int displayActiveQuizzes(){
+    private int displayActiveQuizzes() {
         int choice = 0;
         System.out.println("Select from the currently available quizzes: ");
         try {
@@ -153,7 +153,7 @@ public class QuizSetUpClientImpl implements QuizSetUpClient {
             choice = userInputManager.selectQuizToCloseFromList();
         } catch (RemoteException ex) {
             ex.printStackTrace();
-        } catch(InputMismatchException ex){
+        } catch (InputMismatchException ex) {
             throw new RuntimeException("Enter the quiz number", ex);
         }
         return choice;
@@ -166,14 +166,14 @@ public class QuizSetUpClientImpl implements QuizSetUpClient {
         System.exit(0);
     }
 
-    private void displayQuizWinnerDetails(PlayerQuizInstance playerWithHighestScore) {
+    private void displayQuizWinnerDetails(List<PlayerQuizInstance> playersWithHighestScore) {
         //TODO sort out all exceptions
-        System.out.print("The winner of the game is: ");
-        try {
-            System.out.println(playerWithHighestScore.getPlayer().getName());
-            System.out.println("With a score of: " + playerWithHighestScore.getTotalScore());
-        } catch (NullPointerException ex) {
-            System.out.println("No one has played that quiz");
+        System.out.println("Winner(s) of this quiz: ");
+        if (playersWithHighestScore.isEmpty()) {
+            System.out.println("No one has played this quiz");
+            for (PlayerQuizInstance current : playersWithHighestScore) {
+                System.out.println("Player: " + current.getPlayer().getName() + "\t" + "Total Score: " + current.getTotalScore());
+            }
         }
     }
 
