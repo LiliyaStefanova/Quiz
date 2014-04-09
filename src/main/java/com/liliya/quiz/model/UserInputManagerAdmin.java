@@ -25,7 +25,7 @@ public class UserInputManagerAdmin {
     }
 
     public int selectQuizToCloseFromList() {
-        int choice = 0;
+        int choice = -1;
         do {
             try {
                 System.out.print(">>");
@@ -34,7 +34,7 @@ public class UserInputManagerAdmin {
             } catch (InputMismatchException e) {
                 throw new RuntimeException("You need to enter the quiz number", e);
             }
-        } while (choice == 0);
+        } while (choice == -1);
 
         return choice;
     }

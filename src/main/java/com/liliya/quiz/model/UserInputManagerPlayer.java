@@ -10,7 +10,7 @@ import java.util.Scanner;
 public class UserInputManagerPlayer {
 
     public int selectQuizToPlayFromList() {
-        int choice = 0;
+        int choice = -1;
         do {
             try {
                 System.out.print(">>");
@@ -19,7 +19,7 @@ public class UserInputManagerPlayer {
             } catch (InputMismatchException e) {
                 System.out.println("You need to enter the quiz number");
             }
-        } while (choice == 0);
+        } while (choice == -1);
 
         return choice;
     }
