@@ -167,12 +167,13 @@ public class QuizSetUpClientImpl implements QuizSetUpClient {
     }
 
     private void displayQuizWinnerDetails(List<PlayerQuizInstance> playersWithHighestScore) {
-        //TODO sort out all exceptions
         System.out.println("Winner(s) of this quiz: ");
         if (playersWithHighestScore.isEmpty()) {
             System.out.println("No one has played this quiz");
+        } else {
+            System.out.println("Player" + "\t" + "Total Score");
             for (PlayerQuizInstance current : playersWithHighestScore) {
-                System.out.println("Player: " + current.getPlayer().getName() + "\t" + "Total Score: " + current.getTotalScore());
+                System.out.println(current.getPlayer().getName() + "\t" + current.getTotalScore());
             }
         }
     }

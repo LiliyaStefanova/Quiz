@@ -62,7 +62,6 @@ public class QuizPlayerClientImpl implements QuizPlayerClient {
 
     public void mainMenu() {
         do {
-            System.out.println();
             MenuActions action = TextMenu.display("QUIZ PLAYER MENU", playerMenu);
             switch (action) {
                 case SELECT_QUIZ_FROM_LIST:
@@ -85,12 +84,11 @@ public class QuizPlayerClientImpl implements QuizPlayerClient {
     public int selectQuizToPlay() {
 
         int choice = 0;
-        System.out.println("Select from the currently available quizzes: ");
-        System.out.println();
+        System.out.println("Select from currently available quizzes: ");
         try {
             List<Quiz> availableQuizzes = quizPlayer.getListAvailableQuizzes();
             if (availableQuizzes.isEmpty()) {
-                System.out.println("There are no quizzes available at this time");
+                System.out.println("No quizzes available at this time");
                 mainMenu();
             }
             for (Quiz current : availableQuizzes) {
@@ -102,6 +100,7 @@ public class QuizPlayerClientImpl implements QuizPlayerClient {
         } catch (InputMismatchException ex) {
             throw new RuntimeException("Enter the quiz number", ex);
         }
+        System.out.println();
         return choice;
     }
 
@@ -113,6 +112,7 @@ public class QuizPlayerClientImpl implements QuizPlayerClient {
         try {
             PlayerQuizInstance newInstanceQuizPlayer = quizPlayer.loadQuizForPlay(id, playerName);
             Map<Question, Integer> userGuesses = submitAnswersForScoring(newInstanceQuizPlayer.getQuiz());
+            System.out.println();
             System.out.print("Thank you for your responses. Your final score is: ");
             System.out.println(quizPlayer.calculatePlayerScore(newInstanceQuizPlayer, userGuesses));
             System.out.println();
@@ -121,7 +121,7 @@ public class QuizPlayerClientImpl implements QuizPlayerClient {
             e.printStackTrace();
         }
     }
-
+    //TODO sort out the formatting of the scores
     @Override
     public void viewHighScores() {
         if (playerName.equals("")) {
@@ -149,10 +149,10 @@ public class QuizPlayerClientImpl implements QuizPlayerClient {
             topScores = quizInstancesForPlayer.subList(0, 3);
         }
         System.out.println("Top scores so far: ");
+        System.out.println("Quiz"+ "\t\t\t\t"+ "Score");
         for (PlayerQuizInstance currentInstance : topScores) {
-            System.out.println(currentInstance.getQuiz().getQuizName() + "-" + currentInstance.getTotalScore() + " points");
+            System.out.println(currentInstance.getQuiz().getQuizName() +"\t\t\t\t"+ currentInstance.getTotalScore());
         }
-
     }
 
     @Override
