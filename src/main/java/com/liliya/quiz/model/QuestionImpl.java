@@ -91,4 +91,5 @@ public class QuestionImpl implements Question, Serializable {
         result = 31 * result + correctAnswerPoints;
         return result;
     }
+
 }
