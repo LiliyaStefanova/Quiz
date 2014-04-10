@@ -1,9 +1,10 @@
 package com.liliya.quiz.model;
 
-import java.util.HashMap;
-import java.util.InputMismatchException;
-import java.util.Map;
-import java.util.Scanner;
+import com.liliya.menu.MenuActions;
+import com.liliya.menu.TextMenu;
+import com.liliya.menu.TextMenuItem;
+
+import java.util.*;
 
 /**
  * Methods which handle user input in the Set up client
@@ -142,4 +143,7 @@ public class UserInputManagerAdmin {
     }
 
 
+    public MenuActions showMenu(String menuName, List<TextMenuItem> textMenuItems) {
+        return TextMenu.display(menuName, textMenuItems);
+    }
 }

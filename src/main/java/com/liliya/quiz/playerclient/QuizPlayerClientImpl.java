@@ -48,6 +48,10 @@ public class QuizPlayerClientImpl implements QuizPlayerClient {
 
     @Override
     public void connectToService() {
+
+        /*if(System.getSecurityManager()==null){
+            System.setSecurityManager(new RMISecurityManager());
+        }*/
         try {
             Remote service = Naming.lookup("//127.0.0.1:1699/quiz");
             quizPlayer = (QuizService) service;
@@ -121,7 +125,7 @@ public class QuizPlayerClientImpl implements QuizPlayerClient {
             e.printStackTrace();
         }
     }
-
+    // Returns only top 3 scores or all scores if less are available for a player
     @Override
     public void viewHighScores() {
         List<PlayerQuizInstance> quizInstancesForPlayer = new ArrayList<PlayerQuizInstance>();
@@ -131,10 +135,9 @@ public class QuizPlayerClientImpl implements QuizPlayerClient {
         try {
             quizInstancesForPlayer = quizPlayer.getQuizzesPlayedByPlayer(playerName);
         } catch (RemoteException ex) {
-            ex.printStackTrace();
-        }
+            ex.printStackTrace();}
         System.out.println("Top scores so far: ");
-        System.out.printf("%-15s%-52s\n","Quiz","Score");
+        System.out.printf("%-15s%-15s\n","Quiz","Score");
         System.out.println("---------------------");
         for (PlayerQuizInstance currentInstance : findTopScores(quizInstancesForPlayer)) {
             System.out.printf("%-15s%-15d\n",currentInstance.getQuiz().getQuizName(),currentInstance.getTotalScore());
@@ -147,7 +150,7 @@ public class QuizPlayerClientImpl implements QuizPlayerClient {
         System.exit(0);
     }
 
-    private Map<Question, Integer> submitAnswersForScoring(Quiz quizPlayed) {
+    Map<Question, Integer> submitAnswersForScoring(Quiz quizPlayed) {
         Map<Integer, Question> quizQuestions = quizPlayed.getQuizQuestions();
         Map<Question, Integer> playerGuesses = new HashMap<Question, Integer>();
         for (Map.Entry<Integer, Question> currentQuestion : quizPlayed.getQuizQuestions().entrySet()) {
@@ -161,8 +164,7 @@ public class QuizPlayerClientImpl implements QuizPlayerClient {
         return playerGuesses;
     }
 
-    // Returns only top 3 scores or all scores if less are available for a player
-    private List<PlayerQuizInstance> findTopScores(List<PlayerQuizInstance> quizInstancesForPlayer) {
+    List<PlayerQuizInstance> findTopScores(List<PlayerQuizInstance> quizInstancesForPlayer) {
 
         List<PlayerQuizInstance> topScores = new ArrayList<PlayerQuizInstance>();
 

@@ -9,10 +9,7 @@ import com.liliya.quiz.server.QuizServer;
 
 import java.io.*;
 import java.net.MalformedURLException;
-import java.rmi.Naming;
-import java.rmi.NotBoundException;
-import java.rmi.Remote;
-import java.rmi.RemoteException;
+import java.rmi.*;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
 import java.rmi.server.UnicastRemoteObject;
@@ -52,6 +49,10 @@ public class QuizSetUpClientImpl implements QuizSetUpClient {
     }
 
     public void connectToService() {
+
+        /*if(System.getSecurityManager()==null){
+            System.setSecurityManager(new RMISecurityManager());
+        }*/
         try {
             Remote service = Naming.lookup("//127.0.0.1:1699/quiz");
             quizAdmin = (QuizService) service;
@@ -68,7 +69,8 @@ public class QuizSetUpClientImpl implements QuizSetUpClient {
     public void menu() {
         do {
             System.out.println();
-            MenuActions action = TextMenu.display("QUIZ ADMINISTRATOR MENU", setUpClientMenu);
+//            MenuActions action = TextMenu.display("QUIZ ADMINISTRATOR MENU", setUpClientMenu);
+            MenuActions action = userInputManager.showMenu("QUIZ ADMINISTRATOR MENU", setUpClientMenu);
             switch (action) {
                 case SET_UP_QUIZ_MANUALLY:
                     setUpQuizManually();
@@ -121,10 +123,7 @@ public class QuizSetUpClientImpl implements QuizSetUpClient {
             List<PlayerQuizInstance> winners = quizAdmin.closeQuiz(displayActiveQuizzes());
             displayQuizWinnerDetails(winners);
         } catch (RemoteException ex) {
-            ex.printStackTrace();
-        } /*catch (NoSuchElementException ex) {
-            System.out.println("This quiz does not exist. Try again...");
-        }*/
+            ex.printStackTrace();}
     }
 
     @Override
@@ -166,19 +165,20 @@ public class QuizSetUpClientImpl implements QuizSetUpClient {
         System.exit(0);
     }
 
-    private void displayQuizWinnerDetails(List<PlayerQuizInstance> playersWithHighestScore) {
+     void displayQuizWinnerDetails(List<PlayerQuizInstance> playersWithHighestScore) {
         System.out.println("Winner(s) of this quiz: ");
         if (playersWithHighestScore.isEmpty()) {
             System.out.println("No one has played this quiz");
         } else {
-            System.out.println("Player" + "\t" + "Total Score");
+            System.out.printf("%-15s%-15s\n","Player","Total Score");
             for (PlayerQuizInstance current : playersWithHighestScore) {
-                System.out.println(current.getPlayer().getName() + "\t" + current.getTotalScore());
+                System.out.println();
+                System.out.printf("%-15s%-15d\n",current.getPlayer().getName(), current.getTotalScore());
             }
         }
     }
 
-    private Map<Integer, Question> setUpQuestionsManually() {
+    Map<Integer, Question> setUpQuestionsManually() {
         Map<Integer, Question> questions = new HashMap<Integer, Question>();
         int correctAnswer = 0;
         int countQuestionEntries = userInputManager.setNumberOfQuestions();
@@ -193,7 +193,7 @@ public class QuizSetUpClientImpl implements QuizSetUpClient {
         return questions;
     }
 
-    private Map<Integer, Question> setUpQuestionsFromFile() {
+    Map<Integer, Question> setUpQuestionsFromFile() {
 
         Map<Integer, Question> questions = new HashMap<Integer, Question>();
         String question;
