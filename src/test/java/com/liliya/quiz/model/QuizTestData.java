@@ -4,7 +4,9 @@ import com.liliya.quiz.model.*;
 import com.liliya.quiz.model.PlayerQuizInstance;
 import com.liliya.quiz.model.Question;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 public class QuizTestData {
@@ -18,6 +20,7 @@ public class QuizTestData {
     public Quiz newQuiz;
     public PlayerQuizInstance newInstance;
     public Map<Question, Integer> playerGuesses;
+    public List<PlayerQuizInstance> instancesPerPlayer;
 
     public QuizTestData() {
 
@@ -47,6 +50,10 @@ public class QuizTestData {
         playerGuesses=new HashMap<Question, Integer>();
         playerGuesses.put(question1, 3);
         playerGuesses.put(question2, 1);
+
+        instancesPerPlayer=new ArrayList<PlayerQuizInstance>();
+        instancesPerPlayer.add(newInstance);
+
     }
 }
 
