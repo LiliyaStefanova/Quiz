@@ -75,7 +75,7 @@ public class QuizPlayerClientImpl implements QuizPlayerClient {
                 default:
                     System.out.print("Choose a valid option");
             }
-            System.out.println();
+
 
         } while (true);
     }
@@ -121,37 +121,23 @@ public class QuizPlayerClientImpl implements QuizPlayerClient {
             e.printStackTrace();
         }
     }
-    //TODO sort out the formatting of the scores
+
     @Override
     public void viewHighScores() {
+        List<PlayerQuizInstance> quizInstancesForPlayer = new ArrayList<PlayerQuizInstance>();
         if (playerName.equals("")) {
             playerName = userInputManager.providePlayerName();
         }
-        List<PlayerQuizInstance> quizInstancesForPlayer = new ArrayList<PlayerQuizInstance>();
-        List<PlayerQuizInstance> topScores = new ArrayList<PlayerQuizInstance>();
         try {
             quizInstancesForPlayer = quizPlayer.getQuizzesPlayedByPlayer(playerName);
         } catch (RemoteException ex) {
             ex.printStackTrace();
         }
-        Collections.sort(quizInstancesForPlayer, new Comparator<PlayerQuizInstance>() {
-            @Override
-            public int compare(PlayerQuizInstance o1, PlayerQuizInstance o2) {
-                return o2.getTotalScore() - o1.getTotalScore();
-            }
-        });
-        //will return only top 3 scores or all scores if less are available
-        if (quizInstancesForPlayer.size() == 0) {
-            System.out.println("You have not played any quizzes");
-        } else if (quizInstancesForPlayer.size() < 3) {
-            topScores = quizInstancesForPlayer;
-        } else {
-            topScores = quizInstancesForPlayer.subList(0, 3);
-        }
         System.out.println("Top scores so far: ");
-        System.out.println("Quiz"+ "\t\t\t\t"+ "Score");
-        for (PlayerQuizInstance currentInstance : topScores) {
-            System.out.println(currentInstance.getQuiz().getQuizName() +"\t\t\t\t"+ currentInstance.getTotalScore());
+        System.out.printf("%-15s%-52s\n","Quiz","Score");
+        System.out.println("---------------------");
+        for (PlayerQuizInstance currentInstance : findTopScores(quizInstancesForPlayer)) {
+            System.out.printf("%-15s%-15d\n",currentInstance.getQuiz().getQuizName(),currentInstance.getTotalScore());
         }
     }
 
@@ -161,7 +147,7 @@ public class QuizPlayerClientImpl implements QuizPlayerClient {
         System.exit(0);
     }
 
-    Map<Question, Integer> submitAnswersForScoring(Quiz quizPlayed) {
+    private Map<Question, Integer> submitAnswersForScoring(Quiz quizPlayed) {
         Map<Integer, Question> quizQuestions = quizPlayed.getQuizQuestions();
         Map<Question, Integer> playerGuesses = new HashMap<Question, Integer>();
         for (Map.Entry<Integer, Question> currentQuestion : quizPlayed.getQuizQuestions().entrySet()) {
@@ -173,6 +159,27 @@ public class QuizPlayerClientImpl implements QuizPlayerClient {
 
         }
         return playerGuesses;
+    }
+
+    // Returns only top 3 scores or all scores if less are available for a player
+    private List<PlayerQuizInstance> findTopScores(List<PlayerQuizInstance> quizInstancesForPlayer) {
+
+        List<PlayerQuizInstance> topScores = new ArrayList<PlayerQuizInstance>();
+
+        Collections.sort(quizInstancesForPlayer, new Comparator<PlayerQuizInstance>() {
+            @Override
+            public int compare(PlayerQuizInstance o1, PlayerQuizInstance o2) {
+                return o2.getTotalScore() - o1.getTotalScore();
+            }
+        });
+        if (quizInstancesForPlayer.size() == 0) {
+            System.out.println("You have not played any quizzes");
+        } else if (quizInstancesForPlayer.size() < 3) {
+            topScores = quizInstancesForPlayer;
+        } else {
+            topScores = quizInstancesForPlayer.subList(0, 3);
+        }
+        return topScores;
     }
 
 }

@@ -11,6 +11,7 @@ public class TextMenu  {
         MenuActions input=null;
         int choice=0;
         System.out.println(title);
+        System.out.println("------------------------");
         for(TextMenuItem item: menu){
             System.out.println(menu.indexOf(item)+"."+item.getTitle());
         }
