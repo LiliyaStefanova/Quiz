@@ -56,4 +56,18 @@ public interface Quiz {
      * @param state
      */
     public void setQuizState(boolean state);
+
+    /**
+     * Returns true or false depending on whether the quiz is set as currently being played
+     * @return true or false
+     */
+
+    public boolean isQuizPlayed();
+
+    /**
+     * Sets the status of the quiz to currently being played; this will help prevent it from being closed too early
+     * @param quizPlayed
+     */
+
+    public void setQuizPlayed(boolean quizPlayed);
 }

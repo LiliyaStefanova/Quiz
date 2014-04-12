@@ -69,7 +69,6 @@ public class QuizSetUpClientImpl implements QuizSetUpClient {
     public void menu() {
         do {
             System.out.println();
-//            MenuActions action = TextMenu.display("QUIZ ADMINISTRATOR MENU", setUpClientMenu);
             MenuActions action = userInputManager.showMenu("QUIZ ADMINISTRATOR MENU", setUpClientMenu);
             switch (action) {
                 case SET_UP_QUIZ_MANUALLY:
@@ -120,10 +119,23 @@ public class QuizSetUpClientImpl implements QuizSetUpClient {
     @Override
     public void requestQuizClose() {
         try {
-            List<PlayerQuizInstance> winners = quizAdmin.closeQuiz(displayActiveQuizzes());
+            int quizIDSelected=displayActiveQuizzes();
+            if(quizIDSelected==-1){
+                return;
+            }
+            if(quizAdmin.checkQuizPlayed(quizIDSelected)){
+                System.out.println("Players are still playing the quiz. Try again later.");
+            }
+            while(quizAdmin.checkQuizPlayed(quizIDSelected)){
+                Thread.sleep(1000);
+            }
+            List<PlayerQuizInstance> winners = quizAdmin.closeQuiz(quizIDSelected);
             displayQuizWinnerDetails(winners);
         } catch (RemoteException ex) {
             ex.printStackTrace();}
+          catch( InterruptedException ex){
+              ex.printStackTrace();
+          }
     }
 
     @Override
@@ -144,7 +156,7 @@ public class QuizSetUpClientImpl implements QuizSetUpClient {
             List<Quiz> availableQuizzes = quizAdmin.getListAvailableQuizzes();
             if (availableQuizzes.isEmpty()) {
                 System.out.println("There are no quizzes available at this time");
-                menu();
+                return -1;
             }
             for (Quiz current : availableQuizzes) {
                 System.out.println(current.getQuizId() + ". " + current.getQuizName());

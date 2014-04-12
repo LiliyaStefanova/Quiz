@@ -44,7 +44,6 @@ public class QuizServer extends UnicastRemoteObject implements QuizService, Seri
             quizIDCounter++;        //increment counter for next quiz
             int quizId = newQuiz.getQuizId();
             allQuizzes.add(newQuiz);
-            serverLogger.info(allPlayers.size() + " quizzes created");
             return quizId;
         }
     }
@@ -57,15 +56,29 @@ public class QuizServer extends UnicastRemoteObject implements QuizService, Seri
         //find the quiz to be closed and set it to inactive so other players can't choose it
         for (Quiz curr : allQuizzes) {
             if (curr.getQuizId() == id) {
+                if(!curr.getQuizState()){
+                    throw new IllegalStateException("This quiz has already been closed");
+                }
                 curr.setQuizState(false);
             }
         }
-        return determineQuizWinner(getAllQuizInstances(id));
+        return determineQuizWinner(getAllQuizInstances(id));    //find list of all winners for a quiz
+    }
+
+    public boolean checkQuizPlayed(int id){
+        for(PlayerQuizInstance current: getAllQuizInstances(id)){
+            if(current.getQuiz().isQuizPlayed()){
+                return true;
+            }
+        }
+        return false;
     }
 
     public synchronized PlayerQuizInstance loadQuizForPlay(int id, String name) throws RemoteException {
         PlayerQuizInstance newQuizPlayerInstance = new PlayerQuizInstance(setUpPlayer(name), findQuiz(id));
+        newQuizPlayerInstance.getQuiz().setQuizPlayed(true);
         playerQuizInstances.add(newQuizPlayerInstance);
+
         return newQuizPlayerInstance;
     }
 
@@ -81,6 +94,7 @@ public class QuizServer extends UnicastRemoteObject implements QuizService, Seri
         for (PlayerQuizInstance current : playerQuizInstances) {
             if (current.equals(quizInstance)) {
                 current.setTotalScore(playerQuizInstanceScore);
+                current.getQuiz().setQuizPlayed(false);
             }
         }
 
@@ -265,11 +279,6 @@ public class QuizServer extends UnicastRemoteObject implements QuizService, Seri
 
     public void setQuizIDCounter(int quizIDCounter) {
         this.quizIDCounter = quizIDCounter;
-    }
-
-    public static void main(String[] args) {
-        //TODO security manager on the server side
-
     }
 
 }
