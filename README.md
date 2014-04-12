@@ -22,31 +22,31 @@
 
 Available features:
 
-| Feature                       | Functionality
+| Feature| Functionality
 
-| ----------------------------- |------------- -----------------------------
+| -------- |-------------
 
-| Manual quiz set up            | Key in data to create quiz; Follow menu to enter all data
+| Manual quiz set up | Key in data to create quiz; Follow menu to enter all data
 
-| Quiz set up from file         | Load quiz data from file; Provide quiz name and absolute file path
+| Quiz set up from file | Load quiz data from file; Provide quiz name and absolute file path
 
-| Close a quiz                  | Close an active quiz and see winner;Choose quiz to close from list
+| Close a quiz|Close an active quiz and see winner;Choose quiz to close from list
 
 | Save to file/ shut down server| Save server state to file and shut it down
 
-| Quit client                   | Close down the client application
+| Quit client | Close down the client application
 
 
 #### Quiz Playing
 
 Available features:
 
-| Feature                       | Functionality
+| Feature| Functionality
 
-| ----------------------------- |------------- -----------------------------
+| -------|-------------
 
-| Play quiz                     | Provide a list of active quizzes to choose from; loads quiz selected; displays final score
+| Play quiz| Provide a list of active quizzes to choose from; loads quiz selected; displays final score
 
-| View high scores              | Show the top 3 high scores or all scores(if less than 3) of the player
+| View high scores | Show the top 3 high scores or all scores(if less than 3) of the player
 
-| Quit                          | Close down the client application
+| Quit | Close down the client application
