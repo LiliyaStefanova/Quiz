@@ -1,13 +1,22 @@
-Quiz
+Quiz-Programming in Java Assignment III
 ====
 
-Programming in Java Assignment III
+# How to run the "Quiz System"
 
-Welcome
+## Get Started
 
-Instructions for running the "Quiz System"
+**Launching the server**
 
-Step 1: Run the QuizServerLauncher file
-Step 2: Choose launch server-Option 0 from the menu
-Step 3: Run the QuizSetUpClientImpl file
-Step 4: Run the QuizPlayerClientImpl file as required to launch new player clients
+**1** Run the QuizServerLauncher.java file
+**2** Choose Option 0.LAUNCH SERVER from the menu. You must type the option number
+
+**Launching the set up/administrator client **
+**3** Run the QuizSetUpClientImpl.java file. Run as many times as required for new clients
+
+**Launching the player client **
+**4** Run the QuizPlayerClientImpl.java file for each new player
+
+## Quiz Administration
+
+## Quiz Playing
+
