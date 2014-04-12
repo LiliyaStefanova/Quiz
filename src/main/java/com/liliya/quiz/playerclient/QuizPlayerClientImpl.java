@@ -64,7 +64,7 @@ public class QuizPlayerClientImpl implements QuizPlayerClient {
 
     public void mainMenu() {
         do {
-            MenuActions action = userInputManager.showMenu("QUIZ ADMINISTRATOR MENU", playerMenu);
+            MenuActions action = userInputManager.showMenu("QUIZ PLAYER MENU", playerMenu);
             switch (action) {
                 case SELECT_QUIZ_FROM_LIST:
                     playQuiz(selectQuizToPlay());
@@ -113,9 +113,8 @@ public class QuizPlayerClientImpl implements QuizPlayerClient {
         try {
             PlayerQuizInstance newInstanceQuizPlayer = quizPlayer.loadQuizForPlay(id, playerName);
             Map<Question, Integer> userGuesses = submitAnswersForScoring(newInstanceQuizPlayer.getQuiz());
-            System.out.println();
-            System.out.print("Thank you for your responses. Your final score is: ");
-            System.out.println(quizPlayer.calculatePlayerScore(newInstanceQuizPlayer, userGuesses));
+            System.out.print("\nThank you for your responses. Your final score is: "+
+            quizPlayer.calculatePlayerScore(newInstanceQuizPlayer, userGuesses));
             System.out.println();
 
         } catch (RemoteException e) {
@@ -136,11 +135,12 @@ public class QuizPlayerClientImpl implements QuizPlayerClient {
             ex.printStackTrace();
         }
         System.out.println("Top scores so far: ");
-        System.out.printf("%-15s%-15s\n", "Quiz", "Score");
-        System.out.println("---------------------");
+        System.out.printf("%-20s%-15s%n", "Quiz", "Score");
+        System.out.println("----------------------------");
         for (PlayerQuizInstance currentInstance : findTopScores(quizInstancesForPlayer)) {
-            System.out.printf("%-15s%-15d\n", currentInstance.getQuiz().getQuizName(), currentInstance.getTotalScore());
+            System.out.printf("%-20s%-15d%n", currentInstance.getQuiz().getQuizName(), currentInstance.getTotalScore());
         }
+        System.out.println();
     }
 
     @Override
@@ -152,9 +152,9 @@ public class QuizPlayerClientImpl implements QuizPlayerClient {
     Map<Question, Integer> submitAnswersForScoring(Quiz quizPlayed) {
         Map<Question, Integer> playerGuesses = new HashMap<Question, Integer>();
         for (Map.Entry<Integer, Question> currentQuestion : quizPlayed.getQuizQuestions().entrySet()) {
-            System.out.println(currentQuestion.getKey() + ". " + currentQuestion.getValue().getQuestion());
+            System.out.println(currentQuestion.getKey() + "." + currentQuestion.getValue().getQuestion());
             for (Map.Entry<Integer, String> currentPossAns : currentQuestion.getValue().getPossibleAnswers().entrySet()) {
-                System.out.println(currentPossAns.getKey() + "." + currentPossAns.getValue());
+                System.out.println("\t"+currentPossAns.getKey() + "." + currentPossAns.getValue());
             }
             playerGuesses.put(currentQuestion.getValue(), userInputManager.provideSelectedAnswer());
 

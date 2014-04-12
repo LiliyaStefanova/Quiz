@@ -11,6 +11,10 @@ import java.util.*;
  */
 public class UserInputManagerAdmin {
 
+    public MenuActions showMenu(String menuName, List<TextMenuItem> textMenuItems) {
+        return TextMenu.display(menuName, textMenuItems);
+    }
+
     public String provideQuizName() {
         String quizName = "";
         do {
@@ -142,8 +146,4 @@ public class UserInputManagerAdmin {
         return quizId;
     }
 
-
-    public MenuActions showMenu(String menuName, List<TextMenuItem> textMenuItems) {
-        return TextMenu.display(menuName, textMenuItems);
-    }
 }

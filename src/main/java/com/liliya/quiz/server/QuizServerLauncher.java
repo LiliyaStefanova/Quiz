@@ -26,10 +26,9 @@ public class QuizServerLauncher {
     private static Logger serverLogger = Logger.getLogger(QuizServer.class.getName());
 
     private static final TextMenuItem startServer = new TextMenuItem("LAUNCH SERVER", MenuActions.LAUNCH_SERVER);
-    private static final TextMenuItem writeToFIle = new TextMenuItem("WRITE TO FILE", MenuActions.WRITE_TO_FILE);
     private static final TextMenuItem quit= new TextMenuItem("QUIT MENU", MenuActions.QUIT);
 
-    private static List<TextMenuItem> serverMenu = new ArrayList<TextMenuItem>(Arrays.asList(startServer, writeToFIle, quit));
+    private static List<TextMenuItem> serverMenu = new ArrayList<TextMenuItem>(Arrays.asList(startServer, quit));
 
     private QuizService service;
 
@@ -47,13 +46,6 @@ public class QuizServerLauncher {
             switch (action) {
                 case LAUNCH_SERVER:
                     launchServer();
-                    break;
-                case WRITE_TO_FILE:
-                    try {
-                        service.flush();
-                    } catch (RemoteException ex) {
-                        ex.printStackTrace();
-                    }
                     break;
                 case QUIT:              //can be used to close menu when the server is shut down
                     menuActive=false;

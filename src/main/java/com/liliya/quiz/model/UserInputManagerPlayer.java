@@ -14,6 +14,10 @@ import java.util.Scanner;
 
 public class UserInputManagerPlayer {
 
+    public MenuActions showMenu(String menuName, List<TextMenuItem> textMenuItems) {
+        return TextMenu.display(menuName, textMenuItems);
+    }
+
     public int selectQuizToPlayFromList() {
         int choice = -1;
         do {
@@ -58,12 +62,9 @@ public class UserInputManagerPlayer {
             System.out.print("Enter your name: ");
             Scanner sc = new Scanner(System.in);
             name = sc.nextLine();
+            System.out.println();
         } while (name.trim().equals(""));
         return name;
-    }
-
-    public MenuActions showMenu(String menuName, List<TextMenuItem> textMenuItems) {
-        return TextMenu.display(menuName, textMenuItems);
     }
 
 }
