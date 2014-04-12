@@ -1,6 +1,11 @@
 package com.liliya.quiz.model;
 
+import com.liliya.menu.MenuActions;
+import com.liliya.menu.TextMenu;
+import com.liliya.menu.TextMenuItem;
+
 import java.util.InputMismatchException;
+import java.util.List;
 import java.util.Scanner;
 
 /**
@@ -55,6 +60,10 @@ public class UserInputManagerPlayer {
             name = sc.nextLine();
         } while (name.trim().equals(""));
         return name;
+    }
+
+    public MenuActions showMenu(String menuName, List<TextMenuItem> textMenuItems) {
+        return TextMenu.display(menuName, textMenuItems);
     }
 
 }

@@ -13,7 +13,9 @@ import java.rmi.RemoteException;
 import java.util.*;
 
 /**
- * This is the player client which will be able to play available quizzes
+ * Implementation of the Player Client interface
+ * Can look up quizzes available to play on the server
+ * Can view up to top 3 highest scores
  */
 
 public class QuizPlayerClientImpl implements QuizPlayerClient {
@@ -36,11 +38,7 @@ public class QuizPlayerClientImpl implements QuizPlayerClient {
     }
 
     public static void main(String[] args) {
-        //TODO sort out the security manager
-       /* if(System.getSecurityManager()==null){
-            System.setSecurityManager(new RMISecurityManager());
-        }
-        */
+
         QuizPlayerClient newPlayerClient = new QuizPlayerClientImpl(new UserInputManagerPlayer(), null);
         newPlayerClient.connectToService();
         newPlayerClient.mainMenu();
@@ -48,7 +46,7 @@ public class QuizPlayerClientImpl implements QuizPlayerClient {
 
     @Override
     public void connectToService() {
-
+        //TODO sort out the security manager
         /*if(System.getSecurityManager()==null){
             System.setSecurityManager(new RMISecurityManager());
         }*/
@@ -66,7 +64,7 @@ public class QuizPlayerClientImpl implements QuizPlayerClient {
 
     public void mainMenu() {
         do {
-            MenuActions action = TextMenu.display("QUIZ PLAYER MENU", playerMenu);
+            MenuActions action = userInputManager.showMenu("QUIZ ADMINISTRATOR MENU", playerMenu);
             switch (action) {
                 case SELECT_QUIZ_FROM_LIST:
                     playQuiz(selectQuizToPlay());
@@ -80,10 +78,9 @@ public class QuizPlayerClientImpl implements QuizPlayerClient {
                     System.out.print("Choose a valid option");
             }
 
-
         } while (true);
     }
-
+    //TODO needs to fix this to ensure that the player client is not calling menu directly
     @Override
     public int selectQuizToPlay() {
 
@@ -125,6 +122,7 @@ public class QuizPlayerClientImpl implements QuizPlayerClient {
             e.printStackTrace();
         }
     }
+
     // Returns only top 3 scores or all scores if less are available for a player
     @Override
     public void viewHighScores() {
@@ -135,12 +133,13 @@ public class QuizPlayerClientImpl implements QuizPlayerClient {
         try {
             quizInstancesForPlayer = quizPlayer.getQuizzesPlayedByPlayer(playerName);
         } catch (RemoteException ex) {
-            ex.printStackTrace();}
+            ex.printStackTrace();
+        }
         System.out.println("Top scores so far: ");
-        System.out.printf("%-15s%-15s\n","Quiz","Score");
+        System.out.printf("%-15s%-15s\n", "Quiz", "Score");
         System.out.println("---------------------");
         for (PlayerQuizInstance currentInstance : findTopScores(quizInstancesForPlayer)) {
-            System.out.printf("%-15s%-15d\n",currentInstance.getQuiz().getQuizName(),currentInstance.getTotalScore());
+            System.out.printf("%-15s%-15d\n", currentInstance.getQuiz().getQuizName(), currentInstance.getTotalScore());
         }
     }
 
@@ -151,7 +150,6 @@ public class QuizPlayerClientImpl implements QuizPlayerClient {
     }
 
     Map<Question, Integer> submitAnswersForScoring(Quiz quizPlayed) {
-        Map<Integer, Question> quizQuestions = quizPlayed.getQuizQuestions();
         Map<Question, Integer> playerGuesses = new HashMap<Question, Integer>();
         for (Map.Entry<Integer, Question> currentQuestion : quizPlayed.getQuizQuestions().entrySet()) {
             System.out.println(currentQuestion.getKey() + ". " + currentQuestion.getValue().getQuestion());
