@@ -10,7 +10,6 @@ public class QuizImpl implements Quiz, Serializable {
     private Map<Integer, Question> quizQuestions;
     //set to false once quiz is closed by user
     private boolean quizActive;
-    private boolean quizPlayed;
 
     public QuizImpl(){
         //no args constructor for ser
@@ -21,7 +20,6 @@ public class QuizImpl implements Quiz, Serializable {
         this.quizQuestions = questions;
         this.quizId=id;
         quizActive = true;
-        quizPlayed=false;
     }
 
     @Override
@@ -32,14 +30,6 @@ public class QuizImpl implements Quiz, Serializable {
     @Override
     public void setQuizName(String name) {
         this.quizName = name;
-    }
-
-    public boolean isQuizPlayed() {
-        return quizPlayed;
-    }
-
-    public void setQuizPlayed(boolean quizPlayed) {
-        this.quizPlayed = quizPlayed;
     }
 
     @Override

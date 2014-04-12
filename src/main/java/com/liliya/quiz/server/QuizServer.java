@@ -56,7 +56,7 @@ public class QuizServer extends UnicastRemoteObject implements QuizService, Seri
         //find the quiz to be closed and set it to inactive so other players can't choose it
         for (Quiz curr : allQuizzes) {
             if (curr.getQuizId() == id) {
-                if(!curr.getQuizState()){
+                if (!curr.getQuizState()) {
                     throw new IllegalStateException("This quiz has already been closed");
                 }
                 curr.setQuizState(false);
@@ -65,9 +65,11 @@ public class QuizServer extends UnicastRemoteObject implements QuizService, Seri
         return determineQuizWinner(getAllQuizInstances(id));    //find list of all winners for a quiz
     }
 
-    public boolean checkQuizPlayed(int id){
-        for(PlayerQuizInstance current: getAllQuizInstances(id)){
-            if(current.getQuiz().isQuizPlayed()){
+    public synchronized boolean checkQuizPlayed(int id) {
+        List<PlayerQuizInstance> instances=getAllQuizInstances(id);
+        for (PlayerQuizInstance current : instances) {
+            System.out.println(current.getPlayer().getName());
+            if (current.isQuizPlayed()) {
                 return true;
             }
         }
@@ -76,9 +78,7 @@ public class QuizServer extends UnicastRemoteObject implements QuizService, Seri
 
     public synchronized PlayerQuizInstance loadQuizForPlay(int id, String name) throws RemoteException {
         PlayerQuizInstance newQuizPlayerInstance = new PlayerQuizInstance(setUpPlayer(name), findQuiz(id));
-        newQuizPlayerInstance.getQuiz().setQuizPlayed(true);
         playerQuizInstances.add(newQuizPlayerInstance);
-
         return newQuizPlayerInstance;
     }
 
@@ -94,7 +94,8 @@ public class QuizServer extends UnicastRemoteObject implements QuizService, Seri
         for (PlayerQuizInstance current : playerQuizInstances) {
             if (current.equals(quizInstance)) {
                 current.setTotalScore(playerQuizInstanceScore);
-                current.getQuiz().setQuizPlayed(false);
+                System.out.println("Instance set to not played");
+                current.setQuizPlayed(false);
             }
         }
 
@@ -114,9 +115,9 @@ public class QuizServer extends UnicastRemoteObject implements QuizService, Seri
 
     @Override
     public List<PlayerQuizInstance> getQuizzesPlayedByPlayer(String name) throws RemoteException {
-        List<PlayerQuizInstance> quizInstancesForPlayer=new ArrayList<PlayerQuizInstance>();
-        for(PlayerQuizInstance currentInstance:playerQuizInstances){
-            if(currentInstance.getPlayer().getName().equals(name)){
+        List<PlayerQuizInstance> quizInstancesForPlayer = new ArrayList<PlayerQuizInstance>();
+        for (PlayerQuizInstance currentInstance : playerQuizInstances) {
+            if (currentInstance.getPlayer().getName().equals(name)) {
                 quizInstancesForPlayer.add(currentInstance);
             }
         }
@@ -174,6 +175,7 @@ public class QuizServer extends UnicastRemoteObject implements QuizService, Seri
         }
         return existingQuiz;
     }
+
     //find the existing player or create a new one
     Player setUpPlayer(String name) throws RemoteException {
         for (Player curr : allPlayers) {
@@ -201,7 +203,7 @@ public class QuizServer extends UnicastRemoteObject implements QuizService, Seri
     //TODO functionality to deal with multiple players with the highest score
     List<PlayerQuizInstance> determineQuizWinner(List<PlayerQuizInstance> quizPlayInstances) {
         PlayerQuizInstance maxScore = null;
-        List<PlayerQuizInstance> winners=new ArrayList<PlayerQuizInstance>();
+        List<PlayerQuizInstance> winners = new ArrayList<PlayerQuizInstance>();
         if (quizPlayInstances.isEmpty()) {
             return winners;
         }
@@ -215,13 +217,46 @@ public class QuizServer extends UnicastRemoteObject implements QuizService, Seri
                 } else return 0;
             }
         });
-        for(PlayerQuizInstance current:quizPlayInstances){
-            if(maxScore.getTotalScore()==current.getTotalScore()){
+        for (PlayerQuizInstance current : quizPlayInstances) {
+            if (maxScore.getTotalScore() == current.getTotalScore()) {
                 winners.add(current);
             }
         }
 
         return winners;
+    }
+
+
+    public List<PlayerQuizInstance> getPlayerQuizInstances() {
+        return playerQuizInstances;
+    }
+
+    public void setPlayerQuizInstances(List<PlayerQuizInstance> playerQuizInstances) {
+        this.playerQuizInstances = playerQuizInstances;
+    }
+
+    public List<Quiz> getAllQuizzes() {
+        return allQuizzes;
+    }
+
+    public void setAllQuizzes(List<Quiz> allQuizzes) {
+        this.allQuizzes = allQuizzes;
+    }
+
+    public Set<Player> getAllPlayers() {
+        return allPlayers;
+    }
+
+    public void setAllPlayers(Set<Player> allPlayers) {
+        this.allPlayers = allPlayers;
+    }
+
+    public synchronized int getQuizIDCounter() {
+        return quizIDCounter;
+    }
+
+    public void setQuizIDCounter(int quizIDCounter) {
+        this.quizIDCounter = quizIDCounter;
     }
 
     @Override
@@ -249,36 +284,5 @@ public class QuizServer extends UnicastRemoteObject implements QuizService, Seri
         return result;
     }
 
-    public List<PlayerQuizInstance> getPlayerQuizInstances() {
-        return playerQuizInstances;
-    }
-
-    public void setPlayerQuizInstances(List<PlayerQuizInstance> playerQuizInstances) {
-        this.playerQuizInstances = playerQuizInstances;
-    }
-
-    public List<Quiz> getAllQuizzes() {
-        return allQuizzes;
-    }
-
-    public void setAllQuizzes(List<Quiz> allQuizzes) {
-        this.allQuizzes = allQuizzes;
-    }
-
-    public Set<Player> getAllPlayers() {
-        return allPlayers;
-    }
-
-    public void setAllPlayers(Set<Player> allPlayers) {
-        this.allPlayers = allPlayers;
-    }
-
-    public int getQuizIDCounter() {
-        return quizIDCounter;
-    }
-
-    public void setQuizIDCounter(int quizIDCounter) {
-        this.quizIDCounter = quizIDCounter;
-    }
 
 }

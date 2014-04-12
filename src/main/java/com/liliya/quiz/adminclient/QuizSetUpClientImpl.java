@@ -9,6 +9,7 @@ import com.liliya.quiz.server.QuizServer;
 
 import java.io.*;
 import java.net.MalformedURLException;
+import java.nio.charset.Charset;
 import java.rmi.*;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
@@ -28,7 +29,7 @@ public class QuizSetUpClientImpl implements QuizSetUpClient {
     private static final TextMenuItem setUpManually = new TextMenuItem("MANUAL QUIZ SET UP", MenuActions.SET_UP_QUIZ_MANUALLY);
     private static final TextMenuItem setUpFromFile = new TextMenuItem("SET UP QUIZ FROM FILE", MenuActions.SET_UP_QUIZ_FROM_FILE);
     private static final TextMenuItem close = new TextMenuItem("CLOSE QUIZ", MenuActions.CLOSE_QUIZ);
-    private static final TextMenuItem shutdownServer = new TextMenuItem("SHUTDOWN SERVER", MenuActions.SHUTDOWN_SERVER);
+    private static final TextMenuItem shutdownServer = new TextMenuItem("SAVE TO FILE AND SHUTDOWN SERVER", MenuActions.SHUTDOWN_SERVER);
     private static final TextMenuItem quit = new TextMenuItem("QUIT", MenuActions.QUIT);
 
     private static List<TextMenuItem> setUpClientMenu = new ArrayList<TextMenuItem>(Arrays.asList(setUpManually, setUpFromFile, close,
@@ -99,7 +100,7 @@ public class QuizSetUpClientImpl implements QuizSetUpClient {
         String quizName = userInputManager.provideQuizName();
         try {
             int quizID = quizAdmin.createNewQuiz(quizName, setUpQuestionsManually());
-            System.out.println("ID for quiz " + quizName + " is: " + quizID);
+            System.out.println("ID for quiz \"" + quizName + "\" is: " + quizID);
         } catch (RemoteException ex) {
             ex.printStackTrace();
         }
@@ -110,7 +111,7 @@ public class QuizSetUpClientImpl implements QuizSetUpClient {
         String quizName = userInputManager.provideQuizName();
         try {
             int quizID = quizAdmin.createNewQuiz(quizName, setUpQuestionsFromFile());
-            System.out.println("ID for quiz " + quizName + " is: " + quizID);
+            System.out.println("ID for quiz \"" + quizName + "\" is: " + quizID);
         } catch (RemoteException ex) {
             ex.printStackTrace();
         }
@@ -118,24 +119,29 @@ public class QuizSetUpClientImpl implements QuizSetUpClient {
 
     @Override
     public void requestQuizClose() {
+        boolean blocked=true;
         try {
-            int quizIDSelected=displayActiveQuizzes();
-            if(quizIDSelected==-1){
+            int quizIDSelected = displayActiveQuizzes();
+            if (quizIDSelected == -1) {
                 return;
             }
-            if(quizAdmin.checkQuizPlayed(quizIDSelected)){
-                System.out.println("Players are still playing the quiz. Try again later.");
+                if(quizAdmin.checkQuizPlayed(quizIDSelected)){
+                    System.out.println("Waiting for players to finish...\n");
+                }
+            while((quizAdmin.checkQuizPlayed(quizIDSelected))){
+
+                Thread.sleep(500);
             }
-            while(quizAdmin.checkQuizPlayed(quizIDSelected)){
-                Thread.sleep(1000);
-            }
-            List<PlayerQuizInstance> winners = quizAdmin.closeQuiz(quizIDSelected);
-            displayQuizWinnerDetails(winners);
+                List<PlayerQuizInstance> winners = quizAdmin.closeQuiz(quizIDSelected);
+                displayQuizWinnerDetails(winners);
+                System.out.println("Quiz is now closed.");
+
         } catch (RemoteException ex) {
-            ex.printStackTrace();}
-          catch( InterruptedException ex){
-              ex.printStackTrace();
-          }
+            ex.printStackTrace();
+        } catch(InterruptedException ex){
+            ex.printStackTrace();
+        }
+
     }
 
     @Override
@@ -151,11 +157,11 @@ public class QuizSetUpClientImpl implements QuizSetUpClient {
 
     private int displayActiveQuizzes() {
         int choice = 0;
-        System.out.println("Select from the currently available quizzes: ");
+        System.out.println("Select quiz: ");
         try {
             List<Quiz> availableQuizzes = quizAdmin.getListAvailableQuizzes();
             if (availableQuizzes.isEmpty()) {
-                System.out.println("There are no quizzes available at this time");
+                System.out.println("No quizzes available at this time");
                 return -1;
             }
             for (Quiz current : availableQuizzes) {
@@ -182,11 +188,11 @@ public class QuizSetUpClientImpl implements QuizSetUpClient {
         if (playersWithHighestScore.isEmpty()) {
             System.out.println("No one has played this quiz");
         } else {
-            System.out.printf("%-15s%-15s\n","Player","Total Score");
+            System.out.printf("%-12s%-12s%n","Player","Total Score");
             for (PlayerQuizInstance current : playersWithHighestScore) {
-                System.out.println();
-                System.out.printf("%-15s%-15d\n",current.getPlayer().getName(), current.getTotalScore());
+                System.out.printf("%-12s%-12d%n",current.getPlayer().getName(), current.getTotalScore());
             }
+            System.out.println();
         }
     }
 
@@ -209,12 +215,11 @@ public class QuizSetUpClientImpl implements QuizSetUpClient {
 
         Map<Integer, Question> questions = new HashMap<Integer, Question>();
         String question;
-        int correctAnswer = 0;
-        int correctAnswerPoints;
         BufferedReader br = null;
         int lineCount = 0;
         try {
             String sCurrentLine;
+            //TODO change to InputStreamReader as FileReader uses default encoding
             br = new BufferedReader(new FileReader(userInputManager.inputFileName()));
             while ((sCurrentLine = br.readLine()) != null) {
                 Map<Integer, String> possibleAnswers = new HashMap<Integer, String>();
@@ -223,8 +228,8 @@ public class QuizSetUpClientImpl implements QuizSetUpClient {
                 for (int i = 1; i <= 4; i++) {
                     possibleAnswers.put(i, questionParts[i]);
                 }
-                correctAnswer = Integer.parseInt(questionParts[5]);
-                correctAnswerPoints = Integer.parseInt(questionParts[6]);
+                int correctAnswer = Integer.parseInt(questionParts[5]);
+                 int correctAnswerPoints = Integer.parseInt(questionParts[6]);
                 Question newQuestion = new QuestionImpl(question, possibleAnswers, correctAnswer, correctAnswerPoints);
                 questions.put(lineCount, newQuestion);
 
@@ -234,6 +239,15 @@ public class QuizSetUpClientImpl implements QuizSetUpClient {
             e.printStackTrace();
         } catch (NullPointerException ex) {
             ex.printStackTrace();
+        } finally {
+            try {
+                if (br != null) {
+                    br.close();
+                }
+            } catch (IOException ex) {
+                ex.printStackTrace();
+            }
+
         }
         return questions;
 

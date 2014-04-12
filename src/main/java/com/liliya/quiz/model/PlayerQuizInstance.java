@@ -7,6 +7,8 @@ public class PlayerQuizInstance implements Serializable {
     private Player player;
     private Quiz quiz;
     private int totalScore;
+    private boolean quizPlayed;
+
 
     public PlayerQuizInstance(){
         //no args constructor for serialization
@@ -14,10 +16,19 @@ public class PlayerQuizInstance implements Serializable {
     public PlayerQuizInstance(Player player, Quiz quiz) {
         this.player = player;
         this.quiz = quiz;
+        quizPlayed=true;
     }
 
     public int getTotalScore() {
         return this.totalScore;
+    }
+
+    public boolean isQuizPlayed() {
+        return quizPlayed;
+    }
+
+    public void setQuizPlayed(boolean quizPlayed) {
+        this.quizPlayed = quizPlayed;
     }
 
     public void setTotalScore(int score) {
