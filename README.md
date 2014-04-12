@@ -1,24 +1,36 @@
-Quiz-Programming in Java Assignment III
+##Quiz-Programming in Java Assignment III
 ====
 
-# How to run the "Quiz System"
+### How to run the "Quiz System"
 
-## Get Started
+#### Get Started
 
-* **Launching the server**
+** 1. Launching the server**
 -------------------------------------------
-**1.** Run the QuizServerLauncher.java file
-**2.** Choose Option 0.LAUNCH SERVER from the menu. You must type the option number
+ - Run the QuizServerLauncher.java file
 
-* **Launching the set up/administrator client **
+ - Choose Option 0.LAUNCH SERVER from the menu. You must type the option number
+
+**2. Launching the set up/administrator client **
 ----------------------------------------------
-**3.** Run the QuizSetUpClientImpl.java file. Run as many times as required for new clients
+ - Run the QuizSetUpClientImpl.java file. Run as many times as required for new clients
 
-* **Launching the player client **
+**3. Launching the player client **
 -------------------------------------------------------------------------
-**4** Run the QuizPlayerClientImpl.java file for each new player
+ - Run the QuizPlayerClientImpl.java file for each new player
 
-## Quiz Administration
+#### Quiz Administration
 
-## Quiz Playing
+Available features:
+
+| Feature                       | Functionality                             | How to use
+| ----------------------------- |------------- -----------------------------|-----------------------------------------|
+| Manual quiz set up            | Key in data to create quiz                | Follow menu to enter all data           |
+| Quiz set up from file         | Load quiz data from file                  | Provide quiz name and absolute file path|
+| Close a quiz                  | Close an active quiz and see winner       | Choose quiz to close from list          |
+| Save to file/ shut down server| Save server state to file and shut it down| N/A                                     |
+| Quit client                   | Close down the client application         | N/A                                     |
+
+
+#### Quiz Playing
 
