@@ -14,9 +14,13 @@
 ----------------------------------------------
  - Run the QuizSetUpClientImpl.java file. Run as many times as required for new clients
 
+ - Choose option from menu as required
+
 3. Launching the player client
 -------------------------------------------------------------------------
  - Run the QuizPlayerClientImpl.java file for each new player
+
+ - Choose option from menu as required
 
 ### Quiz Administration
 
