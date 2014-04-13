@@ -1,76 +1,76 @@
 package com.liliya.quiz.model;
 
-import java.io.Serializable;
+/**
+ * Player Quiz Instance represents every instance of a quiz played by a player
+ * It reflects the many to many relationship between players and quizzes
+ * Each instance is denoted by its total score and whether the player is actively playing or not
+ */
 
-public class PlayerQuizInstance implements Serializable {
+public interface PlayerQuizInstance {
 
-    private Player player;
-    private Quiz quiz;
-    private int totalScore;
-    private boolean quizPlayed;
+    /**
+     * Returns the total score for this particular attempt of the player
+     *
+     * @return totalScore
+     */
 
+    public int getTotalScore();
 
-    public PlayerQuizInstance(){
-        //no args constructor for serialization
-    }
-    public PlayerQuizInstance(Player player, Quiz quiz) {
-        this.player = player;
-        this.quiz = quiz;
-        quizPlayed=true;
-    }
+    /**
+     * Denotes if the quiz is currently being played or not
+     * Used to control closing quizzes which are actively played
+     *
+     * @return true or false
+     */
 
-    public int getTotalScore() {
-        return this.totalScore;
-    }
+    public boolean isQuizPlayed();
 
-    public boolean isQuizPlayed() {
-        return quizPlayed;
-    }
+    /**
+     * Sets a quiz as an actively played by the player for this instance to prevent the quiz from being closed
+     *
+     * @param quizPlayed
+     */
 
-    public void setQuizPlayed(boolean quizPlayed) {
-        this.quizPlayed = quizPlayed;
-    }
+    public void setQuizPlayed(boolean quizPlayed);
 
-    public void setTotalScore(int score) {
-        this.totalScore = score;
-    }
+    /**
+     * Sets the total score for this player and their current attempt, following a calculation of the score
+     *
+     * @param score
+     */
 
-    public Player getPlayer() {
-        return this.player;
-    }
+    public void setTotalScore(int score);
 
-    public Quiz getQuiz() {
-        return this.quiz;
-    }
+    /**
+     * Retrieves the player in this instance
+     *
+     * @return Player object
+     */
 
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
+    public Player getPlayer();
 
-        PlayerQuizInstance that = (PlayerQuizInstance) o;
+    /**
+     * Retrieves the quiz in the instance
+     *
+     * @return Quiz object
+     */
 
-        if (totalScore != that.totalScore) return false;
-        if (player != null ? !player.equals(that.player) : that.player != null) return false;
-        if (quiz != null ? !quiz.equals(that.quiz) : that.quiz != null) return false;
+    public Quiz getQuiz();
 
-        return true;
-    }
+    /**
+     * Sets the Player in the instance
+     *
+     * @param player
+     */
 
-    @Override
-    public int hashCode() {
-        int result = player != null ? player.hashCode() : 0;
-        result = 31 * result + (quiz != null ? quiz.hashCode() : 0);
-        result = 31 * result + totalScore;
-        return result;
-    }
+    public void setPlayer(Player player);
 
-    public void setPlayer(Player player) {
-        this.player = player;
-    }
+    /**
+     * Sets the quiz in the instance
+     *
+     * @param quiz
+     */
 
-    public void setQuiz(Quiz quiz) {
-        this.quiz = quiz;
-    }
+    public void setQuiz(Quiz quiz);
 
 }

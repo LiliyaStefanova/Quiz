@@ -78,9 +78,9 @@ public class QuizServer extends UnicastRemoteObject implements QuizService, Seri
     public synchronized PlayerQuizInstance loadQuizForPlay(int id, String name) throws RemoteException {
         PlayerQuizInstance newQuizPlayerInstance=null;
         Player quizPlayer=setUpPlayer(name);
-        Quiz   quizToPlay=findQuiz(id);
-        if(setUpPlayer(name)!=null && findQuiz(id)!=null){
-            newQuizPlayerInstance = new PlayerQuizInstance(quizPlayer, quizToPlay);
+        Quiz   quizToPlay= findQuizToPlay(id);
+        if(setUpPlayer(name)!=null && findQuizToPlay(id)!=null){
+            newQuizPlayerInstance = new PlayerQuizInstanceImpl(quizPlayer, quizToPlay);
             playerQuizInstances.add(newQuizPlayerInstance);
         }
 
@@ -170,7 +170,7 @@ public class QuizServer extends UnicastRemoteObject implements QuizService, Seri
         }.start();
     }
 
-    Quiz findQuiz(int id) {
+    Quiz findQuizToPlay(int id) {
         Quiz existingQuiz = null;
         for (Quiz curr : allQuizzes) {
             if (curr.getQuizId() == id && curr.getQuizState()) {
