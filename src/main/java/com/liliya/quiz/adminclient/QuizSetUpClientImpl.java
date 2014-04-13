@@ -1,5 +1,6 @@
 package com.liliya.quiz.adminclient;
 
+import com.liliya.constants.UserMessages;
 import com.liliya.menu.MenuActions;
 import com.liliya.menu.TextMenu;
 import com.liliya.menu.TextMenuItem;
@@ -24,7 +25,7 @@ public class QuizSetUpClientImpl implements QuizSetUpClient {
 
     private static final String SERVICE_NAME = "quiz";
 
-    private static Logger serverLogger = Logger.getLogger(QuizServer.class.getName());
+    private static Logger clientLogger = Logger.getLogger(QuizSetUpClientImpl.class.getName());
 
     private static final TextMenuItem setUpManually = new TextMenuItem("MANUAL QUIZ SET UP", MenuActions.SET_UP_QUIZ_MANUALLY);
     private static final TextMenuItem setUpFromFile = new TextMenuItem("SET UP QUIZ FROM FILE", MenuActions.SET_UP_QUIZ_FROM_FILE);
@@ -119,21 +120,20 @@ public class QuizSetUpClientImpl implements QuizSetUpClient {
 
     @Override
     public void requestQuizClose() {
-        boolean blocked=true;
+        boolean blocked = true;
         try {
             int quizIDSelected = displayActiveQuizzes();
             if (quizIDSelected == -1) {
                 return;
             }
-                if(quizAdmin.checkQuizPlayed(quizIDSelected)){
-                    System.out.println("Quiz is still played...try again later...\n");
-                    return;
-                }
-                else{
+            if (quizAdmin.checkQuizPlayed(quizIDSelected)) {
+                System.out.println(UserMessages.QUIZ_STILL_PLAYED);
+                return;
+            } else {
                 List<PlayerQuizInstance> winners = quizAdmin.closeQuiz(quizIDSelected);
                 displayQuizWinnerDetails(winners);
-                System.out.println("Quiz is now closed.");
-                }
+                System.out.println(UserMessages.QUIZ_NOW_CLOSED);
+            }
 
         } catch (RemoteException ex) {
             ex.printStackTrace();
@@ -144,7 +144,9 @@ public class QuizSetUpClientImpl implements QuizSetUpClient {
     @Override
     public void closeDownServer() {
         try {
+            clientLogger.info("Writing to file...");
             quizAdmin.flush();
+            clientLogger.info("Shutting down server...");
             quizAdmin.shutDown();
         } catch (RemoteException ex) {
             ex.printStackTrace();
@@ -158,7 +160,7 @@ public class QuizSetUpClientImpl implements QuizSetUpClient {
         try {
             List<Quiz> availableQuizzes = quizAdmin.getListAvailableQuizzes();
             if (availableQuizzes.isEmpty()) {
-                System.out.println("No quizzes available at this time");
+                System.out.println(UserMessages.NO_QUIZZES_AVAILABLE);
                 return -1;
             }
             for (Quiz current : availableQuizzes) {
@@ -176,18 +178,25 @@ public class QuizSetUpClientImpl implements QuizSetUpClient {
     //TODO prompt to ask user if sure they want to exit
     @Override
     public void closeDownClient() {
-        System.out.println("Goodbye!");
-        System.exit(0);
+        if (userInputManager.confirmExit().equals("y") || userInputManager.confirmExit().equals("Y")) {
+
+            clientLogger.info("Shutting down client...");
+            System.out.println("Goodbye!");
+            System.exit(0);
+        }
+         else  {
+            return;
+        }
     }
 
-     void displayQuizWinnerDetails(List<PlayerQuizInstance> playersWithHighestScore) {
-        System.out.println("Winner(s) of this quiz: ");
+    void displayQuizWinnerDetails(List<PlayerQuizInstance> playersWithHighestScore) {
+        System.out.println(UserMessages.WINNERS_OF_THE_QUIZ);
         if (playersWithHighestScore.isEmpty()) {
-            System.out.println("No one has played this quiz");
+            System.out.println(UserMessages.NO_ONE_HAS_PLAYED_QUIZ);
         } else {
-            System.out.printf("%-12s%-12s%n","Player","Total Score");
+            System.out.printf("%-12s%-12s%n", "Player", "Total Score");
             for (PlayerQuizInstance current : playersWithHighestScore) {
-                System.out.printf("%-12s%-12d%n",current.getPlayer().getName(), current.getTotalScore());
+                System.out.printf("%-12s%-12d%n", current.getPlayer().getName(), current.getTotalScore());
             }
             System.out.println();
         }
@@ -226,7 +235,7 @@ public class QuizSetUpClientImpl implements QuizSetUpClient {
                     possibleAnswers.put(i, questionParts[i]);
                 }
                 int correctAnswer = Integer.parseInt(questionParts[5]);
-                 int correctAnswerPoints = Integer.parseInt(questionParts[6]);
+                int correctAnswerPoints = Integer.parseInt(questionParts[6]);
                 Question newQuestion = new QuestionImpl(question, possibleAnswers, correctAnswer, correctAnswerPoints);
                 questions.put(lineCount, newQuestion);
 

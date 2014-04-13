@@ -63,7 +63,7 @@ public class UserInputManagerPlayer {
             Scanner sc = new Scanner(System.in);
             name = sc.nextLine();
             System.out.println();
-        } while (name.trim().equals(""));
+        } while (name.trim().isEmpty());
         return name;
     }
 

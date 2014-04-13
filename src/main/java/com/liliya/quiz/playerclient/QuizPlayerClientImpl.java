@@ -1,5 +1,6 @@
 package com.liliya.quiz.playerclient;
 
+import com.liliya.constants.UserMessages;
 import com.liliya.menu.MenuActions;
 import com.liliya.menu.TextMenu;
 import com.liliya.menu.TextMenuItem;
@@ -80,16 +81,17 @@ public class QuizPlayerClientImpl implements QuizPlayerClient {
 
         } while (true);
     }
+
     //TODO needs to fix this to ensure that the player client is not calling menu directly
     @Override
     public int selectQuizToPlay() {
 
         int choice = 0;
-        System.out.println("Select from currently available quizzes: ");
+        System.out.println(UserMessages.SELECT_QUIZ);
         try {
             List<Quiz> availableQuizzes = quizPlayer.getListAvailableQuizzes();
             if (availableQuizzes.isEmpty()) {
-                System.out.println("No quizzes available at this time");
+                System.out.println(UserMessages.NO_QUIZZES_AVAILABLE);
                 mainMenu();
             }
             for (Quiz current : availableQuizzes) {
@@ -112,14 +114,13 @@ public class QuizPlayerClientImpl implements QuizPlayerClient {
         }
         try {
             PlayerQuizInstance newInstanceQuizPlayer = quizPlayer.loadQuizForPlay(id, playerName);
-            if(newInstanceQuizPlayer==null){
-               System.out.println("This quiz does not exist or is not available");
-               System.out.println();
-               return;
+            if (newInstanceQuizPlayer == null) {
+                System.out.println(UserMessages.NOT_AVAILABLE);
+                System.out.println();
+                return;
             }
             Map<Question, Integer> userGuesses = submitAnswersForScoring(newInstanceQuizPlayer.getQuiz());
-            System.out.print("\nThank you for your responses. Your final score is: "+
-            quizPlayer.calculatePlayerScore(newInstanceQuizPlayer, userGuesses));
+            System.out.print(UserMessages.FINAL_SCORE + quizPlayer.calculatePlayerScore(newInstanceQuizPlayer, userGuesses));
             System.out.println();
 
         } catch (RemoteException e) {
@@ -139,7 +140,7 @@ public class QuizPlayerClientImpl implements QuizPlayerClient {
         } catch (RemoteException ex) {
             ex.printStackTrace();
         }
-        System.out.println("Top scores so far: ");
+        System.out.println(UserMessages.SCORES);
         System.out.printf("%-20s%-15s%n", "Quiz", "Score");
         System.out.println("----------------------------");
         for (PlayerQuizInstance currentInstance : findTopScores(quizInstancesForPlayer)) {
@@ -150,7 +151,7 @@ public class QuizPlayerClientImpl implements QuizPlayerClient {
 
     @Override
     public void closeDownProgram() {
-        System.out.println("Goodbye!");
+        System.out.println(UserMessages.GOODBYE);
         System.exit(0);
     }
 
@@ -159,7 +160,7 @@ public class QuizPlayerClientImpl implements QuizPlayerClient {
         for (Map.Entry<Integer, Question> currentQuestion : quizPlayed.getQuizQuestions().entrySet()) {
             System.out.println(currentQuestion.getKey() + "." + currentQuestion.getValue().getQuestion());
             for (Map.Entry<Integer, String> currentPossAns : currentQuestion.getValue().getPossibleAnswers().entrySet()) {
-                System.out.println("\t"+currentPossAns.getKey() + "." + currentPossAns.getValue());
+                System.out.println("\t" + currentPossAns.getKey() + "." + currentPossAns.getValue());
             }
             playerGuesses.put(currentQuestion.getValue(), userInputManager.provideSelectedAnswer());
 
@@ -178,7 +179,7 @@ public class QuizPlayerClientImpl implements QuizPlayerClient {
             }
         });
         if (quizInstancesForPlayer.size() == 0) {
-            System.out.println("You have not played any quizzes");
+            System.out.println(UserMessages.NO_QUIZZES_PLAYED);
         } else if (quizInstancesForPlayer.size() < 3) {
             topScores = quizInstancesForPlayer;
         } else {
