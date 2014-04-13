@@ -1,13 +1,13 @@
 package com.liliya.menu;
 
-public class TextMenuItem{
+public class TextMenuItem {
 
-     private String title;
-     private MenuActions action;
+    private String title;
+    private MenuActions action;
 
-    public TextMenuItem(String title, MenuActions action){
-        this.title=title;
-        this.action=action;
+    public TextMenuItem(String title, MenuActions action) {
+        this.title = title;
+        this.action = action;
     }
 
 
