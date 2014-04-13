@@ -19,13 +19,13 @@ public class UserInputManagerAdmin {
         String quizName = "";
         do {
             try {
-                System.out.print("Enter quiz name: ");
+                System.out.print("Enter quiz name(C+Enter to escape): ");
                 Scanner sc1 = new Scanner(System.in);
                 quizName = sc1.nextLine();
             } catch (IllegalArgumentException ex) {
                 System.out.println("Please provide a quiz name");
             }
-        } while (quizName.trim().equals(""));
+        } while (quizName.trim().isEmpty());
         return quizName;
     }
 
@@ -64,7 +64,7 @@ public class UserInputManagerAdmin {
             } catch (IllegalArgumentException ex) {
                 System.out.println("You must enter a question");
             }
-        } while (question.trim().equals(""));
+        } while (question.trim().isEmpty());
         return question;
     }
 
@@ -84,7 +84,7 @@ public class UserInputManagerAdmin {
                 }
                 possibleAnswers.put(i, answer);
 
-            } while (answer.trim().equals(""));
+            } while (answer.trim().isEmpty());
         }
         return possibleAnswers;
     }
@@ -128,7 +128,7 @@ public class UserInputManagerAdmin {
             } catch (InputMismatchException ex) {
                 throw new RuntimeException("Invalid file path");
             }
-        } while (filename.trim().equals(""));
+        } while (filename.trim().isEmpty());
         return filename;
     }
 
@@ -145,5 +145,19 @@ public class UserInputManagerAdmin {
         } while (quizId == -1);
         return quizId;
     }
+    //TODO this needs to be fixed
+    public String confirmExit() {
+        String userInput = "";
+        do {
+            System.out.print("Are you sure you want to quit(y/n)?:");
+            try {
+                Scanner sc1 = new Scanner(System.in);
+                userInput = sc1.nextLine();
+            } catch (InputMismatchException ex) {
+                System.out.println("You must specify y or n");
+            }
+        } while (userInput.trim().isEmpty());
 
+        return userInput;
+    }
 }
