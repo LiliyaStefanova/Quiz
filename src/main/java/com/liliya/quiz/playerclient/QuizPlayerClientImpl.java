@@ -112,6 +112,11 @@ public class QuizPlayerClientImpl implements QuizPlayerClient {
         }
         try {
             PlayerQuizInstance newInstanceQuizPlayer = quizPlayer.loadQuizForPlay(id, playerName);
+            if(newInstanceQuizPlayer==null){
+               System.out.println("This quiz does not exist or is not available");
+               System.out.println();
+               return;
+            }
             Map<Question, Integer> userGuesses = submitAnswersForScoring(newInstanceQuizPlayer.getQuiz());
             System.out.print("\nThank you for your responses. Your final score is: "+
             quizPlayer.calculatePlayerScore(newInstanceQuizPlayer, userGuesses));

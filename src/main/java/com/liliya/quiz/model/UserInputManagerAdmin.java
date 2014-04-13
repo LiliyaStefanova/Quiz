@@ -96,7 +96,7 @@ public class UserInputManagerAdmin {
                 System.out.print("Enter correct answer(between 1 and 4): ");
                 Scanner sc4 = new Scanner(System.in);
                 correctAnswer = sc4.nextInt();
-            } catch (IllegalArgumentException ex) {
+            } catch (InputMismatchException ex) {
                 System.out.println("You need to enter the number of the correct answer");
             }
         } while (correctAnswer < 1 || correctAnswer > 4);

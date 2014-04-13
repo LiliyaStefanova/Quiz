@@ -68,7 +68,6 @@ public class QuizServer extends UnicastRemoteObject implements QuizService, Seri
     public synchronized boolean checkQuizPlayed(int id) {
         List<PlayerQuizInstance> instances=getAllQuizInstances(id);
         for (PlayerQuizInstance current : instances) {
-            System.out.println(current.getPlayer().getName());
             if (current.isQuizPlayed()) {
                 return true;
             }
@@ -77,8 +76,14 @@ public class QuizServer extends UnicastRemoteObject implements QuizService, Seri
     }
 
     public synchronized PlayerQuizInstance loadQuizForPlay(int id, String name) throws RemoteException {
-        PlayerQuizInstance newQuizPlayerInstance = new PlayerQuizInstance(setUpPlayer(name), findQuiz(id));
-        playerQuizInstances.add(newQuizPlayerInstance);
+        PlayerQuizInstance newQuizPlayerInstance=null;
+        Player quizPlayer=setUpPlayer(name);
+        Quiz   quizToPlay=findQuiz(id);
+        if(setUpPlayer(name)!=null && findQuiz(id)!=null){
+            newQuizPlayerInstance = new PlayerQuizInstance(quizPlayer, quizToPlay);
+            playerQuizInstances.add(newQuizPlayerInstance);
+        }
+
         return newQuizPlayerInstance;
     }
 
@@ -94,7 +99,6 @@ public class QuizServer extends UnicastRemoteObject implements QuizService, Seri
         for (PlayerQuizInstance current : playerQuizInstances) {
             if (current.equals(quizInstance)) {
                 current.setTotalScore(playerQuizInstanceScore);
-                System.out.println("Instance set to not played");
                 current.setQuizPlayed(false);
             }
         }
@@ -169,7 +173,7 @@ public class QuizServer extends UnicastRemoteObject implements QuizService, Seri
     Quiz findQuiz(int id) {
         Quiz existingQuiz = null;
         for (Quiz curr : allQuizzes) {
-            if (curr.getQuizId() == id) {
+            if (curr.getQuizId() == id && curr.getQuizState()) {
                 existingQuiz = curr;
             }
         }

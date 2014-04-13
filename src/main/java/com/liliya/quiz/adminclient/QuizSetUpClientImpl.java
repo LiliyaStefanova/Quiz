@@ -126,19 +126,16 @@ public class QuizSetUpClientImpl implements QuizSetUpClient {
                 return;
             }
                 if(quizAdmin.checkQuizPlayed(quizIDSelected)){
-                    System.out.println("Waiting for players to finish...\n");
+                    System.out.println("Quiz is still played...try again later...\n");
+                    return;
                 }
-            while((quizAdmin.checkQuizPlayed(quizIDSelected))){
-
-                Thread.sleep(500);
-            }
+                else{
                 List<PlayerQuizInstance> winners = quizAdmin.closeQuiz(quizIDSelected);
                 displayQuizWinnerDetails(winners);
                 System.out.println("Quiz is now closed.");
+                }
 
         } catch (RemoteException ex) {
-            ex.printStackTrace();
-        } catch(InterruptedException ex){
             ex.printStackTrace();
         }
 
