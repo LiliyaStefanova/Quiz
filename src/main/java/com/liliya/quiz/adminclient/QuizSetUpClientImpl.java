@@ -2,19 +2,13 @@ package com.liliya.quiz.adminclient;
 
 import com.liliya.constants.UserMessages;
 import com.liliya.menu.MenuActions;
-import com.liliya.menu.TextMenu;
 import com.liliya.menu.TextMenuItem;
 import com.liliya.quiz.model.*;
 import com.liliya.quiz.model.UserInputManagerAdmin;
-import com.liliya.quiz.server.QuizServer;
 
 import java.io.*;
 import java.net.MalformedURLException;
-import java.nio.charset.Charset;
 import java.rmi.*;
-import java.rmi.registry.LocateRegistry;
-import java.rmi.registry.Registry;
-import java.rmi.server.UnicastRemoteObject;
 import java.util.*;
 import java.util.logging.Logger;
 
@@ -100,7 +94,7 @@ public class QuizSetUpClientImpl implements QuizSetUpClient {
 
         String quizName = userInputManager.provideQuizName();
         try {
-            int quizID = quizAdmin.createNewQuiz(quizName, setUpQuestionsManually());
+            int quizID = quizAdmin.createNewQuiz(quizName, generateQuizQuestionsManually());
             System.out.println("ID for quiz \"" + quizName + "\" is: " + quizID);
         } catch (RemoteException ex) {
             ex.printStackTrace();
@@ -111,7 +105,7 @@ public class QuizSetUpClientImpl implements QuizSetUpClient {
     public void setUpQuizFromFile() {
         String quizName = userInputManager.provideQuizName();
         try {
-            int quizID = quizAdmin.createNewQuiz(quizName, setUpQuestionsFromFile());
+            int quizID = quizAdmin.createNewQuiz(quizName, generateQuizQuestionsFromFile());
             System.out.println("ID for quiz \"" + quizName + "\" is: " + quizID);
         } catch (RemoteException ex) {
             ex.printStackTrace();
@@ -120,7 +114,6 @@ public class QuizSetUpClientImpl implements QuizSetUpClient {
 
     @Override
     public void requestQuizClose() {
-        boolean blocked = true;
         try {
             int quizIDSelected = displayActiveQuizzes();
             if (quizIDSelected == -1) {
@@ -131,7 +124,7 @@ public class QuizSetUpClientImpl implements QuizSetUpClient {
                 return;
             } else {
                 List<PlayerQuizInstance> winners = quizAdmin.closeQuiz(quizIDSelected);
-                displayQuizWinnerDetails(winners);
+                displayQuizWinnersDetails(winners);
                 System.out.println(UserMessages.QUIZ_NOW_CLOSED);
             }
 
@@ -153,8 +146,29 @@ public class QuizSetUpClientImpl implements QuizSetUpClient {
         }
     }
 
+    @Override
+    public void closeDownClient() {
+        if (userInputManager.confirmExit().equalsIgnoreCase("y")) {
+            clientLogger.info("Shutting down client...");
+            System.out.println(UserMessages.GOODBYE);
+            System.exit(0);
+        } else {return;}
+    }
 
-    private int displayActiveQuizzes() {
+    void displayQuizWinnersDetails(List<PlayerQuizInstance> playersWithHighestScore) {
+        System.out.println(UserMessages.WINNERS_OF_THE_QUIZ);
+        if (playersWithHighestScore.isEmpty()) {
+            System.out.println(UserMessages.NO_ONE_HAS_PLAYED_QUIZ);
+        } else {
+            System.out.printf("%-12s%-12s%n", "Player", "Total Score");
+            for (PlayerQuizInstance current : playersWithHighestScore) {
+                System.out.printf("%-12s%-12d%n", current.getPlayer().getName(), current.getTotalScore());
+            }
+            System.out.println();
+        }
+    }
+
+    int displayActiveQuizzes() {
         int choice = 0;
         System.out.println("Select quiz: ");
         try {
@@ -175,34 +189,8 @@ public class QuizSetUpClientImpl implements QuizSetUpClient {
         return choice;
     }
 
-    //TODO prompt to ask user if sure they want to exit
-    @Override
-    public void closeDownClient() {
-        if (userInputManager.confirmExit().equals("y") || userInputManager.confirmExit().equals("Y")) {
 
-            clientLogger.info("Shutting down client...");
-            System.out.println("Goodbye!");
-            System.exit(0);
-        }
-         else  {
-            return;
-        }
-    }
-
-    void displayQuizWinnerDetails(List<PlayerQuizInstance> playersWithHighestScore) {
-        System.out.println(UserMessages.WINNERS_OF_THE_QUIZ);
-        if (playersWithHighestScore.isEmpty()) {
-            System.out.println(UserMessages.NO_ONE_HAS_PLAYED_QUIZ);
-        } else {
-            System.out.printf("%-12s%-12s%n", "Player", "Total Score");
-            for (PlayerQuizInstance current : playersWithHighestScore) {
-                System.out.printf("%-12s%-12d%n", current.getPlayer().getName(), current.getTotalScore());
-            }
-            System.out.println();
-        }
-    }
-
-    Map<Integer, Question> setUpQuestionsManually() {
+    Map<Integer, Question> generateQuizQuestionsManually() {
         Map<Integer, Question> questions = new HashMap<Integer, Question>();
         int correctAnswer = 0;
         int countQuestionEntries = userInputManager.setNumberOfQuestions();
@@ -217,7 +205,7 @@ public class QuizSetUpClientImpl implements QuizSetUpClient {
         return questions;
     }
 
-    Map<Integer, Question> setUpQuestionsFromFile() {
+    Map<Integer, Question> generateQuizQuestionsFromFile() {
 
         Map<Integer, Question> questions = new HashMap<Integer, Question>();
         String question;

@@ -65,6 +65,7 @@ public class QuizPlayerClientImpl implements QuizPlayerClient {
 
     public void mainMenu() {
         do {
+            System.out.println();
             MenuActions action = userInputManager.showMenu("QUIZ PLAYER MENU", playerMenu);
             switch (action) {
                 case SELECT_QUIZ_FROM_LIST:
@@ -75,6 +76,7 @@ public class QuizPlayerClientImpl implements QuizPlayerClient {
                     break;
                 case QUIT:
                     closeDownProgram();
+                    break;
                 default:
                     System.out.print("Choose a valid option");
             }
@@ -151,8 +153,10 @@ public class QuizPlayerClientImpl implements QuizPlayerClient {
 
     @Override
     public void closeDownProgram() {
-        System.out.println(UserMessages.GOODBYE);
-        System.exit(0);
+        if (userInputManager.confirmExit().equalsIgnoreCase("y")) {
+            System.out.println(UserMessages.GOODBYE);
+            System.exit(0);
+        } else {return;}
     }
 
     Map<Question, Integer> submitAnswersForScoring(Quiz quizPlayed) {

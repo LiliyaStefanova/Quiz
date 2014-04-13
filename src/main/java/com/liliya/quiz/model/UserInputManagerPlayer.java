@@ -67,4 +67,19 @@ public class UserInputManagerPlayer {
         return name;
     }
 
+    public String confirmExit() {
+        String userInput = "";
+        do {
+            System.out.print("Are you sure you want to quit(y/n)?:");
+            try {
+                Scanner sc1 = new Scanner(System.in);
+                userInput = sc1.nextLine();
+            } catch (InputMismatchException ex) {
+                System.out.println("You must specify y or n");
+            }
+        } while (userInput.trim().isEmpty());
+
+        return userInput;
+    }
+
 }
