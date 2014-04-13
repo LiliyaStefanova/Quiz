@@ -23,7 +23,7 @@ public class PlayerClientTest {
         QuizPlayerClient playerClient = new QuizPlayerClientImpl(userInputManagerMock, quizServerMock);
 
         //instance set up
-        PlayerQuizInstance newInstance = new PlayerQuizInstance(quizTestData.newPlayer, quizTestData.newQuiz);
+        PlayerQuizInstance newInstance = new PlayerQuizInstanceImpl(quizTestData.newPlayer, quizTestData.newQuiz);
         newInstance.setTotalScore(5);
 
         List<Quiz> activeQuizzes = new ArrayList<Quiz>();

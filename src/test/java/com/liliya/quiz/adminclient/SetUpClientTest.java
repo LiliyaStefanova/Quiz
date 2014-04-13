@@ -60,17 +60,18 @@ public class SetUpClientTest {
 
         QuizSetUpClient setUpClient=new QuizSetUpClientImpl(userInputManagerMock, quizServerMock);
 
-        PlayerQuizInstance newInstance=new PlayerQuizInstance(quizTestData.newPlayer, quizTestData.newQuiz);
-        newInstance.setTotalScore(5);
 
         when(userInputManagerMock.selectQuizToCloseFromList()).thenReturn(3);
-        when(quizServerMock.loadQuizForPlay(3, "John")).thenReturn(newInstance);
+        when(quizServerMock.loadQuizForPlay(3, "John")).thenReturn(quizTestData.newInstance);
+        when(quizServerMock.getListAvailableQuizzes()).thenReturn(quizTestData.listAvailableQuizzes);
 
         when(quizServerMock.closeQuiz(3)).thenReturn(quizTestData.instancesPerPlayer);
 
         setUpClient.requestQuizClose();
 
+        verify(quizServerMock).getListAvailableQuizzes();
         verify(quizServerMock).closeQuiz(3);
+
     }
 
 

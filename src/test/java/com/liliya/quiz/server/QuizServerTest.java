@@ -1,9 +1,7 @@
 package com.liliya.quiz.server;
 
 import com.liliya.quiz.model.QuizTestData;
-import com.liliya.quiz.adminclient.QuizSetUpClient;
 import com.liliya.quiz.model.*;
-import com.liliya.quiz.playerclient.QuizPlayerClient;
 import org.junit.*;
 
 import java.rmi.RemoteException;
@@ -38,7 +36,7 @@ public class QuizServerTest{
         int quizId = quizServer.createNewQuiz("My Quiz", quizTestData.questions);
 
         assertEquals(0, quizId);
-        assertEquals(quizTestData.newQuiz.getQuizName(), quizServer.findQuiz(0).getQuizName());
+        assertEquals(quizTestData.newQuiz.getQuizName(), quizServer.findQuizToPlay(0).getQuizName());
     }
 
     @Test(expected = NullPointerException.class)
@@ -86,9 +84,24 @@ public class QuizServerTest{
 
         quizServer.closeQuiz(quizId1);
 
-        assertFalse(quizServer.findQuiz(quizId1).getQuizState());
+        assertEquals(null, quizServer.findQuizToPlay(quizId1));
         assertEquals(newInstance1.getQuiz().getQuizName(), quizServer.getPlayerQuizInstances().get(0).getQuiz().getQuizName());
         assertEquals(newInstance1.getPlayer().getName(), quizServer.getPlayerQuizInstances().get(0).getPlayer().getName());
+
+    }
+
+    @Test
+    public void checkQuizPlayedTest() throws RemoteException{
+
+        QuizTestData quizTestData=new QuizTestData();
+        QuizServer quizServer=new QuizServer();
+
+        int quizId = quizServer.createNewQuiz("My Quiz", quizTestData.questions);
+
+        PlayerQuizInstance newInstance=quizServer.loadQuizForPlay(quizId, quizTestData.newPlayer.getName());
+        newInstance.setQuizPlayed(true);
+
+        assertTrue(quizServer.checkQuizPlayed(quizId));
 
     }
 
@@ -162,6 +175,7 @@ public class QuizServerTest{
     }
 
     //Checks that if there are no quizzes an empty list will be returned
+    @Test
     public void getListAvailableQuizzesNoQuizTest() throws RemoteException{
         QuizTestData quizTestData=new QuizTestData();
         QuizServer quizServer=new QuizServer();
@@ -180,7 +194,7 @@ public class QuizServerTest{
         QuizServer quizServer=new QuizServer();
 
         int quizID=quizServer.createNewQuiz("My test quiz", quizTestData.questions);
-        quizServer.findQuiz(quizID).setQuizState(false);
+        quizServer.findQuizToPlay(quizID).setQuizState(false);
 
         assertTrue(quizServer.getListAvailableQuizzes().isEmpty());
     }

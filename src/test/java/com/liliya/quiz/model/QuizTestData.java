@@ -18,6 +18,7 @@ public class QuizTestData {
     public Question question2;
     public Player newPlayer;
     public Quiz newQuiz;
+    public List<Quiz> listAvailableQuizzes=new ArrayList<Quiz>();
     public PlayerQuizInstance newInstance;
     public Map<Question, Integer> playerGuesses;
     public List<PlayerQuizInstance> instancesPerPlayer;
@@ -45,7 +46,9 @@ public class QuizTestData {
         newPlayer = new PlayerImpl("John");
         newQuiz = new QuizImpl("My Quiz", questions, 3);
 
-        newInstance = new PlayerQuizInstance(newPlayer, newQuiz);
+        listAvailableQuizzes.add(newQuiz);
+
+        newInstance = new PlayerQuizInstanceImpl(newPlayer, newQuiz);
 
         playerGuesses=new HashMap<Question, Integer>();
         playerGuesses.put(question1, 3);
