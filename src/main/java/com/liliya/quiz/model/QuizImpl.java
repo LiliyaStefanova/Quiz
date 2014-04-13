@@ -11,14 +11,14 @@ public class QuizImpl implements Quiz, Serializable {
     //set to false once quiz is closed by user
     private boolean quizActive;
 
-    public QuizImpl(){
+    public QuizImpl() {
         //no args constructor for ser
     }
 
     public QuizImpl(String name, Map<Integer, Question> questions, int id) {
         this.quizName = name;
         this.quizQuestions = questions;
-        this.quizId=id;
+        this.quizId = id;
         quizActive = true;
     }
 

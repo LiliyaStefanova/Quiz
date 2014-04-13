@@ -48,8 +48,6 @@ public class QuizServer extends UnicastRemoteObject implements QuizService, Seri
         }
     }
 
-    //TODO a quiz cannot be closed if there is a player client still playing it-needs to be figured out-does synchronized fix this?
-
     @Override
     public synchronized List<PlayerQuizInstance> closeQuiz(int id) throws RemoteException {
 
@@ -204,7 +202,6 @@ public class QuizServer extends UnicastRemoteObject implements QuizService, Seri
     }
 
     //finds the player with highest score out of all quiz instances
-    //TODO functionality to deal with multiple players with the highest score
     List<PlayerQuizInstance> determineQuizWinner(List<PlayerQuizInstance> quizPlayInstances) {
         PlayerQuizInstance maxScore = null;
         List<PlayerQuizInstance> winners = new ArrayList<PlayerQuizInstance>();

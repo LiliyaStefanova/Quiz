@@ -26,9 +26,8 @@ public class QuizServerLauncher {
     private static Logger serverLogger = Logger.getLogger(QuizServer.class.getName());
 
     private static final TextMenuItem startServer = new TextMenuItem("LAUNCH SERVER", MenuActions.LAUNCH_SERVER);
-    private static final TextMenuItem quit= new TextMenuItem("QUIT MENU", MenuActions.QUIT);
 
-    private static List<TextMenuItem> serverMenu = new ArrayList<TextMenuItem>(Arrays.asList(startServer, quit));
+    private static List<TextMenuItem> serverMenu = new ArrayList<TextMenuItem>(Arrays.asList(startServer));
 
     private QuizService service;
 
@@ -39,7 +38,7 @@ public class QuizServerLauncher {
     }
 
     public void launchMainMenuServer() {
-        boolean menuActive=true;
+        boolean menuActive = true;
 
         do {
             MenuActions action = TextMenu.display("QUIZ SERVER MENU", serverMenu);
@@ -48,7 +47,7 @@ public class QuizServerLauncher {
                     launchServer();
                     break;
                 case QUIT:              //can be used to close menu when the server is shut down
-                    menuActive=false;
+                    menuActive = false;
                     break;
                 default:
                     System.out.print("Choose a valid option");
