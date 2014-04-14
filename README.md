@@ -1,6 +1,5 @@
 ##Quiz-Programming in Java Assignment III
-===========================
-
+--------------------------------------------
 ### Get Started
 
  1. Launching the server
