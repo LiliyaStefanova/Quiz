@@ -58,9 +58,9 @@ public class QuizServerLauncher {
 
     public void launchServer() {
 
-        /* if(System.getSecurityManager()==null){
+        if (System.getSecurityManager() == null) {
             System.setSecurityManager(new RMISecurityManager());
-        }*/
+        }
 
         try {
             serverLogger.info("Loading server...");

@@ -7,10 +7,7 @@ import com.liliya.menu.TextMenuItem;
 import com.liliya.quiz.model.*;
 
 import java.net.MalformedURLException;
-import java.rmi.Naming;
-import java.rmi.NotBoundException;
-import java.rmi.Remote;
-import java.rmi.RemoteException;
+import java.rmi.*;
 import java.util.*;
 
 /**
@@ -47,10 +44,10 @@ public class QuizPlayerClientImpl implements QuizPlayerClient {
 
     @Override
     public void connectToService() {
-        //TODO sort out the security manager
-        /*if(System.getSecurityManager()==null){
+
+        if (System.getSecurityManager() == null) {
             System.setSecurityManager(new RMISecurityManager());
-        }*/
+        }
         try {
             Remote service = Naming.lookup("//127.0.0.1:1699/quiz");
             quizPlayer = (QuizService) service;
@@ -156,7 +153,9 @@ public class QuizPlayerClientImpl implements QuizPlayerClient {
         if (userInputManager.confirmExit().equalsIgnoreCase("y")) {
             System.out.println(UserMessages.GOODBYE);
             System.exit(0);
-        } else {return;}
+        } else {
+            return;
+        }
     }
 
     Map<Question, Integer> submitAnswersForScoring(Quiz quizPlayed) {

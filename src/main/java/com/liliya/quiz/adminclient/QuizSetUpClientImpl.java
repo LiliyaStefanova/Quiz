@@ -46,9 +46,9 @@ public class QuizSetUpClientImpl implements QuizSetUpClient {
 
     public void connectToService() {
 
-        /*if(System.getSecurityManager()==null){
+        if (System.getSecurityManager() == null) {
             System.setSecurityManager(new RMISecurityManager());
-        }*/
+        }
         try {
             Remote service = Naming.lookup("//127.0.0.1:1699/quiz");
             quizAdmin = (QuizService) service;
@@ -152,7 +152,9 @@ public class QuizSetUpClientImpl implements QuizSetUpClient {
             clientLogger.info("Shutting down client...");
             System.out.println(UserMessages.GOODBYE);
             System.exit(0);
-        } else {return;}
+        } else {
+            return;
+        }
     }
 
     void displayQuizWinnersDetails(List<PlayerQuizInstance> playersWithHighestScore) {
@@ -191,8 +193,8 @@ public class QuizSetUpClientImpl implements QuizSetUpClient {
 
 
     Map<Integer, Question> generateQuizQuestionsManually() {
+
         Map<Integer, Question> questions = new HashMap<Integer, Question>();
-        int correctAnswer = 0;
         int countQuestionEntries = userInputManager.setNumberOfQuestions();
         while (countQuestionEntries > 0) {
             Question newQuestion = new QuestionImpl(userInputManager.provideQuestion(),

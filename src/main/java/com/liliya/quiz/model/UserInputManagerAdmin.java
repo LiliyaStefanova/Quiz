@@ -19,7 +19,7 @@ public class UserInputManagerAdmin {
         String quizName = "";
         do {
             try {
-                System.out.print("Enter quiz name(C+Enter to escape): ");
+                System.out.print("Enter quiz name: ");
                 Scanner sc1 = new Scanner(System.in);
                 quizName = sc1.nextLine();
             } catch (IllegalArgumentException ex) {
