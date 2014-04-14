@@ -1,5 +1,6 @@
 package com.liliya.quiz.adminclient;
 
+import com.liliya.constants.ExceptionMsg;
 import com.liliya.constants.UserMessages;
 import com.liliya.menu.MenuActions;
 import com.liliya.menu.TextMenuItem;
@@ -83,7 +84,7 @@ public class QuizSetUpClientImpl implements QuizSetUpClient {
                     closeDownClient();
                     break;
                 default:
-                    System.out.print("Choose a valid option");
+                    System.out.print(ExceptionMsg.CHOOSE_VALID_OPTION);
             }
 
         } while (true);
@@ -186,7 +187,7 @@ public class QuizSetUpClientImpl implements QuizSetUpClient {
         } catch (RemoteException ex) {
             ex.printStackTrace();
         } catch (InputMismatchException ex) {
-            throw new RuntimeException("Enter the quiz number", ex);
+            throw new RuntimeException(ExceptionMsg.ENTER_QUIZ_NUMBER, ex);
         }
         return choice;
     }
@@ -203,6 +204,9 @@ public class QuizSetUpClientImpl implements QuizSetUpClient {
                     userInputManager.provideCorrectAnswerPoints());
             questions.put(countQuestionEntries, newQuestion);
             countQuestionEntries--;
+        }
+        if(questions.isEmpty()){
+            throw new IllegalArgumentException(ExceptionMsg.QUESTIONS_EMPTY);
         }
         return questions;
     }

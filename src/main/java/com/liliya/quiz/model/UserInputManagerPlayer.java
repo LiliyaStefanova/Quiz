@@ -1,5 +1,6 @@
 package com.liliya.quiz.model;
 
+import com.liliya.constants.ExceptionMsg;
 import com.liliya.menu.MenuActions;
 import com.liliya.menu.TextMenu;
 import com.liliya.menu.TextMenuItem;
@@ -26,7 +27,7 @@ public class UserInputManagerPlayer {
                 Scanner sc = new Scanner(System.in);
                 choice = sc.nextInt();
             } catch (InputMismatchException e) {
-                System.out.println("You need to enter the quiz number");
+                System.out.println(ExceptionMsg.QUIZ_ID_NUM);
             }
         } while (choice == -1);
 
@@ -41,7 +42,7 @@ public class UserInputManagerPlayer {
                 Scanner sc = new Scanner(System.in);
                 playerGuess = sc.nextInt();
             } catch (InputMismatchException ex) {
-                System.out.println("Answer must be number of the question.Try again!");
+                System.out.println(ExceptionMsg.ANS_NUM_TRY);
             }
         } while (!answerRangeValidationCheck(playerGuess) || playerGuess == 0);
 
@@ -75,7 +76,7 @@ public class UserInputManagerPlayer {
                 Scanner sc1 = new Scanner(System.in);
                 userInput = sc1.nextLine();
             } catch (InputMismatchException ex) {
-                System.out.println("You must specify y or n");
+                System.out.println(ExceptionMsg.YN);
             }
         } while (userInput.trim().isEmpty());
 

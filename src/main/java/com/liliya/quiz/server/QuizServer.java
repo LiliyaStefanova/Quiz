@@ -34,18 +34,11 @@ public class QuizServer extends UnicastRemoteObject implements QuizService, Seri
     //TODO check for duplicate quizzes
     @Override
     public synchronized int createNewQuiz(String name, Map<Integer, Question> questions) throws RemoteException {
-
-        if (questions == null) {
-            throw new NullPointerException("Questions cannot be null");
-        } else if (questions.isEmpty()) {
-            throw new IllegalArgumentException("Questions cannot be empty");
-        } else {
             Quiz newQuiz = new QuizImpl(name, questions, quizIDCounter);
             quizIDCounter++;        //increment counter for next quiz
             int quizId = newQuiz.getQuizId();
             allQuizzes.add(newQuiz);
             return quizId;
-        }
     }
 
     @Override

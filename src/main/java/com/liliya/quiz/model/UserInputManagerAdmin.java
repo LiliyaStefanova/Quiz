@@ -1,5 +1,6 @@
 package com.liliya.quiz.model;
 
+import com.liliya.constants.ExceptionMsg;
 import com.liliya.menu.MenuActions;
 import com.liliya.menu.TextMenu;
 import com.liliya.menu.TextMenuItem;
@@ -23,7 +24,7 @@ public class UserInputManagerAdmin {
                 Scanner sc1 = new Scanner(System.in);
                 quizName = sc1.nextLine();
             } catch (IllegalArgumentException ex) {
-                System.out.println("Please provide a quiz name");
+                System.out.println(ExceptionMsg.PROVIDE_QUIZ_NAME);
             }
         } while (quizName.trim().isEmpty());
         return quizName;
@@ -37,7 +38,7 @@ public class UserInputManagerAdmin {
                 Scanner sc = new Scanner(System.in);
                 choice = sc.nextInt();
             } catch (InputMismatchException e) {
-                throw new RuntimeException("You need to enter the quiz number", e);
+                throw new RuntimeException(ExceptionMsg.ENTER_QUIZ_NUMBER, e);
             }
         } while (choice == -1);
 
@@ -50,7 +51,7 @@ public class UserInputManagerAdmin {
             Scanner sc1 = new Scanner(System.in);
             return sc1.nextInt();
         } catch (InputMismatchException ex) {
-            throw new RuntimeException("Number of questions required", ex);
+            throw new RuntimeException(ExceptionMsg.NUM_QUES_REQ, ex);
         }
     }
 
@@ -62,7 +63,7 @@ public class UserInputManagerAdmin {
                 Scanner sc2 = new Scanner(System.in);
                 question = sc2.nextLine();
             } catch (IllegalArgumentException ex) {
-                System.out.println("You must enter a question");
+                System.out.println(ExceptionMsg.ENTER_QUES);
             }
         } while (question.trim().isEmpty());
         return question;
@@ -80,7 +81,7 @@ public class UserInputManagerAdmin {
                     Scanner sc3 = new Scanner(System.in);
                     answer = sc3.nextLine();
                 } catch (IllegalArgumentException ex) {
-                    System.out.println("Possible answer entry required");
+                    System.out.println(ExceptionMsg.POSS_ANS_ENTRY);
                 }
                 possibleAnswers.put(i, answer);
 
@@ -97,7 +98,7 @@ public class UserInputManagerAdmin {
                 Scanner sc4 = new Scanner(System.in);
                 correctAnswer = sc4.nextInt();
             } catch (InputMismatchException ex) {
-                System.out.println("You need to enter the number of the correct answer");
+                System.out.println(ExceptionMsg.NUM_CORR_ANS);
             }
         } while (correctAnswer < 1 || correctAnswer > 4);
         return correctAnswer;
@@ -112,7 +113,7 @@ public class UserInputManagerAdmin {
                 Scanner sc5 = new Scanner(System.in);
                 correctAnswerPoints = sc5.nextInt();
             } catch (InputMismatchException ex) {
-                System.out.println("Answer points must be provided as number");
+                System.out.println(ExceptionMsg.ANS_POINTS);
             }
         } while (correctAnswerPoints == 0);
         return correctAnswerPoints;
@@ -126,7 +127,7 @@ public class UserInputManagerAdmin {
                 Scanner sc1 = new Scanner(System.in);
                 filename = sc1.nextLine();
             } catch (InputMismatchException ex) {
-                throw new RuntimeException("Invalid file path");
+                throw new RuntimeException(ExceptionMsg.INVALID_PATH);
             }
         } while (filename.trim().isEmpty());
         return filename;
@@ -140,7 +141,7 @@ public class UserInputManagerAdmin {
                 Scanner sc1 = new Scanner(System.in);
                 quizId = sc1.nextInt();
             } catch (InputMismatchException ex) {
-                System.out.println("Quiz id must be number");
+                System.out.println(ExceptionMsg.QUIZ_ID_NUM);
             }
         } while (quizId == -1);
         return quizId;
@@ -154,7 +155,7 @@ public class UserInputManagerAdmin {
                 Scanner sc1 = new Scanner(System.in);
                 userInput = sc1.nextLine();
             } catch (InputMismatchException ex) {
-                System.out.println("You must specify y or n");
+                System.out.println(ExceptionMsg.YN);
             }
         } while (userInput.trim().isEmpty());
 
