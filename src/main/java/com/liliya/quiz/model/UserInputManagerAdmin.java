@@ -3,6 +3,7 @@ package com.liliya.quiz.model;
 import com.liliya.constants.ExceptionMsg;
 import com.liliya.constants.UserDialog;
 import com.liliya.constants.UserDialog;
+import com.liliya.exceptions.ChangedMyMindException;
 import com.liliya.menu.MenuActions;
 import com.liliya.menu.TextMenu;
 import com.liliya.menu.TextMenuItem;
@@ -23,8 +24,9 @@ public class UserInputManagerAdmin {
         do {
             try {
                 System.out.print(UserDialog.ENTER_QUIZ_NAME);
-                Scanner sc1 = new Scanner(System.in);
-                quizName = sc1.nextLine();
+                Scanner sc = new Scanner(System.in);
+                quizName = sc.nextLine();
+                checkInterruptionRequired(quizName);
             } catch (IllegalArgumentException ex) {
                 System.out.println(ExceptionMsg.PROVIDE_QUIZ_NAME);
             }
@@ -33,12 +35,16 @@ public class UserInputManagerAdmin {
     }
 
     public int selectQuizToCloseFromList() {
-        int choice = -1;
+        String choiceS = "";
+        int choice=-1;
         do {
             try {
                 System.out.print(">>");
                 Scanner sc = new Scanner(System.in);
-                choice = sc.nextInt();
+                choiceS=sc.nextLine();
+                checkInterruptionRequired(choice + "");
+                choice=Integer.parseInt(choiceS);
+
             } catch (InputMismatchException e) {
                 throw new RuntimeException(ExceptionMsg.ENTER_QUIZ_NUMBER, e);
             }
@@ -50,8 +56,11 @@ public class UserInputManagerAdmin {
     public int setNumberOfQuestions() {
         try {
             System.out.print(UserDialog.NUM_QUESTIONS);
-            Scanner sc1 = new Scanner(System.in);
-            return sc1.nextInt();
+            String choiceS = "";
+            Scanner sc = new Scanner(System.in);
+            choiceS=sc.nextLine();
+            checkInterruptionRequired(choiceS);
+            return Integer.parseInt(choiceS);
         } catch (InputMismatchException ex) {
             throw new RuntimeException(ExceptionMsg.NUM_QUES_REQ, ex);
         }
@@ -62,8 +71,9 @@ public class UserInputManagerAdmin {
         do {
             try {
                 System.out.print(UserDialog.ENTER_QUESTION);
-                Scanner sc2 = new Scanner(System.in);
-                question = sc2.nextLine();
+                Scanner sc = new Scanner(System.in);
+                question = sc.nextLine();
+                checkInterruptionRequired(question);
             } catch (IllegalArgumentException ex) {
                 System.out.println(ExceptionMsg.ENTER_QUES);
             }
@@ -80,8 +90,9 @@ public class UserInputManagerAdmin {
                 System.out.print("Possible answer " + i + ":");
                 try {
 
-                    Scanner sc3 = new Scanner(System.in);
-                    answer = sc3.nextLine();
+                    Scanner sc = new Scanner(System.in);
+                    answer = sc.nextLine();
+                    checkInterruptionRequired(answer);
                 } catch (IllegalArgumentException ex) {
                     System.out.println(ExceptionMsg.POSS_ANS_ENTRY);
                 }
@@ -94,11 +105,15 @@ public class UserInputManagerAdmin {
 
     public int provideCorrectAnswer() {
         int correctAnswer = 0;
+        String choiceS="";
         do {
             try {
                 System.out.print(UserDialog.ENTER_CORR_ANS);
-                Scanner sc4 = new Scanner(System.in);
-                correctAnswer = sc4.nextInt();
+                Scanner sc = new Scanner(System.in);
+                choiceS = sc.nextLine();
+                checkInterruptionRequired(choiceS);
+                correctAnswer=Integer.parseInt(choiceS);
+
             } catch (InputMismatchException ex) {
                 System.out.println(ExceptionMsg.NUM_CORR_ANS);
             }
@@ -109,11 +124,14 @@ public class UserInputManagerAdmin {
     //a question can never have 0 points for a correct answer
     public int provideCorrectAnswerPoints() {
         int correctAnswerPoints = 0;
+        String choiceS="";
         do {
             try {
                 System.out.print(UserDialog.ENTER_CORR_ANS_POINTS);
-                Scanner sc5 = new Scanner(System.in);
-                correctAnswerPoints = sc5.nextInt();
+                Scanner sc = new Scanner(System.in);
+                choiceS=sc.nextLine();
+                checkInterruptionRequired(choiceS);
+                correctAnswerPoints = Integer.parseInt(choiceS);
             } catch (InputMismatchException ex) {
                 System.out.println(ExceptionMsg.ANS_POINTS);
             }
@@ -126,8 +144,9 @@ public class UserInputManagerAdmin {
         System.out.print(UserDialog.ENTER_PATH);
         do {
             try {
-                Scanner sc1 = new Scanner(System.in);
-                filename = sc1.nextLine();
+                Scanner sc = new Scanner(System.in);
+                filename = sc.nextLine();
+                checkInterruptionRequired(filename);
             } catch (InputMismatchException ex) {
                 throw new RuntimeException(ExceptionMsg.INVALID_PATH);
             }
@@ -148,5 +167,11 @@ public class UserInputManagerAdmin {
         } while (userInput.trim().isEmpty());
 
         return userInput;
+    }
+
+    public void checkInterruptionRequired(String input){
+        if(input.equals("X")){
+            throw new ChangedMyMindException();
+        }
     }
 }

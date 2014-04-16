@@ -3,6 +3,7 @@ package com.liliya.quiz.playerclient;
 import com.liliya.constants.ExceptionMsg;
 import com.liliya.constants.UserDialog;
 import com.liliya.constants.UserDialog;
+import com.liliya.exceptions.ChangedMyMindException;
 import com.liliya.exceptions.NoQuizException;
 import com.liliya.menu.MenuActions;
 import com.liliya.menu.TextMenuItem;
@@ -66,6 +67,7 @@ public class QuizPlayerClientImpl implements QuizPlayerClient {
         do {
             System.out.println();
             MenuActions action = userInputManager.showMenu("QUIZ PLAYER MENU", playerMenu);
+            try{
             switch (action) {
                 case SELECT_QUIZ_FROM_LIST:
                     try {
@@ -82,6 +84,9 @@ public class QuizPlayerClientImpl implements QuizPlayerClient {
                     break;
                 default:
                     System.out.print(ExceptionMsg.CHOOSE_VALID_OPTION);
+            }
+            }catch(ChangedMyMindException ex){
+                //do nothing-just return to menu
             }
 
         } while (true);

@@ -2,6 +2,7 @@ package com.liliya.quiz.adminclient;
 
 import com.liliya.constants.ExceptionMsg;
 import com.liliya.constants.UserDialog;
+import com.liliya.exceptions.ChangedMyMindException;
 import com.liliya.menu.MenuActions;
 import com.liliya.menu.TextMenuItem;
 import com.liliya.quiz.model.*;
@@ -67,24 +68,28 @@ public class QuizSetUpClientImpl implements QuizSetUpClient {
         do {
             System.out.println();
             MenuActions action = userInputManager.showMenu("QUIZ ADMINISTRATOR MENU", setUpClientMenu);
-            switch (action) {
-                case SET_UP_QUIZ_MANUALLY:
-                    setUpQuizManually();
-                    break;
-                case SET_UP_QUIZ_FROM_FILE:
-                    setUpQuizFromFile();
-                    break;
-                case CLOSE_QUIZ:
-                    requestQuizClose();
-                    break;
-                case SHUTDOWN_SERVER:
-                    closeDownServer();
-                    break;
-                case QUIT:
-                    closeDownClient();
-                    break;
-                default:
-                    System.out.print(ExceptionMsg.CHOOSE_VALID_OPTION);
+            try {
+                switch (action) {
+                    case SET_UP_QUIZ_MANUALLY:
+                        setUpQuizManually();
+                        break;
+                    case SET_UP_QUIZ_FROM_FILE:
+                        setUpQuizFromFile();
+                        break;
+                    case CLOSE_QUIZ:
+                        requestQuizClose();
+                        break;
+                    case SHUTDOWN_SERVER:
+                        closeDownServer();
+                        break;
+                    case QUIT:
+                        closeDownClient();
+                        break;
+                    default:
+                        System.out.print(ExceptionMsg.CHOOSE_VALID_OPTION);
+                }
+            } catch(ChangedMyMindException ex){
+                //do nothing-just return to menu
             }
 
         } while (true);
