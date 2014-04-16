@@ -3,7 +3,7 @@ package com.liliya.constants;
 
 public class ExceptionMsg {
 
-    public static final String CHOOSE_VALID_OPTION = "Choose a valid option";
+    public static final String CHOOSE_VALID_OPTION = "Choose a valid option(return to main menu - X)";
     public static final String ENTER_QUIZ_NUMBER = "Enter the quiz number";
     public static final String QUESTIONS_EMPTY = "Questions cannot empty";
     public static final String PROVIDE_QUIZ_NAME = "Please provide a quiz name";
