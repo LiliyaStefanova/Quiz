@@ -1,13 +1,13 @@
 package com.liliya.quiz.playerclient;
 
-import com.liliya.quiz.model.QuizTestData;
 import com.liliya.quiz.model.*;
-import org.junit.*;
+import org.junit.Test;
 
 import java.rmi.RemoteException;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
 
-import static junit.framework.Assert.assertEquals;
+import static org.junit.Assert.*;
 import static org.mockito.Mockito.*;
 
 public class PlayerClientTest {

@@ -6,9 +6,7 @@ import org.junit.*;
 
 import java.rmi.RemoteException;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import static org.junit.Assert.*;
 import static org.junit.Assert.assertEquals;
@@ -37,37 +35,6 @@ public class QuizServerTest{
 
         assertEquals(0, quizId);
         assertEquals(quizTestData.newQuiz.getQuizName(), quizServer.findQuizToPlay(0).getQuizName());
-    }
-
-    @Test(expected = NullPointerException.class)
-    public void createQuizQuestionsNullTest() throws RemoteException{
-        QuizTestData quizTestData=new QuizTestData();
-
-        QuizServer quizServer=new QuizServer();
-
-        UserInputManagerAdmin userInputManagerAdmin=mock(UserInputManagerAdmin.class);
-
-        when(userInputManagerAdmin.provideQuizName()).thenReturn("My Quiz");
-
-        int quizId = quizServer.createNewQuiz("My Quiz", null);
-
-    }
-
-    @Test(expected = IllegalArgumentException.class)
-    public void createQuizQuestionsEmptyTest() throws RemoteException{
-
-        QuizTestData quizTestData=new QuizTestData();
-
-        QuizServer quizServer=new QuizServer();
-
-        UserInputManagerAdmin userInputManagerAdmin=mock(UserInputManagerAdmin.class);
-
-        when(userInputManagerAdmin.provideQuizName()).thenReturn("My Quiz");
-
-        Map<Integer, Question> questions = new HashMap<Integer, Question>();
-
-        int quizId = quizServer.createNewQuiz("My Quiz", questions);
-
     }
 
     //Empty or null name not tested here as exception is handled as part of the UserInputManagerAdmin functionality
