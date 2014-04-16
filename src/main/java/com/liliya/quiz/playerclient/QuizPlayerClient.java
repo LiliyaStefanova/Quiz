@@ -1,7 +1,5 @@
 package com.liliya.quiz.playerclient;
 
-import java.util.List;
-
 /**
  * Public interface for the player client
  */
