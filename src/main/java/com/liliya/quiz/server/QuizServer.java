@@ -1,6 +1,7 @@
 package com.liliya.quiz.server;
 
 
+import com.liliya.constants.ExceptionMsg;
 import com.liliya.quiz.model.*;
 
 import java.io.*;
@@ -48,7 +49,7 @@ public class QuizServer extends UnicastRemoteObject implements QuizService, Seri
         for (Quiz curr : allQuizzes) {
             if (curr.getQuizId() == id) {
                 if (!curr.getQuizState()) {
-                    throw new IllegalStateException("This quiz has already been closed");
+                    throw new IllegalStateException(ExceptionMsg.ALREADY_CLOSED);
                 }
                 curr.setQuizState(false);
             }
@@ -141,7 +142,7 @@ public class QuizServer extends UnicastRemoteObject implements QuizService, Seri
             registry.unbind(SERVICE_NAME);
             UnicastRemoteObject.unexportObject(this, false);
         } catch (NotBoundException ex) {
-            throw new RemoteException("Could not un-register, quitting anyway...", ex);
+            throw new RemoteException(ExceptionMsg.UNREGISTER_FAIL, ex);
         }
 
         new Thread() {

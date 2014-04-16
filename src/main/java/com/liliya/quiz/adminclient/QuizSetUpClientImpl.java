@@ -1,7 +1,7 @@
 package com.liliya.quiz.adminclient;
 
 import com.liliya.constants.ExceptionMsg;
-import com.liliya.constants.UserMessages;
+import com.liliya.constants.UserDialog;
 import com.liliya.menu.MenuActions;
 import com.liliya.menu.TextMenuItem;
 import com.liliya.quiz.model.*;
@@ -121,12 +121,12 @@ public class QuizSetUpClientImpl implements QuizSetUpClient {
                 return;
             }
             if (quizAdmin.checkQuizPlayed(quizIDSelected)) {
-                System.out.println(UserMessages.QUIZ_STILL_PLAYED);
+                System.out.println(UserDialog.QUIZ_STILL_PLAYED);
                 return;
             } else {
                 List<PlayerQuizInstance> winners = quizAdmin.closeQuiz(quizIDSelected);
                 displayQuizWinnersDetails(winners);
-                System.out.println(UserMessages.QUIZ_NOW_CLOSED);
+                System.out.println(UserDialog.QUIZ_NOW_CLOSED);
             }
 
         } catch (RemoteException ex) {
@@ -151,7 +151,7 @@ public class QuizSetUpClientImpl implements QuizSetUpClient {
     public void closeDownClient() {
         if (userInputManager.confirmExit().equalsIgnoreCase("y")) {
             clientLogger.info("Shutting down client...");
-            System.out.println(UserMessages.GOODBYE);
+            System.out.println(UserDialog.GOODBYE);
             System.exit(0);
         } else {
             return;
@@ -159,9 +159,9 @@ public class QuizSetUpClientImpl implements QuizSetUpClient {
     }
 
     void displayQuizWinnersDetails(List<PlayerQuizInstance> playersWithHighestScore) {
-        System.out.println(UserMessages.WINNERS_OF_THE_QUIZ);
+        System.out.println(UserDialog.WINNERS_OF_THE_QUIZ);
         if (playersWithHighestScore.isEmpty()) {
-            System.out.println(UserMessages.NO_ONE_HAS_PLAYED_QUIZ);
+            System.out.println(UserDialog.NO_ONE_HAS_PLAYED_QUIZ);
         } else {
             System.out.printf("%-12s%-12s%n", "Player", "Total Score");
             for (PlayerQuizInstance current : playersWithHighestScore) {
@@ -177,7 +177,7 @@ public class QuizSetUpClientImpl implements QuizSetUpClient {
         try {
             List<Quiz> availableQuizzes = quizAdmin.getListAvailableQuizzes();
             if (availableQuizzes.isEmpty()) {
-                System.out.println(UserMessages.NO_QUIZZES_AVAILABLE);
+                System.out.println(UserDialog.NO_QUIZZES_AVAILABLE);
                 return -1;
             }
             for (Quiz current : availableQuizzes) {

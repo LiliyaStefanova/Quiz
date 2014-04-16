@@ -1,7 +1,5 @@
 package com.liliya.quiz.adminclient;
 
-import com.liliya.quiz.model.PlayerQuizInstance;
-
 /**
  * Public interface for the set up client
  */

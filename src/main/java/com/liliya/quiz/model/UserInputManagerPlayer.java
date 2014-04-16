@@ -1,6 +1,7 @@
 package com.liliya.quiz.model;
 
 import com.liliya.constants.ExceptionMsg;
+import com.liliya.constants.UserDialog;
 import com.liliya.menu.MenuActions;
 import com.liliya.menu.TextMenu;
 import com.liliya.menu.TextMenuItem;
@@ -38,7 +39,7 @@ public class UserInputManagerPlayer {
         int playerGuess = 0;
         do {
             try {
-                System.out.print("Your answer(type the answer number): ");
+                System.out.print(UserDialog.ANSWER_PROMPT);
                 Scanner sc = new Scanner(System.in);
                 playerGuess = sc.nextInt();
             } catch (InputMismatchException ex) {
@@ -60,7 +61,7 @@ public class UserInputManagerPlayer {
     public String providePlayerName() {
         String name = "";
         do {
-            System.out.print("Enter your name: ");
+            System.out.print(UserDialog.ENTER_NAME);
             Scanner sc = new Scanner(System.in);
             name = sc.nextLine();
             System.out.println();
@@ -71,7 +72,7 @@ public class UserInputManagerPlayer {
     public String confirmExit() {
         String userInput = "";
         do {
-            System.out.print("Are you sure you want to quit(y/n)?:");
+            System.out.print(UserDialog.CONFIRM_QUIT);
             try {
                 Scanner sc1 = new Scanner(System.in);
                 userInput = sc1.nextLine();
