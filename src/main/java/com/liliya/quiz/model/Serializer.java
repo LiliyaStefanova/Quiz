@@ -5,10 +5,7 @@ import com.liliya.quiz.server.QuizServer;
 import java.beans.XMLDecoder;
 import java.beans.XMLEncoder;
 import java.io.*;
-import java.rmi.Remote;
 import java.rmi.RemoteException;
-import java.util.List;
-import java.util.Set;
 
 public class Serializer implements Serializable {
 

@@ -5,7 +5,6 @@ import java.rmi.Remote;
 import java.rmi.RemoteException;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
 /**
  * The server functionality of the quiz system
@@ -18,8 +17,6 @@ public interface QuizService extends Remote {
      * @param name      of the quiz specified by the set up client
      * @param questions of the quiz specified by the set up client
      * @return id of the quiz
-     * @throws NullPointerException     if the questions are null
-     * @throws IllegalArgumentException if the questions are empty
      */
     public int createNewQuiz(String name, Map<Integer, Question> questions) throws RemoteException;
 
