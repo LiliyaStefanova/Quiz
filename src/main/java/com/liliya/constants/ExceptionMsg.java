@@ -19,5 +19,9 @@ public class ExceptionMsg {
     public static final String YN = "You must specify y or n";
 
 
+    public static final String ALREADY_CLOSED = "This quiz has already been closed";
+    public static final String UNREGISTER_FAIL = "Could not un-register, quitting anyway...";
+
+
 
 }
