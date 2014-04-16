@@ -6,8 +6,6 @@
 -------------------------------------------
  - Run the QuizServerLauncher.java file
 
- - Choose Option 0.LAUNCH SERVER from the menu. You must type the option number
-
 2. Launching the set up/administrator client
 ----------------------------------------------
  - Run the QuizSetUpClientImpl.java file. Run as many times as required for new clients
