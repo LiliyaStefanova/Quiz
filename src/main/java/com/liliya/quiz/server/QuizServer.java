@@ -83,6 +83,10 @@ public class QuizServer extends UnicastRemoteObject implements QuizService, Seri
     @Override
     public synchronized int calculatePlayerScore(PlayerQuizInstance quizInstance, Map<Question, Integer> guesses) throws RemoteException {
         int playerQuizInstanceScore = 0;
+        //if guesses were not submitted, set quiz to not played to avoid blocking admin from closing it
+        if(guesses.isEmpty()||guesses.size()<quizInstance.getQuiz().getQuizQuestions().size()){
+            quizInstance.setQuizPlayed(false);
+        }
         for (Map.Entry<Question, Integer> entry : guesses.entrySet()) {
             if (entry.getKey().getCorrectAnswer() == entry.getValue()) {
                 playerQuizInstanceScore = playerQuizInstanceScore + entry.getKey().getCorrectAnswerPoints();

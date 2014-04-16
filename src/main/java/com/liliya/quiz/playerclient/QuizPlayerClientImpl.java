@@ -172,6 +172,10 @@ public class QuizPlayerClientImpl implements QuizPlayerClient {
             playerGuesses.put(currentQuestion.getValue(), userInputManager.provideSelectedAnswer());
 
         }
+        if(playerGuesses.isEmpty()|| playerGuesses.size()<quizPlayed.getQuizQuestions().size()){
+            throw new IllegalArgumentException("Some or all questions have not been answered");
+        }
+
         return playerGuesses;
     }
 
