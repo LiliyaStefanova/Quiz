@@ -7,12 +7,10 @@ import com.liliya.quiz.model.QuizService;
 import com.liliya.quiz.model.Serializer;
 
 import java.nio.channels.AlreadyBoundException;
-import java.rmi.NotBoundException;
 import java.rmi.RMISecurityManager;
 import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
-import java.rmi.server.UnicastRemoteObject;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -25,36 +23,13 @@ public class QuizServerLauncher {
 
     private static Logger serverLogger = Logger.getLogger(QuizServer.class.getName());
 
-    private static final TextMenuItem startServer = new TextMenuItem("LAUNCH SERVER", MenuActions.LAUNCH_SERVER);
-
-    private static List<TextMenuItem> serverMenu = new ArrayList<TextMenuItem>(Arrays.asList(startServer));
-
     private QuizService service;
 
     public static void main(String[] args) {
 
         QuizServerLauncher qsl = new QuizServerLauncher();
-        qsl.launchMainMenuServer();
+        qsl.launchServer();
     }
-
-    public void launchMainMenuServer() {
-        boolean menuActive = true;
-
-        do {
-            MenuActions action = TextMenu.display("QUIZ SERVER MENU", serverMenu);
-            switch (action) {
-                case LAUNCH_SERVER:
-                    launchServer();
-                    break;
-                case QUIT:              //can be used to close menu when the server is shut down
-                    menuActive = false;
-                    break;
-                default:
-                    System.out.print("Choose a valid option");
-            }
-        } while (menuActive);
-    }
-
 
     public void launchServer() {
 
