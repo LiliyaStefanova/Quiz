@@ -1,9 +1,5 @@
 package com.liliya.quiz.model;
 
-import com.liliya.quiz.model.*;
-import com.liliya.quiz.model.PlayerQuizInstance;
-import com.liliya.quiz.model.Question;
-
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;

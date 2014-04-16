@@ -1,7 +1,5 @@
 package com.liliya.quiz.model;
 
-import com.liliya.quiz.model.Question;
-import com.liliya.quiz.model.QuestionImpl;
 import org.junit.*;
 
 import java.util.HashMap;

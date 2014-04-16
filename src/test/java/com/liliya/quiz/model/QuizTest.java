@@ -1,6 +1,5 @@
 package com.liliya.quiz.model;
 
-import com.liliya.quiz.model.*;
 import org.junit.*;
 
 import java.util.HashMap;
@@ -73,9 +72,9 @@ public class QuizTest {
         Quiz quiz1=new QuizImpl("Capitals", questionMap, 3);
         Quiz quiz2=new QuizImpl("Capitals", questionMap, 4);
 
-        assertEquals(2, quiz1.getQuizId());
+        assertEquals(3, quiz1.getQuizId());
 
-        assertEquals(3, quiz2.getQuizId());
+        assertEquals(4, quiz2.getQuizId());
     }
 
     @Test
