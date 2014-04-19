@@ -39,10 +39,10 @@ public class UserInputManagerAdmin {
         int choice = -1;
         do {
             try {
-                System.out.print(">>");
+                System.out.print("(key X to escape)>>");
                 Scanner sc = new Scanner(System.in);
                 choiceS = sc.nextLine();
-                checkInterruptionRequired(choice + "");
+                checkInterruptionRequired(choiceS);
                 choice = Integer.parseInt(choiceS);
 
             } catch (InputMismatchException e) {
