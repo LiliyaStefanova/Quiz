@@ -18,7 +18,6 @@ public class QuizServer extends UnicastRemoteObject implements QuizService, Seri
     private List<PlayerQuizInstance> playerQuizInstances;   //list of all instances of a quiz played, player and score
     private List<Quiz> allQuizzes;
     private Set<Player> allPlayers;
-    private static final String FILENAME = "server_state.xml";
     private int quizIDCounter;  //keeps track of the next quiz ID to be assigned
 
     private static final String SERVICE_NAME = "quiz";
