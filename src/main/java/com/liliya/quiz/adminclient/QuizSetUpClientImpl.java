@@ -88,7 +88,7 @@ public class QuizSetUpClientImpl implements QuizSetUpClient {
                     default:
                         System.out.print(ExceptionMsg.CHOOSE_VALID_OPTION);
                 }
-            } catch(ChangedMyMindException ex){
+            } catch (ChangedMyMindException ex) {
                 //do nothing-just return to menu
             }
 
@@ -143,10 +143,14 @@ public class QuizSetUpClientImpl implements QuizSetUpClient {
     @Override
     public void closeDownServer() {
         try {
-            clientLogger.info("Writing to file...");
-            quizAdmin.flush();
-            clientLogger.info("Shutting down server...");
-            quizAdmin.shutDown();
+            if (userInputManager.confirmExit().equalsIgnoreCase("y")) {
+                clientLogger.info("Writing to file...");
+                quizAdmin.flush();
+                clientLogger.info("Shutting down server...");
+                quizAdmin.shutDown();
+            } else {
+                return;
+            }
         } catch (RemoteException ex) {
             ex.printStackTrace();
         }
@@ -210,7 +214,7 @@ public class QuizSetUpClientImpl implements QuizSetUpClient {
             questions.put(countQuestionEntries, newQuestion);
             countQuestionEntries--;
         }
-        if(questions.isEmpty()){
+        if (questions.isEmpty()) {
             throw new IllegalArgumentException(ExceptionMsg.QUESTIONS_EMPTY);
         }
         return questions;

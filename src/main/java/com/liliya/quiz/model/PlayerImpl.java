@@ -13,7 +13,7 @@ public class PlayerImpl implements Player, Serializable {
 
     private String name;
 
-    public PlayerImpl(){
+    public PlayerImpl() {
         //no args constructor for serialization
     }
 

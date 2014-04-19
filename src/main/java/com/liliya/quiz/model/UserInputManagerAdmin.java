@@ -36,14 +36,14 @@ public class UserInputManagerAdmin {
 
     public int selectQuizToCloseFromList() {
         String choiceS = "";
-        int choice=-1;
+        int choice = -1;
         do {
             try {
                 System.out.print(">>");
                 Scanner sc = new Scanner(System.in);
-                choiceS=sc.nextLine();
+                choiceS = sc.nextLine();
                 checkInterruptionRequired(choice + "");
-                choice=Integer.parseInt(choiceS);
+                choice = Integer.parseInt(choiceS);
 
             } catch (InputMismatchException e) {
                 throw new RuntimeException(ExceptionMsg.ENTER_QUIZ_NUMBER, e);
@@ -58,7 +58,7 @@ public class UserInputManagerAdmin {
             System.out.print(UserDialog.NUM_QUESTIONS);
             String choiceS = "";
             Scanner sc = new Scanner(System.in);
-            choiceS=sc.nextLine();
+            choiceS = sc.nextLine();
             checkInterruptionRequired(choiceS);
             return Integer.parseInt(choiceS);
         } catch (InputMismatchException ex) {
@@ -105,14 +105,14 @@ public class UserInputManagerAdmin {
 
     public int provideCorrectAnswer() {
         int correctAnswer = 0;
-        String choiceS="";
+        String choiceS = "";
         do {
             try {
                 System.out.print(UserDialog.ENTER_CORR_ANS);
                 Scanner sc = new Scanner(System.in);
                 choiceS = sc.nextLine();
                 checkInterruptionRequired(choiceS);
-                correctAnswer=Integer.parseInt(choiceS);
+                correctAnswer = Integer.parseInt(choiceS);
 
             } catch (InputMismatchException ex) {
                 System.out.println(ExceptionMsg.NUM_CORR_ANS);
@@ -124,12 +124,12 @@ public class UserInputManagerAdmin {
     //a question can never have 0 points for a correct answer
     public int provideCorrectAnswerPoints() {
         int correctAnswerPoints = 0;
-        String choiceS="";
+        String choiceS = "";
         do {
             try {
                 System.out.print(UserDialog.ENTER_CORR_ANS_POINTS);
                 Scanner sc = new Scanner(System.in);
-                choiceS=sc.nextLine();
+                choiceS = sc.nextLine();
                 checkInterruptionRequired(choiceS);
                 correctAnswerPoints = Integer.parseInt(choiceS);
             } catch (InputMismatchException ex) {
@@ -169,8 +169,8 @@ public class UserInputManagerAdmin {
         return userInput;
     }
 
-    public void checkInterruptionRequired(String input){
-        if(input.equals("X")){
+    public void checkInterruptionRequired(String input) {
+        if (input.equals("X")) {
             throw new ChangedMyMindException();
         }
     }

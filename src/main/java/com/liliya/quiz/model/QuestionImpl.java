@@ -11,7 +11,7 @@ public class QuestionImpl implements Question, Serializable {
     private int correctAnswer;
     private int correctAnswerPoints;
 
-    public QuestionImpl(){
+    public QuestionImpl() {
         //no args constructor for serialization
     }
 

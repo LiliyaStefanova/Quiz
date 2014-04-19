@@ -9,17 +9,18 @@ package com.liliya.exceptions;
  */
 public class ChangedMyMindException extends RuntimeException {
 
-    public ChangedMyMindException(){}
+    public ChangedMyMindException() {
+    }
 
-    public ChangedMyMindException(String message){
+    public ChangedMyMindException(String message) {
         super(message);
     }
 
-    public ChangedMyMindException(Throwable cause){
+    public ChangedMyMindException(Throwable cause) {
         super(cause);
     }
 
-    public ChangedMyMindException(String message, Throwable cause){
+    public ChangedMyMindException(String message, Throwable cause) {
         super(message, cause);
     }
 }

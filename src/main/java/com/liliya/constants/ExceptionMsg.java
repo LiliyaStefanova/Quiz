@@ -23,5 +23,4 @@ public class ExceptionMsg {
     public static final String UNREGISTER_FAIL = "Could not un-register, quitting anyway...";
 
 
-
 }
