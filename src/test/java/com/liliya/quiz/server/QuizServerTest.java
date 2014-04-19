@@ -29,7 +29,7 @@ public class QuizServerTest{
 
         UserInputManagerAdmin userInputManagerAdmin=mock(UserInputManagerAdmin.class);
 
-        when(userInputManagerAdmin.provideQuizName()).thenReturn("My Quiz");
+        when(userInputManagerAdmin.provideNewQuizName()).thenReturn("My Quiz");
 
         int quizId = quizServer.createNewQuiz("My Quiz", quizTestData.questions);
 
