@@ -21,12 +21,12 @@ public class UserInputManagerPlayer {
         return TextMenu.display(menuName, textMenuItems);
     }
 
-    public int selectQuizToPlayFromList() {
+    public int selectQuizToPlay() {
         String choiceS = "";
         int choice = -1;
         do {
             try {
-                System.out.print(">>");
+                System.out.print("(key X to escape)>>");
                 Scanner sc = new Scanner(System.in);
                 choiceS = sc.nextLine();
                 checkInterruptionRequired(choiceS);
@@ -40,7 +40,7 @@ public class UserInputManagerPlayer {
         return choice;
     }
 
-    public int provideSelectedAnswer() {
+    public int inputSelectedAnswer() {
         int playerGuess = 0;
         String choiceS = "";
         do {
@@ -52,21 +52,15 @@ public class UserInputManagerPlayer {
                 playerGuess = Integer.parseInt(choiceS);
             } catch (InputMismatchException ex) {
                 System.out.println(ExceptionMsg.ANS_NUM_TRY);
+            } catch (NumberFormatException ex) {
+                System.out.println(ExceptionMsg.ANS_NUM_TRY);
             }
         } while (!answerRangeValidationCheck(playerGuess) || playerGuess == 0);
 
         return playerGuess;
     }
 
-    private boolean answerRangeValidationCheck(int answer) {
-        boolean correct = true;
-        if (answer < 1 || answer > 4) {
-            correct = false;
-        }
-        return correct;
-    }
-
-    public String providePlayerName() {
+    public String inputPlayerName() {
         String name = "";
         do {
             System.out.print(UserDialog.ENTER_NAME);
@@ -97,6 +91,14 @@ public class UserInputManagerPlayer {
         if (input.equals("X")) {
             throw new ChangedMyMindException();
         }
+    }
+
+    private boolean answerRangeValidationCheck(int answer) {
+        boolean correct = true;
+        if (answer < 1 || answer > 4) {
+            correct = false;
+        }
+        return correct;
     }
 
 }

@@ -19,7 +19,7 @@ public class UserInputManagerAdmin {
         return TextMenu.display(menuName, textMenuItems);
     }
 
-    public String provideQuizName() {
+    public String provideNewQuizName() {
         String quizName = "";
         do {
             try {
@@ -34,7 +34,7 @@ public class UserInputManagerAdmin {
         return quizName;
     }
 
-    public int selectQuizToCloseFromList() {
+    public int selectExistingQuizToClose() {
         String choiceS = "";
         int choice = -1;
         do {
@@ -46,14 +46,16 @@ public class UserInputManagerAdmin {
                 choice = Integer.parseInt(choiceS);
 
             } catch (InputMismatchException e) {
-                throw new RuntimeException(ExceptionMsg.ENTER_QUIZ_NUMBER, e);
+                System.out.println(ExceptionMsg.ENTER_QUIZ_NUMBER);
+            } catch (NumberFormatException e){
+                System.out.println(ExceptionMsg.ENTER_QUIZ_NUMBER);
             }
         } while (choice == -1);
 
         return choice;
     }
 
-    public int setNumberOfQuestions() {
+    public int setNewQuizNumQuestions() {
         try {
             System.out.print(UserDialog.NUM_QUESTIONS);
             String choiceS = "";
@@ -63,10 +65,12 @@ public class UserInputManagerAdmin {
             return Integer.parseInt(choiceS);
         } catch (InputMismatchException ex) {
             throw new RuntimeException(ExceptionMsg.NUM_QUES_REQ, ex);
+        } catch (NumberFormatException ex) {
+            throw new RuntimeException(ExceptionMsg.NUM_QUES_REQ, ex);
         }
     }
 
-    public String provideQuestion() {
+    public String inputNewQuizQuestion() {
         String question = "";
         do {
             try {
@@ -81,7 +85,7 @@ public class UserInputManagerAdmin {
         return question;
     }
 
-    public Map<Integer, String> providePossibleAnswers() {
+    public Map<Integer, String> inputNewQuizPossAnswers() {
         Map<Integer, String> possibleAnswers = new HashMap<Integer, String>();
         String answer = "";
         System.out.println(UserDialog.ENTER_POSS_ANS);
@@ -103,7 +107,7 @@ public class UserInputManagerAdmin {
         return possibleAnswers;
     }
 
-    public int provideCorrectAnswer() {
+    public int inputNewQuizCorrAnswer() {
         int correctAnswer = 0;
         String choiceS = "";
         do {
@@ -114,15 +118,16 @@ public class UserInputManagerAdmin {
                 checkInterruptionRequired(choiceS);
                 correctAnswer = Integer.parseInt(choiceS);
 
-            } catch (InputMismatchException ex) {
+            } catch (NumberFormatException ex) {
                 System.out.println(ExceptionMsg.NUM_CORR_ANS);
             }
+
         } while (correctAnswer < 1 || correctAnswer > 4);
         return correctAnswer;
     }
 
     //a question can never have 0 points for a correct answer
-    public int provideCorrectAnswerPoints() {
+    public int inputNewQuizCorrAnsPts() {
         int correctAnswerPoints = 0;
         String choiceS = "";
         do {
@@ -134,12 +139,14 @@ public class UserInputManagerAdmin {
                 correctAnswerPoints = Integer.parseInt(choiceS);
             } catch (InputMismatchException ex) {
                 System.out.println(ExceptionMsg.ANS_POINTS);
+            } catch (NumberFormatException ex) {
+                System.out.println(ExceptionMsg.ANS_POINTS);
             }
         } while (correctAnswerPoints == 0);
         return correctAnswerPoints;
     }
 
-    public String inputFileName() {
+    public String inputNewQuizFilePath() {
         String filename = "";
         System.out.print(UserDialog.ENTER_PATH);
         do {
@@ -169,6 +176,7 @@ public class UserInputManagerAdmin {
         return userInput;
     }
 
+    //checks if the user has requested to escape back to the main menu
     public void checkInterruptionRequired(String input) {
         if (input.equals("X")) {
             throw new ChangedMyMindException();
