@@ -18,6 +18,11 @@
 
  - Choose option from menu as required
 
+**Important:** Security policy file is called server.policy and can be used both by the server and the clients. If
+ launching from the command line, place the file in the working directory or use the absolute path.
+ If using an IDE, edit the VM options to include the following line:  -Djava.security.policy= path to the file
+
+
 ### Quiz Administration
 
 The QuizSetUpClient is the administrator of the quiz. This client can create and close quizzes; and request that the
