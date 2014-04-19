@@ -21,7 +21,7 @@ public interface QuizSetUpClient {
      * to generate a new quiz
      * Gets the id back the server
      */
-    public void setUpQuizManually();
+    public void setUpNewQuizManually();
 
     /**
      * Prompts for a quiz name
@@ -29,7 +29,7 @@ public interface QuizSetUpClient {
      * set up a new quiz
      * Gets id back from the server
      */
-    public void setUpQuizFromFile();
+    public void setUpNewQuizFromFile();
 
     /**
      * Closes the quiz when the the set up client provides the id
@@ -47,7 +47,7 @@ public interface QuizSetUpClient {
 
     /**
      * Shuts down the set up client process (also referred to as admin client)
-     * Writes all data from server prior to exiting
+     * Server will continue running if it has not been shut down
      */
     public void closeDownClient();
 

@@ -17,7 +17,7 @@ import java.util.logging.Logger;
 public class QuizSetUpClientImpl implements QuizSetUpClient {
 
 
-    private QuizService quizAdmin = null;
+    private QuizService quizService = null;
 
     private static final String SERVICE_NAME = "quiz";
 
@@ -36,7 +36,7 @@ public class QuizSetUpClientImpl implements QuizSetUpClient {
 
     public QuizSetUpClientImpl(UserInputManagerAdmin userInputManager, QuizService service) {
         this.userInputManager = userInputManager;
-        this.quizAdmin = service;
+        this.quizService = service;
     }
 
     public static void main(String[] args) {
@@ -53,7 +53,7 @@ public class QuizSetUpClientImpl implements QuizSetUpClient {
         }
         try {
             Remote service = Naming.lookup("//127.0.0.1:1699/quiz");
-            quizAdmin = (QuizService) service;
+            quizService = (QuizService) service;
         } catch (MalformedURLException ex) {
             ex.printStackTrace();
         } catch (RemoteException e) {
@@ -71,10 +71,10 @@ public class QuizSetUpClientImpl implements QuizSetUpClient {
             try {
                 switch (action) {
                     case SET_UP_QUIZ_MANUALLY:
-                        setUpQuizManually();
+                        setUpNewQuizManually();
                         break;
                     case SET_UP_QUIZ_FROM_FILE:
-                        setUpQuizFromFile();
+                        setUpNewQuizFromFile();
                         break;
                     case CLOSE_QUIZ:
                         requestQuizClose();
@@ -96,11 +96,11 @@ public class QuizSetUpClientImpl implements QuizSetUpClient {
     }
 
     @Override
-    public void setUpQuizManually() {
+    public void setUpNewQuizManually() {
 
-        String quizName = userInputManager.provideQuizName();
+        String quizName = userInputManager.provideNewQuizName();
         try {
-            int quizID = quizAdmin.createNewQuiz(quizName, generateQuizQuestionsManually());
+            int quizID = quizService.createNewQuiz(quizName, generateQuizQuestionsManually());
             System.out.println("ID for quiz \"" + quizName + "\" is: " + quizID);
         } catch (RemoteException ex) {
             ex.printStackTrace();
@@ -108,10 +108,10 @@ public class QuizSetUpClientImpl implements QuizSetUpClient {
     }
 
     @Override
-    public void setUpQuizFromFile() {
-        String quizName = userInputManager.provideQuizName();
+    public void setUpNewQuizFromFile() {
+        String quizName = userInputManager.provideNewQuizName();
         try {
-            int quizID = quizAdmin.createNewQuiz(quizName, generateQuizQuestionsFromFile());
+            int quizID = quizService.createNewQuiz(quizName, generateQuizQuestionsFromFile());
             System.out.println("ID for quiz \"" + quizName + "\" is: " + quizID);
         } catch (RemoteException ex) {
             ex.printStackTrace();
@@ -125,11 +125,11 @@ public class QuizSetUpClientImpl implements QuizSetUpClient {
             if (quizIDSelected == -1) {
                 return;
             }
-            if (quizAdmin.checkQuizPlayed(quizIDSelected)) {
+            if (quizService.checkQuizPlayed(quizIDSelected)) {
                 System.out.println(UserDialog.QUIZ_STILL_PLAYED);
                 return;
             } else {
-                List<PlayerQuizInstance> winners = quizAdmin.closeQuiz(quizIDSelected);
+                List<PlayerQuizInstance> winners = quizService.closeQuiz(quizIDSelected);
                 displayQuizWinnersDetails(winners);
                 System.out.println(UserDialog.QUIZ_NOW_CLOSED);
             }
@@ -145,9 +145,9 @@ public class QuizSetUpClientImpl implements QuizSetUpClient {
         try {
             if (userInputManager.confirmExit().equalsIgnoreCase("y")) {
                 clientLogger.info("Writing to file...");
-                quizAdmin.flush();
+                quizService.flush();
                 clientLogger.info("Shutting down server...");
-                quizAdmin.shutDown();
+                quizService.shutDown();
             } else {
                 return;
             }
@@ -167,7 +167,7 @@ public class QuizSetUpClientImpl implements QuizSetUpClient {
         }
     }
 
-    void displayQuizWinnersDetails(List<PlayerQuizInstance> playersWithHighestScore) {
+    private void displayQuizWinnersDetails(List<PlayerQuizInstance> playersWithHighestScore) {
         System.out.println(UserDialog.WINNERS_OF_THE_QUIZ);
         if (playersWithHighestScore.isEmpty()) {
             System.out.println(UserDialog.NO_ONE_HAS_PLAYED_QUIZ);
@@ -180,11 +180,11 @@ public class QuizSetUpClientImpl implements QuizSetUpClient {
         }
     }
 
-    int displayActiveQuizzes() {
+    private int displayActiveQuizzes() {
         int choice = 0;
         System.out.println("Select quiz: ");
         try {
-            List<Quiz> availableQuizzes = quizAdmin.getListAvailableQuizzes();
+            List<Quiz> availableQuizzes = quizService.getListAvailableQuizzes();
             if (availableQuizzes.isEmpty()) {
                 System.out.println(UserDialog.NO_QUIZZES_AVAILABLE);
                 return -1;
@@ -192,7 +192,7 @@ public class QuizSetUpClientImpl implements QuizSetUpClient {
             for (Quiz current : availableQuizzes) {
                 System.out.println(current.getQuizId() + ". " + current.getQuizName());
             }
-            choice = userInputManager.selectQuizToCloseFromList();
+            choice = userInputManager.selectExistingQuizToClose();
         } catch (RemoteException ex) {
             ex.printStackTrace();
         } catch (InputMismatchException ex) {
@@ -202,15 +202,15 @@ public class QuizSetUpClientImpl implements QuizSetUpClient {
     }
 
 
-    Map<Integer, Question> generateQuizQuestionsManually() {
+    private Map<Integer, Question> generateQuizQuestionsManually() {
 
         Map<Integer, Question> questions = new HashMap<Integer, Question>();
-        int countQuestionEntries = userInputManager.setNumberOfQuestions();
+        int countQuestionEntries = userInputManager.setNewQuizNumQuestions();
         while (countQuestionEntries > 0) {
-            Question newQuestion = new QuestionImpl(userInputManager.provideQuestion(),
-                    userInputManager.providePossibleAnswers(),
-                    userInputManager.provideCorrectAnswer(),
-                    userInputManager.provideCorrectAnswerPoints());
+            Question newQuestion = new QuestionImpl(userInputManager.inputNewQuizQuestion(),
+                    userInputManager.inputNewQuizPossAnswers(),
+                    userInputManager.inputNewQuizCorrAnswer(),
+                    userInputManager.inputNewQuizCorrAnsPts());
             questions.put(countQuestionEntries, newQuestion);
             countQuestionEntries--;
         }
@@ -220,7 +220,7 @@ public class QuizSetUpClientImpl implements QuizSetUpClient {
         return questions;
     }
 
-    Map<Integer, Question> generateQuizQuestionsFromFile() {
+    private Map<Integer, Question> generateQuizQuestionsFromFile() {
 
         Map<Integer, Question> questions = new HashMap<Integer, Question>();
         String question;
@@ -228,8 +228,7 @@ public class QuizSetUpClientImpl implements QuizSetUpClient {
         int lineCount = 0;
         try {
             String sCurrentLine;
-            //TODO change to InputStreamReader as FileReader uses default encoding
-            br = new BufferedReader(new FileReader(userInputManager.inputFileName()));
+            br = new BufferedReader(new FileReader(userInputManager.inputNewQuizFilePath()));
             while ((sCurrentLine = br.readLine()) != null) {
                 Map<Integer, String> possibleAnswers = new HashMap<Integer, String>();
                 String[] questionParts = sCurrentLine.split(",");
