@@ -32,14 +32,13 @@ public class QuizServer extends UnicastRemoteObject implements QuizService, Seri
         quizIDCounter = 0;
     }
 
-    //TODO check for duplicate quizzes
     @Override
     public synchronized int createNewQuiz(String name, Map<Integer, Question> questions) throws RemoteException {
-            Quiz newQuiz = new QuizImpl(name, questions, quizIDCounter);
-            quizIDCounter++;        //increment counter for next quiz
-            int quizId = newQuiz.getQuizId();
-            allQuizzes.add(newQuiz);
-            return quizId;
+        Quiz newQuiz = new QuizImpl(name, questions, quizIDCounter);
+        quizIDCounter++;        //increment counter for next quiz
+        int quizId = newQuiz.getQuizId();
+        allQuizzes.add(newQuiz);
+        return quizId;
     }
 
     @Override
@@ -58,7 +57,7 @@ public class QuizServer extends UnicastRemoteObject implements QuizService, Seri
     }
 
     public synchronized boolean checkQuizPlayed(int id) {
-        List<PlayerQuizInstance> instances=getAllQuizInstances(id);
+        List<PlayerQuizInstance> instances = getAllQuizInstances(id);
         for (PlayerQuizInstance current : instances) {
             if (current.isQuizPlayed()) {
                 return true;
@@ -68,10 +67,10 @@ public class QuizServer extends UnicastRemoteObject implements QuizService, Seri
     }
 
     public synchronized PlayerQuizInstance loadQuizForPlay(int id, String name) throws RemoteException {
-        PlayerQuizInstance newQuizPlayerInstance=null;
-        Player quizPlayer=setUpPlayer(name);
-        Quiz   quizToPlay= findQuizToPlay(id);
-        if(setUpPlayer(name)!=null && findQuizToPlay(id)!=null){
+        PlayerQuizInstance newQuizPlayerInstance = null;
+        Player quizPlayer = setUpPlayer(name);
+        Quiz quizToPlay = findQuizToPlay(id);
+        if (setUpPlayer(name) != null && findQuizToPlay(id) != null) {
             newQuizPlayerInstance = new PlayerQuizInstanceImpl(quizPlayer, quizToPlay);
             playerQuizInstances.add(newQuizPlayerInstance);
         }
@@ -84,7 +83,7 @@ public class QuizServer extends UnicastRemoteObject implements QuizService, Seri
     public synchronized int calculatePlayerScore(PlayerQuizInstance quizInstance, Map<Question, Integer> guesses) throws RemoteException {
         int playerQuizInstanceScore = 0;
         //if guesses were not submitted, set quiz to not played to avoid blocking admin from closing it
-        if(guesses.isEmpty()||guesses.size()<quizInstance.getQuiz().getQuizQuestions().size()){
+        if (guesses.isEmpty() || guesses.size() < quizInstance.getQuiz().getQuizQuestions().size()) {
             quizInstance.setQuizPlayed(false);
         }
         for (Map.Entry<Question, Integer> entry : guesses.entrySet()) {

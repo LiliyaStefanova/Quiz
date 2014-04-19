@@ -22,32 +22,32 @@ public class UserInputManagerPlayer {
     }
 
     public int selectQuizToPlayFromList() {
-          String choiceS = "";
-    int choice=-1;
-    do {
-        try {
-            System.out.print(">>");
-            Scanner sc = new Scanner(System.in);
-            choiceS=sc.nextLine();
-            checkInterruptionRequired(choice + "");
-            choice=Integer.parseInt(choiceS);
+        String choiceS = "";
+        int choice = -1;
+        do {
+            try {
+                System.out.print(">>");
+                Scanner sc = new Scanner(System.in);
+                choiceS = sc.nextLine();
+                checkInterruptionRequired(choiceS);
+                choice = Integer.parseInt(choiceS);
 
-        } catch (InputMismatchException e) {
-            throw new RuntimeException(ExceptionMsg.ENTER_QUIZ_NUMBER, e);
-        }
-    } while (choice == -1);
+            } catch (InputMismatchException e) {
+                throw new RuntimeException(ExceptionMsg.ENTER_QUIZ_NUMBER, e);
+            }
+        } while (choice == -1);
 
-    return choice;
-}
+        return choice;
+    }
 
     public int provideSelectedAnswer() {
         int playerGuess = 0;
-        String choiceS="";
+        String choiceS = "";
         do {
             try {
                 System.out.print(UserDialog.ANSWER_PROMPT);
                 Scanner sc = new Scanner(System.in);
-                choiceS=sc.nextLine();
+                choiceS = sc.nextLine();
                 checkInterruptionRequired(choiceS);
                 playerGuess = Integer.parseInt(choiceS);
             } catch (InputMismatchException ex) {
@@ -93,8 +93,8 @@ public class UserInputManagerPlayer {
         return userInput;
     }
 
-    public void checkInterruptionRequired(String input){
-        if(input.equals("X")){
+    public void checkInterruptionRequired(String input) {
+        if (input.equals("X")) {
             throw new ChangedMyMindException();
         }
     }

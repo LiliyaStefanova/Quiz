@@ -2,7 +2,6 @@ package com.liliya.quiz.playerclient;
 
 import com.liliya.constants.ExceptionMsg;
 import com.liliya.constants.UserDialog;
-import com.liliya.constants.UserDialog;
 import com.liliya.exceptions.ChangedMyMindException;
 import com.liliya.exceptions.NoQuizException;
 import com.liliya.menu.MenuActions;
@@ -27,14 +26,14 @@ public class QuizPlayerClientImpl implements QuizPlayerClient {
 
     private static List<TextMenuItem> playerMenu = new ArrayList<TextMenuItem>(Arrays.asList(selectFromList, viewHighScores, quit));
 
-    QuizService quizPlayer = null;
+    QuizService quizService = null;
     String playerName = "";
 
     UserInputManagerPlayer userInputManager;
 
     public QuizPlayerClientImpl(UserInputManagerPlayer userInputManager, QuizService server) {
         this.userInputManager = userInputManager;
-        this.quizPlayer = server;
+        this.quizService = server;
 
     }
 
@@ -53,7 +52,7 @@ public class QuizPlayerClientImpl implements QuizPlayerClient {
         }
         try {
             Remote service = Naming.lookup("//127.0.0.1:1699/quiz");
-            quizPlayer = (QuizService) service;
+            quizService = (QuizService) service;
         } catch (MalformedURLException ex) {
             ex.printStackTrace();
         } catch (RemoteException e) {
@@ -67,25 +66,25 @@ public class QuizPlayerClientImpl implements QuizPlayerClient {
         do {
             System.out.println();
             MenuActions action = userInputManager.showMenu("QUIZ PLAYER MENU", playerMenu);
-            try{
-            switch (action) {
-                case SELECT_QUIZ_FROM_LIST:
-                    try {
-                        playQuiz(selectQuizToPlay());
-                    } catch (NoQuizException ex) {
-                        System.out.println(UserDialog.NO_QUIZZES_AVAILABLE);
-                    }
-                    break;
-                case VIEW_HIGH_SCORES:
-                    viewHighScores();
-                    break;
-                case QUIT:
-                    closeDownProgram();
-                    break;
-                default:
-                    System.out.print(ExceptionMsg.CHOOSE_VALID_OPTION);
-            }
-            }catch(ChangedMyMindException ex){
+            try {
+                switch (action) {
+                    case SELECT_QUIZ_FROM_LIST:
+                        try {
+                            playQuiz(selectQuizToPlay());
+                        } catch (NoQuizException ex) {
+                            System.out.println(UserDialog.NO_QUIZZES_AVAILABLE);
+                        }
+                        break;
+                    case VIEW_HIGH_SCORES:
+                        viewHighScores();
+                        break;
+                    case QUIT:
+                        closeDownProgram();
+                        break;
+                    default:
+                        System.out.print(ExceptionMsg.CHOOSE_VALID_OPTION);
+                }
+            } catch (ChangedMyMindException ex) {
                 //do nothing-just return to menu
             }
 
@@ -98,7 +97,7 @@ public class QuizPlayerClientImpl implements QuizPlayerClient {
         int choice = 0;
         System.out.println(UserDialog.SELECT_QUIZ);
         try {
-            List<Quiz> availableQuizzes = quizPlayer.getListAvailableQuizzes();
+            List<Quiz> availableQuizzes = quizService.getListAvailableQuizzes();
             if (availableQuizzes.isEmpty()) {
                 throw new NoQuizException();
             }
@@ -121,15 +120,21 @@ public class QuizPlayerClientImpl implements QuizPlayerClient {
             playerName = userInputManager.providePlayerName();
         }
         try {
-            PlayerQuizInstance newInstanceQuizPlayer = quizPlayer.loadQuizForPlay(id, playerName);
+            PlayerQuizInstance newInstanceQuizPlayer = quizService.loadQuizForPlay(id, playerName);
             if (newInstanceQuizPlayer == null) {
                 System.out.println(UserDialog.NOT_AVAILABLE);
                 System.out.println();
                 return;
             }
-            Map<Question, Integer> userGuesses = submitAnswersForScoring(newInstanceQuizPlayer.getQuiz());
-            System.out.print(UserDialog.FINAL_SCORE + quizPlayer.calculatePlayerScore(newInstanceQuizPlayer, userGuesses));
-            System.out.println();
+            try {
+                Map<Question, Integer> userGuesses = submitAnswersForScoring(newInstanceQuizPlayer.getQuiz());
+                System.out.print(UserDialog.FINAL_SCORE + quizService.calculatePlayerScore(newInstanceQuizPlayer, userGuesses));
+                System.out.println();
+            } catch (ChangedMyMindException ex) {
+
+                quizService.calculatePlayerScore(newInstanceQuizPlayer, new HashMap<Question, Integer>());
+            }
+
 
         } catch (RemoteException e) {
             e.printStackTrace();
@@ -144,7 +149,7 @@ public class QuizPlayerClientImpl implements QuizPlayerClient {
             playerName = userInputManager.providePlayerName();
         }
         try {
-            quizInstancesForPlayer = quizPlayer.getQuizzesPlayedByPlayer(playerName);
+            quizInstancesForPlayer = quizService.getQuizzesPlayedByPlayer(playerName);
         } catch (RemoteException ex) {
             ex.printStackTrace();
         }
@@ -168,20 +173,21 @@ public class QuizPlayerClientImpl implements QuizPlayerClient {
     }
 
     Map<Question, Integer> submitAnswersForScoring(Quiz quizPlayed) {
-        Map<Question, Integer> playerGuesses = new HashMap<Question, Integer>();
-        for (Map.Entry<Integer, Question> currentQuestion : quizPlayed.getQuizQuestions().entrySet()) {
-            System.out.println(currentQuestion.getKey() + "." + currentQuestion.getValue().getQuestion());
-            for (Map.Entry<Integer, String> currentPossAns : currentQuestion.getValue().getPossibleAnswers().entrySet()) {
-                System.out.println("\t" + currentPossAns.getKey() + "." + currentPossAns.getValue());
+        try {
+            Map<Question, Integer> playerGuesses = new HashMap<Question, Integer>();
+            for (Map.Entry<Integer, Question> currentQuestion : quizPlayed.getQuizQuestions().entrySet()) {
+                System.out.println(currentQuestion.getKey() + "." + currentQuestion.getValue().getQuestion());
+                for (Map.Entry<Integer, String> currentPossAns : currentQuestion.getValue().getPossibleAnswers().entrySet()) {
+                    System.out.println("\t" + currentPossAns.getKey() + "." + currentPossAns.getValue());
+                }
+                playerGuesses.put(currentQuestion.getValue(), userInputManager.provideSelectedAnswer());
+
             }
-            playerGuesses.put(currentQuestion.getValue(), userInputManager.provideSelectedAnswer());
-
-        }
-        if(playerGuesses.isEmpty()|| playerGuesses.size()<quizPlayed.getQuizQuestions().size()){
-            throw new IllegalArgumentException("Some or all questions have not been answered");
+            return playerGuesses;
+        } catch (ChangedMyMindException ex) {
+            return new HashMap<Question, Integer>();
         }
 
-        return playerGuesses;
     }
 
     List<PlayerQuizInstance> findTopScores(List<PlayerQuizInstance> quizInstancesForPlayer) {
