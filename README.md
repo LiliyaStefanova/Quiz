@@ -76,3 +76,11 @@ The QuizSetUpClient is the administrator of the quiz. This client can create and
    name if a new client has been launched
 
 -**Quit**-close down the client application
+
+**Important: ** Known Bugs and Limitations
+
+  -Each new player client launched will be considered a unique new player-a new user name will be required.
+   This is a limitation of the system and will be fixed with the next iteration.
+
+  -If a client connection goes down mid-way through playing a quiz; the quiz remains locked by this client and the
+   admin will not be able to close it.
