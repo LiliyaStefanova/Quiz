@@ -104,7 +104,7 @@ public class QuizPlayerClientImpl implements QuizPlayerClient {
             for (Quiz current : availableQuizzes) {
                 System.out.println(current.getQuizId() + ". " + current.getQuizName());
             }
-            choice = userInputManager.selectQuizToPlayFromList();
+            choice = userInputManager.selectQuizToPlay();
         } catch (RemoteException ex) {
             ex.printStackTrace();
         } catch (InputMismatchException ex) {
@@ -116,9 +116,7 @@ public class QuizPlayerClientImpl implements QuizPlayerClient {
 
     @Override
     public void playQuiz(int id) {
-        while (playerName.equals("")) {
-            playerName = userInputManager.providePlayerName();
-        }
+        enterPlayerDetails();
         try {
             PlayerQuizInstance newInstanceQuizPlayer = quizService.loadQuizForPlay(id, playerName);
             if (newInstanceQuizPlayer == null) {
@@ -127,7 +125,7 @@ public class QuizPlayerClientImpl implements QuizPlayerClient {
                 return;
             }
             try {
-                Map<Question, Integer> userGuesses = submitAnswersForScoring(newInstanceQuizPlayer.getQuiz());
+                Map<Question, Integer> userGuesses = displayQuestionsEnterAnswers(newInstanceQuizPlayer.getQuiz());
                 System.out.print(UserDialog.FINAL_SCORE + quizService.calculatePlayerScore(newInstanceQuizPlayer, userGuesses));
                 System.out.println();
             } catch (ChangedMyMindException ex) {
@@ -146,7 +144,7 @@ public class QuizPlayerClientImpl implements QuizPlayerClient {
     public void viewHighScores() {
         List<PlayerQuizInstance> quizInstancesForPlayer = new ArrayList<PlayerQuizInstance>();
         if (playerName.equals("")) {
-            playerName = userInputManager.providePlayerName();
+            playerName = userInputManager.inputPlayerName();
         }
         try {
             quizInstancesForPlayer = quizService.getQuizzesPlayedByPlayer(playerName);
@@ -172,7 +170,7 @@ public class QuizPlayerClientImpl implements QuizPlayerClient {
         }
     }
 
-    Map<Question, Integer> submitAnswersForScoring(Quiz quizPlayed) {
+    private Map<Question, Integer> displayQuestionsEnterAnswers(Quiz quizPlayed) {
         try {
             Map<Question, Integer> playerGuesses = new HashMap<Question, Integer>();
             for (Map.Entry<Integer, Question> currentQuestion : quizPlayed.getQuizQuestions().entrySet()) {
@@ -180,7 +178,7 @@ public class QuizPlayerClientImpl implements QuizPlayerClient {
                 for (Map.Entry<Integer, String> currentPossAns : currentQuestion.getValue().getPossibleAnswers().entrySet()) {
                     System.out.println("\t" + currentPossAns.getKey() + "." + currentPossAns.getValue());
                 }
-                playerGuesses.put(currentQuestion.getValue(), userInputManager.provideSelectedAnswer());
+                playerGuesses.put(currentQuestion.getValue(), userInputManager.inputSelectedAnswer());
 
             }
             return playerGuesses;
@@ -190,7 +188,7 @@ public class QuizPlayerClientImpl implements QuizPlayerClient {
 
     }
 
-    List<PlayerQuizInstance> findTopScores(List<PlayerQuizInstance> quizInstancesForPlayer) {
+    private List<PlayerQuizInstance> findTopScores(List<PlayerQuizInstance> quizInstancesForPlayer) {
 
         List<PlayerQuizInstance> topScores = new ArrayList<PlayerQuizInstance>();
 
@@ -208,6 +206,30 @@ public class QuizPlayerClientImpl implements QuizPlayerClient {
             topScores = quizInstancesForPlayer.subList(0, 3);
         }
         return topScores;
+    }
+
+    private void enterPlayerDetails() {
+        boolean playerExists = false;
+        do {
+            playerName = userInputManager.inputPlayerName();
+            playerExists = checkPlayerExists(playerName);
+
+        } while (playerExists);
+    }
+
+    private boolean checkPlayerExists(String name) {
+        boolean playerExists = false;
+        try {
+            for (Player player : quizService.getAllPlayers()) {
+                if (player.getName().equals(name)) {
+                    playerExists = true;
+                    return playerExists;
+                }
+            }
+        } catch (RemoteException ex) {
+            ex.printStackTrace();
+        }
+        return playerExists;
     }
 
 }
