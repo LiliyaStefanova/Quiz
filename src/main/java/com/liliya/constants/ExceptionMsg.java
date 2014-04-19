@@ -14,10 +14,9 @@ public class ExceptionMsg {
     public static final String ANS_POINTS = "Answer points must be provided as number";
     public static final String INVALID_PATH = "Invalid file path";
     public static final String ANS_NUM_TRY = "You need to type the answer number.Try again!";
-    public static final String QUIZ_ID_NUM = "You need to type the answer number.Try again!";
+    public static final String NAME_ALREADY_EXISTS = "This name already exists.Try again";
 
     public static final String YN = "You must specify y or n";
-
 
     public static final String ALREADY_CLOSED = "This quiz has already been closed";
     public static final String UNREGISTER_FAIL = "Could not un-register, quitting anyway...";
