@@ -30,7 +30,7 @@ public class PlayerClientTest {
         activeQuizzes.add(quizTestData.newQuiz);
 
         when(quizServerMock.getListAvailableQuizzes()).thenReturn(activeQuizzes);
-        when(userInputManagerMock.selectQuizToPlayFromList()).thenReturn(3);
+        when(userInputManagerMock.selectQuizToPlay()).thenReturn(3);
 
         playerClient.selectQuizToPlay();
 
@@ -47,8 +47,8 @@ public class PlayerClientTest {
 
         QuizPlayerClient playerClient = new QuizPlayerClientImpl(userInputManagerMock, quizServerMock);
 
-        when(userInputManagerMock.providePlayerName()).thenReturn("John");
-        when(userInputManagerMock.provideSelectedAnswer()).thenReturn(3).thenReturn(1);
+        when(userInputManagerMock.inputPlayerName()).thenReturn("John");
+        when(userInputManagerMock.inputSelectedAnswer()).thenReturn(3).thenReturn(1);
         when(quizServerMock.loadQuizForPlay(3, "John")).thenReturn(quizTestData.newInstance);
         when(quizServerMock.calculatePlayerScore(quizTestData.newInstance, quizTestData.playerGuesses)).thenReturn(13);
 
@@ -71,7 +71,7 @@ public class PlayerClientTest {
 
         QuizPlayerClient playerClient = new QuizPlayerClientImpl(userInputManagerMock, quizServerMock);
 
-        when(userInputManagerMock.providePlayerName()).thenReturn("John");
+        when(userInputManagerMock.inputPlayerName()).thenReturn("John");
         when(quizServerMock.getQuizzesPlayedByPlayer("John")).thenReturn(quizTestData.instancesPerPlayer);
 
         playerClient.viewHighScores();

@@ -29,12 +29,12 @@ public class SetUpClientTest {
 
         QuizSetUpClient setUpClient=new QuizSetUpClientImpl(userInputManagerMock, quizServerMock);
 
-        when(userInputManagerMock.provideQuizName()).thenReturn("My Quiz");
-        when(userInputManagerMock.setNumberOfQuestions()).thenReturn(1);
-        when(userInputManagerMock.provideQuestion()).thenReturn("When did WWII start?");
-        when(userInputManagerMock.providePossibleAnswers()).thenReturn(quizTestData.possibleAnswers1);
-        when(userInputManagerMock.provideCorrectAnswer()).thenReturn(3);
-        when(userInputManagerMock.provideCorrectAnswerPoints()).thenReturn(6);
+        when(userInputManagerMock.provideNewQuizName()).thenReturn("My Quiz");
+        when(userInputManagerMock.setNewQuizNumQuestions()).thenReturn(1);
+        when(userInputManagerMock.inputNewQuizQuestion()).thenReturn("When did WWII start?");
+        when(userInputManagerMock.inputNewQuizPossAnswers()).thenReturn(quizTestData.possibleAnswers1);
+        when(userInputManagerMock.inputNewQuizCorrAnswer()).thenReturn(3);
+        when(userInputManagerMock.inputNewQuizCorrAnsPts()).thenReturn(6);
 
         Map<Integer, Question> questions=new HashMap<Integer, Question>();
         Question question1=new QuestionImpl("When did WWII start?",quizTestData.possibleAnswers1,3,6);
@@ -42,7 +42,7 @@ public class SetUpClientTest {
 
         when(quizServerMock.createNewQuiz("My Quiz",questions)).thenReturn(42);
 
-        setUpClient.setUpQuizManually();
+        setUpClient.setUpNewQuizManually();
 
         verify(quizServerMock).createNewQuiz("My Quiz", questions);
 
@@ -61,7 +61,7 @@ public class SetUpClientTest {
         QuizSetUpClient setUpClient=new QuizSetUpClientImpl(userInputManagerMock, quizServerMock);
 
 
-        when(userInputManagerMock.selectQuizToCloseFromList()).thenReturn(3);
+        when(userInputManagerMock.selectExistingQuizToClose()).thenReturn(3);
         when(quizServerMock.loadQuizForPlay(3, "John")).thenReturn(quizTestData.newInstance);
         when(quizServerMock.getListAvailableQuizzes()).thenReturn(quizTestData.listAvailableQuizzes);
 
